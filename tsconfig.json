@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "ESNext", "DOM", "DOM.Iterable", "WebWorker"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vite/client", "vite-plugin-pwa", "vite-plugin-pwa/info"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@wms/config": ["./src/config/index.ts"],
+      "@wms/apis": ["./src/data/apis/index.ts"],
+      "@wms/static": ["./src/data/static/index.ts"],
+      "@wms/redux/store": ["./src/data/redux/store/store.ts"],
+      "@wms/redux/selector": ["./src/data/redux/selector/selector.ts"],
+      "@wms/redux/reducer": ["./src/data/redux/reducer/reducer.ts"],
+      "@wms/redux/actions": ["./src/data/redux/actions/index.ts"],
+      "@wms/interfaces": ["./src/interfaces/index.ts"],
+      "@wms/assets/*": ["./src/assets/*"],
+      "@wms/components": ["./src/components/index.ts"],
+      "@wms/helpers": ["./src/helpers/index.ts"],
+      "@wms/hooks": ["./src/hooks/index.ts"],
+      "@wms/pages": ["./src/pages/index.ts"],
+      "@wms/routes": ["./src/routes/router.tsx"],
+      "@wms/styles/*": ["./src/styles/*"],
+      "@wms/templates": ["./src/templates/index.ts"],
+      "@wms/utils": ["./src/utils/index.ts"],
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
