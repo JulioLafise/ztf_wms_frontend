@@ -24,7 +24,7 @@ const NotFoundMain = () => {
       }}
     >
       <Box sx={{ background: 'white', padding: 2, borderRadius: 5 }}>
-        <img src="/img/logo.png" alt="logoLafise" style={{ height: 'auto', width: '200px' }} />
+        <img src="/img/logo_fzt2.png" alt="logoZTF" style={{ height: 'auto', width: '200px' }} />
       </Box>
       <Typography variant="h1" style={{ color: 'white' }}>
         404
@@ -59,7 +59,7 @@ const NotFoundNav = () => {
         }}
       >
         <Box sx={{ background: 'white', padding: 2, borderRadius: 5 }}>
-          <img src="/img/logo.png" alt="logoLafise" style={{ height: 'auto', width: '200px', }} />
+          <img src="/img/logo_fzt2.png" alt="logoZTF" style={{ height: 'auto', width: '400px', }} />
         </Box>
         <Typography variant="h1">
           404

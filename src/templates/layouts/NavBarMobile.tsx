@@ -17,7 +17,7 @@ import { BackgroundLetterAvatars, DarkMode } from '@wms/components';
 import { useAuth } from '@wms/hooks';
 import { IMenuList } from '@wms/interfaces';
 import { MenuProfileMobile } from './components';
-// import SideBarMobileMenu from './SideBarMobileMenu';
+import SideBarMobileMenu from './SideBarMobileMenu';
 
 interface IProps {
   window?: () => Window,
@@ -61,13 +61,6 @@ const NavBarMobile = (props: INavBarMobileProps) => {
   const handleClose = () => setOpenMobile(false);
 
   const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
-  const BoxNavBar = styled('div')(({ theme }) => ({
-    flexGrow: 1,
-    display: 'initial',
-    [theme.breakpoints.up('sm')]: {
-      display: 'none'
-    }
-  }));
 
   return (
     <Box display={isMobile ? 'initial' : 'none'} sx={{ flexGrow: 1 }}>
@@ -115,7 +108,7 @@ const NavBarMobile = (props: INavBarMobileProps) => {
         </AppBar>
       </ElevationScroll>
       <Offset />
-      {/* {openMobile && <SideBarMobileMenu handleClose={handleClose} isOpen={openMobile} menu={menu} />} */}
+      {openMobile && <SideBarMobileMenu handleClose={handleClose} isOpen={openMobile} menu={menu} />}
     </Box>
   );
 };

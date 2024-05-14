@@ -6,6 +6,7 @@ import { useAws } from '@wms/hooks';
 import { v4 as uuid } from 'uuid';
 import { StatusCards } from './widgets';
 
+interface Test { line: number, month: string, articule: string, in: number, out: number }
 
 const MetricsPage = () => {
   const { s3GetObject } = useAws();
@@ -15,16 +16,24 @@ const MetricsPage = () => {
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const data = [1, 2, 3, 4];
+  const data = React.useMemo(() => [1, 2, 3, 4], []);
 
 
-  const columns = React.useMemo<MRT_ColumnDef<any>[]>(() => [
+  const columns = React.useMemo<MRT_ColumnDef<Test>[]>(() => [
     {
       id: 'line',
       accessorKey: 'line',
       header: 'Line',
       enableEditing: false,
       minSize: 150,
+    },
+    {
+      id: 'month',
+      accessorKey: 'month',
+      header: 'Mes',
+      enableEditing: false,
+      minSize: 150,
+      enableGrouping: true,
     },
     {
       id: 'articule',
@@ -104,7 +113,7 @@ const MetricsPage = () => {
       <Box component="article" className="col-span-12 flex flex-wrap md:flex-nowrap gap-2 w-full">
         <StatusCards />
       </Box>
-      {/* <Paper elevation={2} className="col-span-12 row-span-2 w-full">
+      <Paper elevation={2} className="col-span-12 row-span-2 w-full">
         <ChartBars
           id="metrics-bar"
           title="Donaciones"
@@ -121,39 +130,45 @@ const MetricsPage = () => {
             {
               field: 'Febrero',
               values: {
-                'Laptops': 75,
-                'Material de Estudio': 120,
-                'Becas': 93,
-                'Otros': 250
+                'Laptops': 64,
+                'Material de Estudio': 250,
+                'Becas': 55,
+                'Otros': 150
               }
             },
           ]}
+          variant="columns"
         />
-      </Paper> */}
+      </Paper>
       <Paper elevation={2} className="col-span-12">
-        <MaterialTable<any>
+        <MaterialTable<Test>
           columns={columns}
+          groupedColumns={['month']}
           data={[
             {
               line: 1,
+              month: 'Enero',
               articule: 'Laptops',
               in: 500,
               out: 250
             },
             {
               line: 2,
+              month: 'Enero',
               articule: 'Becas',
               in: 350,
               out: 100
             },
             {
               line: 3,
+              month: 'Febrero',
               articule: 'Laptops',
               in: 650,
               out: 325
             },
             {
               line: 4,
+              month: 'Enero',
               articule: 'Material de Estudio',
               in: 1250,
               out: 600

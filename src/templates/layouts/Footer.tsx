@@ -57,7 +57,7 @@ const Footer = () => {
           <Paper>
             <Toolbar variant="dense" sx={{ height: 0 }}>
               <Box sx={{ flexGrow: 1 }} />
-              <Typography variant="caption" fontSize={10} >© 2024 ZAMORA TERAN FOUNDATION, All rights reserved</Typography>
+              <Typography variant="caption" fontSize={10} >© 2024 Zamora Teran Foundation, All rights reserved</Typography>
             </Toolbar>
           </Paper>
         </AppBar>

@@ -6,7 +6,8 @@ import {
   type MRT_RowData,
   type MRT_Row,
   type MRT_TableInstance,
-  type MRT_Cell
+  type MRT_Cell,
+  type MRT_GroupingState
 } from 'material-react-table';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -22,8 +23,9 @@ interface IProps<T extends MRT_RowData> {
   data: T[],
   setRef?: React.Dispatch<React.SetStateAction<MRT_TableInstance<T> | undefined>>
   columnsVisible?: Partial<IColumnsVisible<T>>,
+  groupedColumns?: Array<keyof T>,
   pagination?: IPagination,
-  rowCount?: number
+  rowCount?: number,
   onPaginationChange?: React.Dispatch<React.SetStateAction<IPagination>>,
   enableRowActions?: boolean,
   onActionEdit?: IOnSaveAndEditRows<T>,
@@ -62,6 +64,7 @@ const MaterialTable = <T extends MRT_RowData,>(props: IProps<T>) => {
     enableRowActions = false,
     enableRowSelection = false,
     columnsVisible = {},
+    groupedColumns,
     pagination,
     rowCount,
     onPaginationChange,
@@ -133,6 +136,8 @@ const MaterialTable = <T extends MRT_RowData,>(props: IProps<T>) => {
     initialState: {
       showColumnFilters: false,
       showGlobalFilter: false,
+      expanded: true,
+      grouping: groupedColumns as MRT_GroupingState,
       columnPinning: {
         left: ['mrt-row-expand', 'mrt-row-select', 'mrt-row-actions'],
         // right: ['mrt-row-actions'],

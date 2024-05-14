@@ -56,7 +56,7 @@ const DashBoardTemplate = () => {
   return (
     <React.Fragment>
       <Paper className="h-[100vh] overflow-hidden" elevation={1}>
-         <NavBar />
+        <NavBar />
         <NavBarMobile menu={menu.main} />
         {/*<SideBarMenu menu={menu.main} others={menu.secondary} /> */}
         <Breadcrumbs />
