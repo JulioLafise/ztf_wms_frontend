@@ -8,7 +8,7 @@ import {
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import NavBar from './layouts/NavBar';
 import NavBarMobile from './layouts/NavBarMobile';
-// import SideBarMenu from './layout/SideBarMenu';
+import SideBarMenu from './layouts/SideBarMenu';
 import Footer from './layouts/Footer';
 import { Breadcrumbs, TitleRouter, AboutModal } from '@wms/components';
 import { useUI, useAuth } from '@wms/hooks';
@@ -16,12 +16,13 @@ import { LocalStorageConfig } from '@wms/config';
 
 const Container = styled(MuiContainer)(
   ({ theme }) => ({
-    'paddingInline': 80,
+    'paddingInline': 5,
     'height': '100vh',
-    [theme.breakpoints.down('sm')]: {
-      'paddingInline': 25,
-      'height': '92vh'
-    },
+    'backgroundColor': 'white',
+    // [theme.breakpoints.down(768)]: {
+    //   'paddingInline': 25,
+    //   'height': '92vh'
+    // },
   }),
 );
 
@@ -58,9 +59,9 @@ const DashBoardTemplate = () => {
       <Paper className="h-[100vh] overflow-hidden" elevation={1}>
         <NavBar />
         <NavBarMobile menu={menu.main} />
-        {/*<SideBarMenu menu={menu.main} others={menu.secondary} /> */}
+        <SideBarMenu menu={menu.main} others={menu.secondary} />
         <Breadcrumbs />
-        <Container id="container-page" className="container-scroll" >
+        <Container id="container-page" className="container-scroll w-full" >
           <AboutModal isOpen={about.isOpen} onClose={() => { onAboutMenu(!about.isOpen); }} />
           <TitleRouter />
           <Outlet />

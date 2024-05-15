@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 
 const TitleRouter = () => {
   const location = useLocation();
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
   const path = location.pathname.split('/');
   const indexLast = location.pathname.split('/').length - 1;
   return (

@@ -51,7 +51,7 @@ const NavBar = () => {
   const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
   const BoxNavBar = styled('div')(({ theme }) => ({
     flexGrow: 1,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down(768)]: {
       display: 'none'
     }
   }));

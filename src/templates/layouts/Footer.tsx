@@ -35,7 +35,7 @@ const Footer = () => {
   }));
   const BoxFooter = styled('div')(({ theme }) => ({
     flexGrow: 1,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down(768)]: {
       display: 'none'
     }
   }));

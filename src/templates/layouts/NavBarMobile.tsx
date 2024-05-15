@@ -44,7 +44,7 @@ const NavBarMobile = (props: INavBarMobileProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
   const [openMobile, setOpenMobile] = React.useState(false);
   const isMenuOpen = Boolean(anchorEl);
 

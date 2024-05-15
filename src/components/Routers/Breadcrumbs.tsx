@@ -34,13 +34,13 @@ const ElevationScroll = (props: IProps) => {
 
 const BoxOffset = styled(Box)(({ theme }) => ({
   paddingLeft: 70,
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down(768)]: {
     paddingLeft: 10
   }
 }));
 
 const BoxContainer = styled(Box)(({ theme }) => ({
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down(768)]: {
     display: 'none'
   }
 }));
