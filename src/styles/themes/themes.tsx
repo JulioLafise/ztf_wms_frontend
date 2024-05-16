@@ -8,18 +8,18 @@ const themePalette = ({ isDarkMode, paletteColors }: ThemeUI) => createTheme({
     paletteColors?.primary
       ? { ...paletteColors?.primary }
       : {
-        light: '#076615',
-        main: '#076615',
-        dark: '#048c18',
-        contrastText: '#fff',
+        light: '#668DC0',
+        main: '#304A6E',
+        dark: '#0F1C30',
+        contrastText: '#fff'
       },
     secondary:
     paletteColors?.secondary
       ? { ...paletteColors?.secondary }
       : {
-        light: '#06911a',
-        main: '#06911a',
-        dark: '#013809',
+        light: '#C09966',
+        main: '#6E5430',
+        dark: '#30230F',
         contrastText: '#fff',
       }
   },

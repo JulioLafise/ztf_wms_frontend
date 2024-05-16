@@ -18,55 +18,39 @@ export const menu: IMenuList[] = [
         description: '',
         roles: ['dev']
       },
-      {
-        menuId: 'month-sales',
-        menuUrl: '/month-sales',
-        menuName: 'Month Sales',
-        icon: 'money-bill-trend-up',
-        description: '',
-        roles: ['dev']
-      },
     ],
     roles: ['dev']
   },
   {
     menuId: 'visit-control',
-    menuUrl: '/app/visit-control',
-    menuName: 'Visit Control',
-    icon: 'map-location-dot',
+    menuUrl: '/app/inventory',
+    menuName: 'Inventory',
+    icon: 'warehouse',
     description: '',
     children: [
       {
-        menuId: 'schedule-visit',
-        menuUrl: '/schedule-visit',
-        menuName: 'Schedule Visit',
-        icon: 'calendar-days',
-        description: 'Programacion de visita de clientes',
+        menuId: 'kardex',
+        menuUrl: '/kardex',
+        menuName: 'Kardex',
+        icon: 'boxes-stacked',
+        description: 'Listado del Inventario actual',
         roles: ['dev']
       },
       {
-        menuId: 'customers',
-        menuUrl: '/customers',
-        menuName: 'Customers',
-        icon: 'user-plus',
-        description: 'Administracion de clientes',
+        menuId: 'entries',
+        menuUrl: '/entries',
+        menuName: 'Entries',
+        icon: 'dolly',
+        description: 'Manejo de las Entradas',
         roles: ['dev']
       },
       {
-        menuId: 'customer-contacts',
-        menuUrl: '/customer-contacts',
-        menuName: 'Customer Contacts',
+        menuId: 'departures',
+        menuUrl: '/departures',
+        menuName: 'Departures',
         icon: 'id-badge',
-        description: 'Administracion de contactos de clientes',
-        roles: ['dev']
-      },
-      {
-        menuId: 'customer-locations',
-        menuUrl: '/customer-locations',
-        menuName: 'Customer Locations',
-        icon: 'arrows-to-circle',
-        description: 'Locaciones de los clientes',
-        roles: ['dev']
+        description: 'Manejo de las Salidas',
+        roles: ['truck-ramp-box']
       },
     ],
     roles: ['dev']

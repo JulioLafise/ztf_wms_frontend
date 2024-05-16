@@ -16,13 +16,12 @@ import { LocalStorageConfig } from '@wms/config';
 
 const Container = styled(MuiContainer)(
   ({ theme }) => ({
-    'paddingInline': 5,
+    'paddingInline': 80,
     'height': '100vh',
-    'backgroundColor': 'white',
-    // [theme.breakpoints.down(768)]: {
-    //   'paddingInline': 25,
-    //   'height': '92vh'
-    // },
+    [theme.breakpoints.down(768)]: {
+      'paddingInline': 25,
+      'height': '92vh'
+    },
   }),
 );
 
@@ -34,13 +33,11 @@ const DashBoardTemplate = () => {
     onMenu,
     onDarkMode,
     onAboutMenu,
-    changePaletteColors
   } = useUI();
   const location = useLocation();
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    changePaletteColors('oceans-theme');
     onMenu(user!);
     const isDark = LocalStorageConfig.getItems().darkMode;
     const rootPath = LocalStorageConfig.getItems().navPath;
@@ -61,7 +58,7 @@ const DashBoardTemplate = () => {
         <NavBarMobile menu={menu.main} />
         <SideBarMenu menu={menu.main} others={menu.secondary} />
         <Breadcrumbs />
-        <Container id="container-page" className="container-scroll w-full" >
+        <Container maxWidth="xxl" disableGutters id="container-page" className="container-scroll" >
           <AboutModal isOpen={about.isOpen} onClose={() => { onAboutMenu(!about.isOpen); }} />
           <TitleRouter />
           <Outlet />

@@ -1,8 +1,8 @@
-import { RouteObject, Navigate, Outlet } from 'react-router-dom';
+import { RouteObject, Outlet } from 'react-router-dom';
 import { Error } from '@wms/components';
 import {
-DashBoardPageLazy,
-MetricsPageLazy
+  DashBoardPageLazy,
+  MetricsPageLazy
 } from '@wms/pages';
 
 export const dashboardRouter: RouteObject = {
@@ -17,11 +17,6 @@ export const dashboardRouter: RouteObject = {
       path: 'metrics',
       element: <MetricsPageLazy
       />,
-      errorElement: <Error />
-    },
-    {
-      path: 'month-sales',
-      element: <Outlet />,
       errorElement: <Error />
     },
   ]

@@ -21,7 +21,7 @@ const TitleRouter = () => {
       >
         <Typography variant="h4" fontWeight="bold" fontSize={28}>{path[indexLast].toUpperCase()}</Typography>
         <Box sx={{ width: 70 - (path[indexLast].length + 10), paddingTop: 0.5 }}>
-          <Divider color="#668DC0" sx={{ borderWidth: 2 }} />
+          <Divider sx={{ borderWidth: 2, bgcolor: theme => theme.palette.primary.main }} />
         </Box>
       </Box>
     </React.Fragment>

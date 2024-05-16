@@ -83,7 +83,7 @@ const SimpleModal = (props: IProps) => {
               {description}
             </Typography>)
           }
-          <Box component="section" className="w-1/6 pt-2 pb-4"><Divider variant="fullWidth" color="#668DC0" className="pt-1" /></Box>
+          <Box component="section" className="w-1/6 pt-2 pb-4"><Divider variant="fullWidth" className="pt-1" sx={{ bgcolor: theme => theme.palette.primary.main }} /></Box>
           {children}
         </BoxModal>
       </Fade>

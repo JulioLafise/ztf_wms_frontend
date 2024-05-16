@@ -80,10 +80,6 @@ const SignInTemplate = () => {
 
   React.useEffect(() => {!isAuthenticated && onDarkMode(false, true);}, [isAuthenticated]);
 
-  React.useEffect(() => {
-    changePaletteColors('oceans-theme');
-  }, []);
-
   return (
     <SideForm>
       {

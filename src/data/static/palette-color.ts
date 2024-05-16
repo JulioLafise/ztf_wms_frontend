@@ -26,9 +26,9 @@ export default (theme: string): Palettes | undefined => {
         contrastText: '#fff'
       },
       secondary: {
-        light: '#06911a',
-        main: '#06911a',
-        dark: '#013809',
+        light: '#C09966',
+        main: '#6E5430',
+        dark: '#30230F',
         contrastText: '#fff',
       }
     };
@@ -42,9 +42,9 @@ export default (theme: string): Palettes | undefined => {
         contrastText: '#fff'
       },
       secondary: {
-        light: '#06911a',
-        main: '#06911a',
-        dark: '#013809',
+        light: '#4D95FF',
+        main: '#267EFF',
+        dark: '#0079F5',
         contrastText: '#fff',
       }
     };

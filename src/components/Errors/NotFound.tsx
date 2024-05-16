@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate, useLoaderData, useLocation } from 'react-router-dom';
@@ -14,17 +15,15 @@ const NotFoundMain = () => {
         alignItems: 'center',
         flexDirection: 'column',
         minHeight: '100vh',
-        backgroundColor: `${theme.palette.primary.light}`,
-        backgroundImage: 'url(/img/svg/endless_constellation.svg)',
-        // opacity: 0.7,
+        backgroundColor: `${theme.palette.primary.dark}`,
+        backgroundImage: 'url(/img/svg/world_map.svg)',
         backgroundPosition: 'center center',
         backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-
+        backgroundSize: 'cover'
       }}
     >
-      <Box sx={{ background: 'white', padding: 2, borderRadius: 5 }}>
-        <img src="/img/logo_fzt2.png" alt="logoZTF" style={{ height: 'auto', width: '200px' }} />
+      <Box sx={{ background: 'white', padding: 2, borderRadius: 5, boxShadow: 5 }}>
+        <img src="/img/logo_fzt2.png" alt="logoZTF" style={{ height: 'auto', width: '400px' }} />
       </Box>
       <Typography variant="h1" style={{ color: 'white' }}>
         404
@@ -44,21 +43,22 @@ const NotFoundNav = () => {
   const navigate = useNavigate();
   const rootPath = localStorage.getItem('nav-path') === location.pathname ? '/app/dashboard' : localStorage.getItem('nav-path');
   return (
-    <Box>
+    <React.Fragment>
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
-          // minHeight: '100vh',
           position: 'relative',
+          // backgroundImage: 'url(/img/svg/hexagon_blue.svg)',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
+          padding: 5
         }}
       >
-        <Box sx={{ background: 'white', padding: 2, borderRadius: 5 }}>
+        <Box sx={{ background: 'white', padding: 2, borderRadius: 5, boxShadow: 5 }}>
           <img src="/img/logo_fzt2.png" alt="logoZTF" style={{ height: 'auto', width: '400px', }} />
         </Box>
         <Typography variant="h1">
@@ -70,7 +70,7 @@ const NotFoundNav = () => {
         </Typography>
         <Button variant="contained" sx={{ margin: 5 }} onClick={() => navigate(rootPath || '/app/dashboard', { replace: true })}>Back</Button>
       </Box>
-    </Box>
+    </React.Fragment>
   );
 };
 
