@@ -43,6 +43,13 @@ const themePalette = ({ isDarkMode, paletteColors }: ThemeUI) => createTheme({
       xlk: 7680
     },
   },
+  transitions: {
+    duration: {
+      enteringScreen: 12,
+      leavingScreen: 7,
+      standard: 4
+    }
+  }
 });
 
 declare module '@mui/material/styles' {

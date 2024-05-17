@@ -1,7 +1,7 @@
 import { RouteObject, Navigate, Outlet } from 'react-router-dom';
 import { Error, PanelRouter } from '@wms/components';
 import {
-
+  ProfilePageLazy
 } from '@wms/pages';
 
 export const settingsRouter: RouteObject = {
@@ -24,7 +24,7 @@ export const settingsRouter: RouteObject = {
     },
     {
       path: 'profile',
-      element: <Outlet />,
+      element: <ProfilePageLazy />,
       errorElement: <Error />
     },
   ]
