@@ -16,7 +16,9 @@ import { LocalStorageConfig } from '@wms/config';
 
 const Container = styled(MuiContainer)(
   ({ theme }) => ({
-    'paddingInline': 80,
+    // 'paddingInline': 80,
+    'paddingInlineEnd': 80,
+    'paddingInlineStart': 280,
     'height': '100vh',
     [theme.breakpoints.down(768)]: {
       'paddingInline': 25,

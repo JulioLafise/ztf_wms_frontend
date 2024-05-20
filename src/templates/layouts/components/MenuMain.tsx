@@ -6,10 +6,12 @@ import {
   Divider,
   Tooltip,
   CssBaseline,
+  IconButton,
 } from '@mui/material';
 import { v4 as uuid } from 'uuid';
 import { IMenuList } from '@wms/interfaces';
 import { FontAwesomeIcon } from '@wms/components';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 
 interface IMenuMainProps {

@@ -16,7 +16,8 @@ import {
   Mail,
   Notifications,
   LogoutRounded,
-  InfoRounded
+  InfoRounded,
+  Menu
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { DarkMode } from '@wms/components';
@@ -61,6 +62,7 @@ const NavBar = () => {
       <ElevationScroll>
         <AppBar position="fixed" sx={{ zIndex: '9999 !important', }} >
           <Toolbar>
+            <IconButton size="large" edge="start" className=""><Menu sx={{ color: 'white' }} /></IconButton>
             <Box component="article" className="flex items-center bg-white rounded p-2" onClick={onNavHome} >
               <img src="/img/logo_fzt2.png" width="64" />
             </Box>

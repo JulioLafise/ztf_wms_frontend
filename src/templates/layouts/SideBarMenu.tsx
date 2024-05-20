@@ -119,7 +119,7 @@ const SideBarMenu = (props: IProps) => {
       }
       setMenuSelect(menu);
       setState({ ...state, [anchor]: open });
-      !!navUrl && sleep(0.05).then(() => navigate(navUrl, { replace: true }));
+      // !!navUrl && sleep(0.05).then(() => navigate(navUrl, { replace: true }));
     };
   
   const BoxSideBar = styled('div')(({ theme }) => ({
@@ -136,7 +136,7 @@ const SideBarMenu = (props: IProps) => {
         <Divider />
         <List>
           {menu.map((item) => (
-            <MenuMain menuMain={item} toggleDrawer={toggleDrawer} key={uuid()} />
+            <MenuList anchor="left" menuMain={item} subMenu={item.children || []} toggleDrawer={toggleDrawer} key={uuid()} />
           ))}
         </List>
         <Box sx={{ flexGrow: 1 }} />
@@ -147,28 +147,6 @@ const SideBarMenu = (props: IProps) => {
           ))}
         </List>
       </Drawer>
-      <SwipeableDrawer
-        anchor="left"
-        open={state['left']}
-        onClose={toggleDrawer('left', false, null, '')}
-        onOpen={toggleDrawer('left', true, null, '')}
-        transitionDuration={{
-          enter: theme.transitions.duration.enteringScreen,
-          exit: theme.transitions.duration.leavingScreen
-        }}
-      >
-        {
-          !!menuSelect && (
-            <MenuList
-              key={uuid()}
-              anchor="left"
-              menuMain={menuSelect}
-              subMenu={menuSelect.children!}
-              toggleDrawer={toggleDrawer}
-            />
-          )
-        }
-      </SwipeableDrawer>
     </BoxSideBar>
   );
 };

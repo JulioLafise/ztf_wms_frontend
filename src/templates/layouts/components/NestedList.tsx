@@ -27,7 +27,7 @@ const NestedList = ({ menu, handleClose }: INestedListProps) => {
   const navigate = useNavigate();
   const handleClick = () => setOpen(!open);
   return (
-    <>
+    <React.Fragment>
       <ListItem
         onClick={handleClick}
         className="text-end"
@@ -87,7 +87,7 @@ const NestedList = ({ menu, handleClose }: INestedListProps) => {
           }
         </List>
       </Collapse>
-    </>
+    </React.Fragment>
   );
 };
 
