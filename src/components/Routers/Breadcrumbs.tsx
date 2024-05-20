@@ -3,23 +3,49 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Breadcrumbs as MuiBreadcrumbs,
   Link,
-  AppBar,
+  AppBar as MuiAppBar,
   Toolbar,
   useScrollTrigger,
   Box,
   IconButton,
   styled,
-  Paper
+  Paper,
+  type AppBarProps as MuiAppBarProps,
+  type BoxProps as MuiBoxPropsProps
 } from '@mui/material';
 import { v4 as uuid } from 'uuid';
 import { useUI } from '@wms/hooks';
 import { FontAwesomeIcon } from '@wms/components';
 
 
+const drawerWidth = 240;
+
+interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+}
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})<AppBarProps>(({ theme, open }) => ({
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp + 1,
+    duration: theme.transitions.duration.leavingScreen + 1,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp + 1,
+      duration: theme.transitions.duration.enteringScreen + 1,
+    }),
+  }),
+}));
+
 interface IProps {
   window?: () => Window,
   children: React.ReactElement
 }
+
 const ElevationScroll = (props: IProps) => {
   const { children, window } = props;
   const trigger = useScrollTrigger({
@@ -32,8 +58,22 @@ const ElevationScroll = (props: IProps) => {
   });
 };
 
-const BoxOffset = styled(Box)(({ theme }) => ({
-  paddingLeft: 70,
+
+interface BoxProps extends MuiBoxPropsProps {
+  open?: boolean;
+}
+
+const BoxOffset = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'open'
+})<BoxProps>(({ theme, open }) => ({
+  transition: theme.transitions.create('paddingLeft', {
+    easing: theme.transitions.easing.sharp + 1,
+    duration: theme.transitions.duration.leavingScreen + 1,
+  }),
+  ...(open
+    ? { paddingLeft: 0, }
+    : { paddingLeft: 60, }
+  ),
   [theme.breakpoints.down(768)]: {
     paddingLeft: 10
   }
@@ -46,7 +86,8 @@ const BoxContainer = styled(Box)(({ theme }) => ({
 }));
 
 
-const Breadcrumbs = () => {
+const Breadcrumbs: React.FC<{ open: boolean }> = (props) => {
+  const { open } = props;
   const location = useLocation();
   const navigate = useNavigate();
   const { menu } = useUI();
@@ -151,10 +192,11 @@ const Breadcrumbs = () => {
           elevation={2}
           position="fixed"
           sx={{ top: 56, boxShadow: 0 }}
+          open={open}
         >
           <Paper>
             <Toolbar >
-              <BoxOffset />
+              <BoxOffset open={open} />
               <MuiBreadcrumbs maxItems={4} aria-label="breadcrumb">
                 <IconButton
                   edge="start"

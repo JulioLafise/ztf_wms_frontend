@@ -4,6 +4,7 @@ import { DashBoardTemplateLazy, SignInTemplateLazy } from '@wms/templates';
 import { dashboardRouter } from './dashboard.router';
 import { settingsRouter } from './settings.router';
 import { catalogueRouter } from './catalogue.router';
+import { inventoryRouter } from './inventory.router';
 
 const routeRoot = createBrowserRouter([
   {
@@ -13,6 +14,7 @@ const routeRoot = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to={'dashboard'} replace />, errorElement: <Error /> },
       { ...dashboardRouter },
+      { ...inventoryRouter },
       { ...catalogueRouter },
       { ...settingsRouter },
       { path: '*', element: <NotFound page />, errorElement: <Error /> },

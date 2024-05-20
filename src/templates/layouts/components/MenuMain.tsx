@@ -1,54 +1,76 @@
 import React from 'react';
 import {
+  List,
   ListItem,
   ListItemButton,
+  ListItemText,
   ListItemIcon,
   Divider,
-  Tooltip,
-  CssBaseline,
+  Collapse,
   IconButton,
+  Tooltip
 } from '@mui/material';
-import { v4 as uuid } from 'uuid';
 import { IMenuList } from '@wms/interfaces';
 import { FontAwesomeIcon } from '@wms/components';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 
-interface IMenuMainProps {
-  toggleDrawer: (anchor: Anchor, open: boolean, menu: IMenuList, navUrl: string) => (event: React.KeyboardEvent | React.MouseEvent) => void
-  menuMain: IMenuList,
+interface IMenuProps {
+  toggleDrawer: (open: boolean, navUrl: string) => (event: React.KeyboardEvent | React.MouseEvent) => void
+  menu: IMenuList,
+  openSideBar: boolean,
+  typeSideBar: 'permanent' | 'temporary',
 }
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-const MenuMain = (props: IMenuMainProps) => {
-  const { menuMain, toggleDrawer } = props;
+const MenuMain: React.FC<IMenuProps> = (props) => {
+  const { toggleDrawer, menu, openSideBar, typeSideBar } = props;
+  const [open, setOpen] = React.useState(typeSideBar === 'permanent');
+
+  const onToggle = (ev: any) => openSideBar ? setOpen(prevState => !prevState) : toggleDrawer(true, '')(ev);
   return (
-    <React.Fragment key={uuid()}>
-      <CssBaseline />
-      <ListItem key={uuid()} disablePadding sx={{ display: 'block' }}>
+    <React.Fragment>
+      <ListItem
+        onClick={onToggle}
+        className="text-end"
+        disablePadding
+        sx={{ display: 'block' }}
+        secondaryAction={
+          openSideBar && (
+            <IconButton edge="end" >
+              {open ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
+          )
+        }
+      >
         <ListItemButton
           sx={{
             minHeight: 48,
-            justifyContent: 'center',
+            justifyContent: 'initial',
             px: 2.5,
           }}
-          onClick={toggleDrawer('left', true, menuMain, '')}
         >
-          <Tooltip title={menuMain.menuName} placement="right">
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: 'auto',
-                justifyContent: 'center',
-              }}
-            >
-              <FontAwesomeIcon iconLabel={menuMain.icon} size="lg" />
-            </ListItemIcon>
+          <Tooltip title={menu.menuName} placement="right">
+            <ListItemIcon><FontAwesomeIcon iconLabel={menu.icon} size="lg" /></ListItemIcon>
           </Tooltip>
+          <ListItemText disableTypography primary={menu?.menuName} className="font-semibold" />
         </ListItemButton>
       </ListItem>
-      {menuMain.menuId === 'dashboard' && <Divider />}
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List>
+          {menu?.children?.map((item) => (
+            <ListItem key={item.menuId} disablePadding>
+              <ListItemButton onClick={toggleDrawer(false,`${menu.menuUrl}${item.menuUrl}`)}>
+                <ListItemIcon sx={{ pl: 1 }} >
+                  <FontAwesomeIcon iconLabel={item.icon} size="lg" />
+                </ListItemIcon>
+                <ListItemText primary={item.menuName} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Collapse>
+      {menu.menuId === 'dashboard' && <Divider />}
     </React.Fragment>
   );
 };

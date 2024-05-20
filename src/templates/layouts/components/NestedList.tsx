@@ -47,15 +47,6 @@ const NestedList = ({ menu, handleClose }: INestedListProps) => {
         >
           <ListItemIcon><FontAwesomeIcon iconLabel={menu.icon} size="lg" /></ListItemIcon>
           <ListItemText disableTypography primary={menu?.menuName} className="font-semibold" />
-          {/* <ListItemIcon
-            sx={{
-              minWidth: 0,
-              pl: 7,
-              justifyContent: 'center',
-            }}
-          >
-            {open ? <ExpandLess /> : <ExpandMore />}
-          </ListItemIcon> */}
         </ListItemButton>
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>

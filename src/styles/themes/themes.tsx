@@ -47,7 +47,7 @@ const themePalette = ({ isDarkMode, paletteColors }: ThemeUI) => createTheme({
     duration: {
       enteringScreen: 12,
       leavingScreen: 7,
-      standard: 4
+      standard: 4,
     }
   }
 });

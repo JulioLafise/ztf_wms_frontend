@@ -2,6 +2,7 @@
 export * from './Spinners';
 export * from './Buttons';
 export * from './Modal';
+export * from './Steppers';
 
 // ROUTERS COMPONENTS
 export * from './Routers';

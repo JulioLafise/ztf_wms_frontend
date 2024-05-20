@@ -3,6 +3,7 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
+  ListItemText,
   Tooltip,
 } from '@mui/material';
 import { v4 as uuid } from 'uuid';
@@ -23,35 +24,29 @@ const MenuOthers = (props: IMenuOthers) => {
     setAnchorEl(event.currentTarget);
   };
   return (
-    <>
-      <ListItem key={others.menuId} disablePadding sx={{ display: 'block' }}>
+    <React.Fragment>
+      <ListItem key={others.menuId} disablePadding sx={{ display: 'block' }} className="text-end" onClick={handleProfileMenuOpen}>
         <ListItemButton
           sx={{
             minHeight: 48,
-            justifyContent: 'center',
+            justifyContent: 'initial',
             px: 2.5,
-          }}
-          onClick={handleProfileMenuOpen}
+          }}          
         >
           <Tooltip title={others.menuName} placement="right">
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: 'auto',
-                justifyContent: 'center',
-              }}
-            >
+            <ListItemIcon>
               {
                 others.menuId === 'account'
                   ? <BackgroundLetterAvatars sx={{ width: 24, height: 24, fontSize: 12 }} alt={user?.person?.firstName} src={user?.userImage} />
                   : <FontAwesomeIcon iconLabel={others.icon} size="lg" />
-              }
+              }              
             </ListItemIcon>
           </Tooltip>
+          <ListItemText disableTypography>{others.menuName}</ListItemText>
         </ListItemButton>
       </ListItem>
       <Menu key={uuid()} anchorEl={anchorEl} setAnchorEl={setAnchorEl} subMenu={others.children!} menuMain={others} />
-    </>
+    </React.Fragment>
   );
 };
 

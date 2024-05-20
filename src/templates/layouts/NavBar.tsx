@@ -17,7 +17,8 @@ import {
   Notifications,
   LogoutRounded,
   InfoRounded,
-  Menu
+  Menu,
+  Close
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { DarkMode } from '@wms/components';
@@ -40,7 +41,11 @@ const ElevationScroll = (props: IProps) => {
 };
 
 
-const NavBar = () => {
+const NavBar: React.FC<{ setOpenSideBar: React.Dispatch<React.SetStateAction<{
+  open: boolean;
+  type: 'permanent' | 'temporary';
+}>>, openSideBar: boolean }> = (props) => {
+  const { setOpenSideBar, openSideBar } = props;
   const { onSignOut } = useAuth();
   const { toastInfo } = useToastNotification();
   const navigate = useNavigate();
@@ -62,7 +67,18 @@ const NavBar = () => {
       <ElevationScroll>
         <AppBar position="fixed" sx={{ zIndex: '9999 !important', }} >
           <Toolbar>
-            <IconButton size="large" edge="start" className=""><Menu sx={{ color: 'white' }} /></IconButton>
+            <IconButton
+              color="inherit"
+              size="large"
+              edge="start"
+              onClick={() => setOpenSideBar(prevState => ({ open: !prevState.open, type: !prevState.open ? 'permanent' : 'temporary' }))}
+            >
+              {
+                openSideBar
+                  ? <Close />
+                  : <Menu />
+              }
+            </IconButton>
             <Box component="article" className="flex items-center bg-white rounded p-2" onClick={onNavHome} >
               <img src="/img/logo_fzt2.png" width="64" />
             </Box>
@@ -107,7 +123,7 @@ const NavBar = () => {
                 size="small"
                 onClick={handleSignOut}
               >
-                <LogoutRounded className="mr-1"/>
+                <LogoutRounded className="mr-1" />
                 Sign Out
               </Button>
             </Box>

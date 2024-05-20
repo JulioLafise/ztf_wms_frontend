@@ -7,15 +7,12 @@ import {
   List,
   Divider,
   Box,
-  SwipeableDrawer,
   useTheme
 } from '@mui/material';
 import { v4 as uuid } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import { IMenuList } from '@wms/interfaces';
-import { sleep } from '@wms/helpers';
-import { MenuMain, MenuOthers } from './components';
-import MenuList from './components/MenuList';
+import { MenuOthers, MenuMain } from './components';
 
 
 // FUNCTIONS && CONST
@@ -74,40 +71,30 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-// MODIFY COMPONENTS
-
 
 // INTERFACES && TYPES
 
 interface IProps {
   menu: IMenuList[],
   others: IMenuList[],
+  open: boolean,
+  typeSideBar: 'permanent' | 'temporary',
+  setOpen: React.Dispatch<React.SetStateAction<{ open: boolean, type: 'permanent' | 'temporary' }>>
 }
-
-interface IStateAnchorProps {
-  top: boolean;
-  left: boolean;
-  bottom: boolean;
-  right: boolean;
-}
-
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 // INTERFACES && TYPES 
 
 const SideBarMenu = (props: IProps) => {
-  const { menu, others } = props;
-  const theme = useTheme();
+  const {
+    menu,
+    others,
+    open: openSideBar,
+    typeSideBar,
+    setOpen
+  } = props;
   const navigate = useNavigate();
-  const [menuSelect, setMenuSelect] = React.useState<IMenuList | null>(null);
-  const [state, setState] = React.useState<IStateAnchorProps>({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
-
-  const toggleDrawer = (anchor: Anchor, open: boolean, menu: IMenuList | null, navUrl: string) =>
+  
+  const toggleDrawer = (open: boolean, navUrl: string) =>
     (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
         event &&
@@ -117,10 +104,17 @@ const SideBarMenu = (props: IProps) => {
       ) {
         return;
       }
-      setMenuSelect(menu);
-      setState({ ...state, [anchor]: open });
-      // !!navUrl && sleep(0.05).then(() => navigate(navUrl, { replace: true }));
+      onClose(open);
+      !!navUrl && navigate(navUrl, { replace: true });
     };
+
+  const onClose = (open: boolean) => {
+    if (typeSideBar === 'permanent') {
+      setOpen({ open: true, type: 'permanent' });
+    } else {
+      setOpen({ open, type: 'temporary' });
+    }
+  };
   
   const BoxSideBar = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -128,15 +122,16 @@ const SideBarMenu = (props: IProps) => {
       display: 'none'
     }
   }));
+
     
   return (
     <BoxSideBar>
-      <Drawer variant="permanent" anchor="left" open={false}>
+      <Drawer variant="permanent" anchor="left" open={openSideBar}>
         <DrawerHeader />
         <Divider />
         <List>
           {menu.map((item) => (
-            <MenuList anchor="left" menuMain={item} subMenu={item.children || []} toggleDrawer={toggleDrawer} key={uuid()} />
+            <MenuMain key={uuid()} toggleDrawer={toggleDrawer} menu={item} openSideBar={openSideBar} typeSideBar={typeSideBar} />
           ))}
         </List>
         <Box sx={{ flexGrow: 1 }} />
@@ -145,7 +140,7 @@ const SideBarMenu = (props: IProps) => {
           {others.map((item) => (
             <MenuOthers others={item} key={uuid()} />
           ))}
-        </List>
+        </List>       
       </Drawer>
     </BoxSideBar>
   );

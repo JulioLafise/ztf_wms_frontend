@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Box,
   Container as MuiContainer,
+  type ContainerProps as MuiContainerProps,
   Paper,
   styled
 } from '@mui/material';
@@ -14,11 +15,23 @@ import { Breadcrumbs, TitleRouter, AboutModal } from '@wms/components';
 import { useUI, useAuth } from '@wms/hooks';
 import { LocalStorageConfig } from '@wms/config';
 
-const Container = styled(MuiContainer)(
-  ({ theme }) => ({
-    // 'paddingInline': 80,
+interface ContainerProps extends MuiContainerProps {
+  open?: boolean
+}
+
+const Container = styled(MuiContainer, {
+  shouldForwardProp: (prop) => prop !== 'open'
+})<ContainerProps>(
+  ({ theme, open }) => ({
+    'transition': theme.transitions.create('paddingInlineStart', {
+      easing: theme.transitions.easing.sharp + 1,
+      duration: theme.transitions.duration.leavingScreen + 1,
+    }),
+    ...(open
+      ? { 'paddingInlineStart': 260, }
+      : { 'paddingInlineStart': 80, }
+    ),
     'paddingInlineEnd': 80,
-    'paddingInlineStart': 280,
     'height': '100vh',
     [theme.breakpoints.down(768)]: {
       'paddingInline': 25,
@@ -38,6 +51,7 @@ const DashBoardTemplate = () => {
   } = useUI();
   const location = useLocation();
   const navigate = useNavigate();
+  const [openSideBar, setOpenSideBar] = React.useState<{ open: boolean, type: 'permanent' | 'temporary' }>({ open: false, type: 'temporary' });
 
   React.useEffect(() => {
     onMenu(user!);
@@ -56,11 +70,11 @@ const DashBoardTemplate = () => {
   return (
     <React.Fragment>
       <Paper className="h-[100vh] overflow-hidden" elevation={1}>
-        <NavBar />
+        <NavBar setOpenSideBar={setOpenSideBar} openSideBar={openSideBar.open} />
         <NavBarMobile menu={menu.main} />
-        <SideBarMenu menu={menu.main} others={menu.secondary} />
-        <Breadcrumbs />
-        <Container maxWidth="xxl" disableGutters id="container-page" className="container-scroll" >
+        <SideBarMenu menu={menu.main} others={menu.secondary} open={openSideBar.open} setOpen={setOpenSideBar} typeSideBar={openSideBar.type} />
+        <Breadcrumbs open={openSideBar.open} />
+        <Container maxWidth="xxl" disableGutters id="container-page" className="container-scroll" open={openSideBar.open} >
           <AboutModal isOpen={about.isOpen} onClose={() => { onAboutMenu(!about.isOpen); }} />
           <TitleRouter />
           <Outlet />
