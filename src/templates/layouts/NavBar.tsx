@@ -119,7 +119,7 @@ const NavBar: React.FC<{ setOpenSideBar: React.Dispatch<React.SetStateAction<{
               <Button
                 variant="contained"
                 color="warning"
-                sx={{ ml: 1 }}
+                sx={{ ml: 1, py: 0 }}
                 size="small"
                 onClick={handleSignOut}
               >

@@ -1,4 +1,4 @@
-import { ErrorAxios } from '@interfaces';
+import { ErrorAxios } from '@wms/interfaces';
 
 export const filterErrorAxios = (error: any) => {
   const errorAxios: ErrorAxios = {
