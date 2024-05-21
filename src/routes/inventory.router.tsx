@@ -4,7 +4,8 @@ import {
   EntryPageLazy,
   EntriesStepperLazy,
   DeparturePageLazy,
-  DeparturesStepperLazy
+  DeparturesStepperLazy,
+  PurchaseOrderPageLazy
 } from '@wms/pages';
 
 export const inventoryRouter: RouteObject = {
@@ -57,7 +58,7 @@ export const inventoryRouter: RouteObject = {
     },
     {
       path: 'purchase-order',
-      element: <Outlet />,
+      element: <PurchaseOrderPageLazy />,
       errorElement: <Error />
     },
   ]
