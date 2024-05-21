@@ -29,6 +29,7 @@ export interface IUIProps {
   about: {
     isOpen: boolean
   },
+  isSideBarOpen: boolean,
   error: any
 }
 

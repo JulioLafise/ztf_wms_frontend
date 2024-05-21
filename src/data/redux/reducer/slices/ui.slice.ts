@@ -13,6 +13,7 @@ const initialState: IUIProps = {
   about: {
     isOpen: false
   },
+  isSideBarOpen: false,
   error: undefined
 };
 
@@ -32,6 +33,9 @@ const uiSlice = createSlice({
     onAboutMenu: (state, { payload }) => {
       state.about.isOpen = payload;
     },
+    onSideBarOpen: (state, { payload }) => {
+      state.isSideBarOpen = payload;
+    },
     onReset: () => initialState,
   },
 });
@@ -42,7 +46,8 @@ export const {
   onPaletteColor,
   onMenuList,
   onAboutMenu,
-  onReset
+  onSideBarOpen,
+  onReset,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

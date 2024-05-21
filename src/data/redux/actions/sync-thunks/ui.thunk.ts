@@ -5,7 +5,8 @@ import {
   onDarkMode,
   onPaletteColor,
   onMenuList,
-  onAboutMenu
+  onAboutMenu,
+  onSideBarOpen
 } from '../../../redux/reducer/slices/ui.slice';
 
 export const changeMode = (isModeDark: boolean, isLogout = false) => {
@@ -37,6 +38,17 @@ export const changePaletteColors = (theme: PaletteTheme['paletteColors']) => {
       const palette: Palettes | undefined = paletteColors(theme);
       dispatch(onPaletteColor(palette));
       return palette;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+};
+
+export const changueSideBarState = (isOpen: boolean) => {
+  return (dispatch: AppDispatch) => {
+    try {
+      dispatch(onSideBarOpen(isOpen));
+      return isOpen;
     } catch (error: any) {
       throw new Error(error);
     }

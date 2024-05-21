@@ -48,6 +48,7 @@ const DashBoardTemplate = () => {
     onMenu,
     onDarkMode,
     onAboutMenu,
+    onSideBarOpen
   } = useUI();
   const location = useLocation();
   const navigate = useNavigate();
@@ -66,6 +67,10 @@ const DashBoardTemplate = () => {
       LocalStorageConfig.setItem('nav-path', location.pathname);
     }
   }, [location.pathname]);
+
+  React.useEffect(() => {
+    onSideBarOpen(openSideBar.open);
+  }, [openSideBar]);
 
   return (
     <React.Fragment>
