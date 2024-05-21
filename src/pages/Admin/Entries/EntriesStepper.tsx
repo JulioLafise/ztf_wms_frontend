@@ -4,8 +4,8 @@ import { ArrowBack, ArrowForward, ExitToApp, Task } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Stepper, ButtonActions } from '@wms/components';
 import { useUI } from '@wms/hooks';
-import HeaderDeparture from './Steps/HeaderDeparture';
-import DetailDeparture from './Steps/DetailDeparture';
+import HeaderEntry from './Steps/HeaderEntry';
+import DetailEntry from './Steps/DetailEntry';
 
 const DeparturesStepper = () => {
   const { isSideBarOpen } = useUI();
@@ -15,14 +15,14 @@ const DeparturesStepper = () => {
   const previousStep = () => setActiveStep(prevState => prevState - 1);
   const nextStep = () => setActiveStep(prevState => prevState + 1);
   const steps = React.useMemo(() => [
-    { label: 'Departure' },
-    { label: 'Detail Departure' },
-    { label: 'Summary Departure' },
+    { label: 'Entry' },
+    { label: 'Detail Entry' },
+    { label: 'Summary Entry' },
   ], []);
   const ComponentStep = (step: number) => {
     switch (step) {
       case 1:
-        return (<DetailDeparture />);
+        return (<DetailEntry />);
 
       case 2:
 
@@ -33,7 +33,7 @@ const DeparturesStepper = () => {
         return (<>Report</>);
 
       default:
-        return (<HeaderDeparture />);
+        return (<HeaderEntry />);
     }
   };
   return (

@@ -10,7 +10,7 @@ import { IOnSaveAndEditRows, IValidationErrors } from '@wms/interfaces';
 import { useAlertNotification } from '@wms/hooks';
 import { MaterialTable, TextFieldHF } from '@wms/components';
 
-const DetailDeparture = () => {
+const DetailEntry = () => {
   const { swalToastSuccess } = useAlertNotification();
   const navigate = useNavigate();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
@@ -28,8 +28,8 @@ const DetailDeparture = () => {
 
   const columns = React.useMemo<MRT_ColumnDef<any>[]>(() => [
     {
-      id: 'salidaDetalleId',
-      accessorKey: 'salidaDetalleId',
+      id: 'entradaDetalleId',
+      accessorKey: 'entradaDetalleId',
       header: 'ID',
       enableEditing: false,
       minSize: 150,
@@ -50,10 +50,17 @@ const DetailDeparture = () => {
       enableEditing: false,
     },
     {
+      id: 'codigoLote',
+      accessorKey: 'codigoLote',
+      header: 'Codigo Lote',
+      enableEditing: true,
+      minSize: 150,
+    },
+    {
       id: 'precio',
       accessorKey: 'precio',
       header: 'Precio',
-      enableEditing: false,
+      enableEditing: true,
       minSize: 150,
     },
     {
@@ -77,9 +84,8 @@ const DetailDeparture = () => {
       ...prevState,
       {
         ...values,
-        salidaDetalleId: uuid(),
+        entradaDetalleId: uuid(),
         descripcion: `${values.producto} equipo de computo kid`,
-        precio: '$20'
       }
     ]);
     setValidationErrors({});
@@ -87,9 +93,8 @@ const DetailDeparture = () => {
   };
 
   const onDelete = async (values: { [key: string]: any }) => {
-    console.log(values);
     setRowData(prevState => [
-      ...prevState.filter(ft => ft.salidaDetalleId != values.salidaDetalleId)
+      ...prevState.filter(ft => ft.entradaDetalleId != values.entradaDetalleId)
     ]);
     swalToastSuccess('Delete item', {
       message: 'Success',
@@ -129,7 +134,7 @@ const DetailDeparture = () => {
           data={rowData || []}
           enableRowActions
           isEditing
-          columnsVisible={{ salidaDetalleId: false }}
+          columnsVisible={{ entradaDetalleId: false }}
           setRef={setRef}
           pagination={pagination}
           rowCount={rowData.length}
@@ -150,4 +155,4 @@ const DetailDeparture = () => {
   );
 };
 
-export default DetailDeparture;
+export default DetailEntry;

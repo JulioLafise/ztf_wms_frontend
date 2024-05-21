@@ -1,11 +1,17 @@
 import React, { ReactElement, useEffect } from 'react';
 import { Add } from '@mui/icons-material';
-import { Fab, PropTypes, Tooltip, Zoom } from '@mui/material';
+import {
+  Fab,
+  PropTypes,
+  Tooltip,
+  Zoom,
+  IconProps,
+} from '@mui/material';
 
 interface Props {
   title: string,
   onClick?: React.MouseEventHandler<HTMLButtonElement>,
-  ComponentIcon?: ReactElement,
+  ComponentIcon?: ReactElement<IconProps>,
   children?: ReactElement | ReactElement[] | boolean,
   typeSubmit?: 'button' | 'reset' | 'submit',
   disabled?: boolean,
@@ -64,8 +70,21 @@ const ButtonActions = (props: Props) => {
           variant={variant}
           size={size}
           type={typeSubmit || 'button'}
-          color={color || 'primary'}
-          disabled={disabled}
+          color={disabled ? 'inherit' : color || 'primary'}
+          // disabled={disabled}
+          sx={{
+            ':root': {
+              '&.Mui-disabled': {
+                pointerEvents: 'auto'
+              },
+              // '&.MuiFab-root': {
+              //   pointerEvents: disabled ? 'auto' : 'none'
+              // },
+              // '&.MuiButtonBase-root': {
+              //   pointerEvents: disabled ? 'auto' : 'none'
+              // }
+            }
+          }}
           style={{
             position: 'fixed',
             bottom: ubication?.bottom || 50,
@@ -73,9 +92,9 @@ const ButtonActions = (props: Props) => {
             left: ubication?.left || 'auto',
             top: ubication?.top || 'auto',
           }}
-          onClick={onClick}
+          onClick={disabled ? undefined : onClick}
         >
-          {ComponentIcon || <Add />}
+          {ComponentIcon || <Add color={disabled ? 'disabled' : 'inherit'} />}
           {children}
         </Fab>
       </Zoom>

@@ -48,9 +48,25 @@ export const menu: IMenuList[] = [
         menuId: 'departures',
         menuUrl: '/departures',
         menuName: 'Departures',
-        icon: 'id-badge',
+        icon: 'truck-ramp-box',
         description: 'Manejo de las Salidas',
-        roles: ['truck-ramp-box']
+        roles: ['dev']
+      },
+      {
+        menuId: 'purchase-order',
+        menuUrl: '/purchase-order',
+        menuName: 'Purchase Order',
+        icon: 'sheet-plastic',
+        description: 'Ordenes de Pedido',
+        roles: ['dev']
+      },
+      {
+        menuId: 'products',
+        menuUrl: '/products',
+        menuName: 'Products',
+        icon: 'box',
+        description: 'Productos',
+        roles: ['dev']
       },
     ],
     roles: ['dev']

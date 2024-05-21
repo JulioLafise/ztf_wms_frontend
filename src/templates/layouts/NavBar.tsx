@@ -79,8 +79,8 @@ const NavBar: React.FC<{ setOpenSideBar: React.Dispatch<React.SetStateAction<{
                   : <Menu />
               }
             </IconButton>
-            <Box component="article" className="flex items-center bg-white rounded p-2" onClick={onNavHome} >
-              <img src="/img/logo_fzt2.png" width="64" />
+            <Box component="article" className="flex items-center bg-white rounded-full py-2 px-2.5" onClick={onNavHome} >
+              <img src="/img/logo_zt_foundation.png" width="24" />
             </Box>
             <Typography variant="h6" component="div" className="pl-2" fontWeight="bold" onClick={onNavHome}>
               ZTF - WMS
