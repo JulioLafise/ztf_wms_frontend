@@ -43,11 +43,12 @@ const ErrorPage = () => {
   };
 
   return (
-    <Paper elevation={1} className="rounded-lg" sx={{ boxShadow: 'none' }}>
+    <Paper elevation={1} className="rounded-lg" sx={{ boxShadow: 'none', height: '100vh' }}>
       <Box component="div" className="container grid content-center justify-center mx-3 rounded-lg"
         sx={{
           backgroundImage: 'url(/img/svg/meteor.svg)',
-          backgroundSize: 'cover'
+          backgroundSize: 'cover',
+          height: '100%'
         }}
       >
         <Box component="div"

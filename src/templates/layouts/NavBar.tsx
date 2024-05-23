@@ -41,11 +41,12 @@ const ElevationScroll = (props: IProps) => {
 };
 
 
-const NavBar: React.FC<{ setOpenSideBar: React.Dispatch<React.SetStateAction<{
-  open: boolean;
-  type: 'permanent' | 'temporary';
-}>>, openSideBar: boolean }> = (props) => {
-  const { setOpenSideBar, openSideBar } = props;
+const NavBar: React.FC<{
+  setOpenSideBar: React.Dispatch<React.SetStateAction<boolean>>,
+  setTypeSideBar: React.Dispatch<React.SetStateAction<'permanent' | 'temporary'>>,
+  openSideBar: boolean
+}> = (props) => {
+  const { setOpenSideBar, setTypeSideBar, openSideBar } = props;
   const { onSignOut } = useAuth();
   const { toastInfo } = useToastNotification();
   const navigate = useNavigate();
@@ -61,6 +62,12 @@ const NavBar: React.FC<{ setOpenSideBar: React.Dispatch<React.SetStateAction<{
       display: 'none'
     }
   }));
+  const onClick = () => {
+    setOpenSideBar(prevState => {
+      setTypeSideBar(!prevState ? 'permanent' : 'temporary');
+      return !prevState;
+    });
+  };
   return (
     <BoxNavBar sx={{ flexGrow: 1 }}>
       <CssBaseline />
@@ -71,7 +78,7 @@ const NavBar: React.FC<{ setOpenSideBar: React.Dispatch<React.SetStateAction<{
               color="inherit"
               size="large"
               edge="start"
-              onClick={() => setOpenSideBar(prevState => ({ open: !prevState.open, type: !prevState.open ? 'permanent' : 'temporary' }))}
+              onClick={onClick}
             >
               {
                 openSideBar

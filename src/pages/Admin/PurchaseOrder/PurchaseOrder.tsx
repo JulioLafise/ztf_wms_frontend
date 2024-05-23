@@ -91,8 +91,8 @@ const PurchaseOrderPage = () => {
         // onActionRefreshTable={() => refetch()}
         isLoading={false}
         isGenerate={true}
-        isError={false}     
-        onActionStateChange={(row:any) => onStateChange(row.original)}  
+        isError={false}
+        onActionStateChange={(row: any) => onStateChange(row.original)}
       />
       {/* <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} /> */}
     </Paper>

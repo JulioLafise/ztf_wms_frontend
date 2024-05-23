@@ -1,5 +1,5 @@
 import React from 'react';
-import { fromEvent, merge } from 'rxjs';
+import { fromEvent, merge, type Observable } from 'rxjs';
 import moment from 'moment';
 import { useAuth } from './';
 
@@ -27,12 +27,17 @@ const useMonitorActivity = (intervalNumber = INTERVAL_TIME) => {
 
   // ...Observable Events...
   const eventStreams = events.map(ev => fromEvent(window, ev));
-  const allEvents$ = merge(...eventStreams);
+  const allEvents$ = React.useRef<Observable<Event>>(merge(...eventStreams));
 
   // ...Events listener...
-  allEvents$.subscribe((ev) => {
-    lastEvent.current = moment();
-  });
+  React.useEffect(() => {
+    const subscription = allEvents$.current.subscribe((ev) => {
+      lastEvent.current = moment();
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [allEvents$]);
 
   // ...Intervals of comprobations...
   React.useEffect(() => {

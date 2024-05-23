@@ -79,7 +79,7 @@ interface IProps {
   others: IMenuList[],
   open: boolean,
   typeSideBar: 'permanent' | 'temporary',
-  setOpen: React.Dispatch<React.SetStateAction<{ open: boolean, type: 'permanent' | 'temporary' }>>
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 // INTERFACES && TYPES 
@@ -95,7 +95,7 @@ const SideBarMenu = (props: IProps) => {
   const navigate = useNavigate();
   
   const toggleDrawer = (open: boolean, navUrl: string) =>
-    (event: React.KeyboardEvent | React.MouseEvent) => {
+    (event: React.KeyboardEvent | React.MouseEvent | React.TouchEvent) => {
       if (
         event &&
         event.type === 'keydown' &&
@@ -110,9 +110,9 @@ const SideBarMenu = (props: IProps) => {
 
   const onClose = (open: boolean) => {
     if (typeSideBar === 'permanent') {
-      setOpen({ open: true, type: 'permanent' });
+      setOpen(true);
     } else {
-      setOpen({ open, type: 'temporary' });
+      setOpen(open);
     }
   };
   
@@ -129,11 +129,13 @@ const SideBarMenu = (props: IProps) => {
       <Drawer variant="permanent" anchor="left" open={openSideBar}>
         <DrawerHeader />
         <Divider />
-        <List>
-          {menu.map((item) => (
-            <MenuMain key={uuid()} toggleDrawer={toggleDrawer} menu={item} openSideBar={openSideBar} typeSideBar={typeSideBar} />
-          ))}
-        </List>
+        <Box onMouseOver={toggleDrawer(true, '')} onMouseLeave={toggleDrawer(false, '')}>
+          <List>
+            {menu.map((item) => (
+              <MenuMain key={uuid()} toggleDrawer={toggleDrawer} menu={item} openSideBar={openSideBar} typeSideBar={typeSideBar} />
+            ))}
+          </List>
+        </Box>
         <Box sx={{ flexGrow: 1 }} />
         <Divider />
         <List>

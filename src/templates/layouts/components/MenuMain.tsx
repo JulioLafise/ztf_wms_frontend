@@ -8,7 +8,8 @@ import {
   Divider,
   Collapse,
   IconButton,
-  Tooltip
+  Tooltip,
+  ClickAwayListener
 } from '@mui/material';
 import { IMenuList } from '@wms/interfaces';
 import { FontAwesomeIcon } from '@wms/components';
@@ -27,11 +28,13 @@ const MenuMain: React.FC<IMenuProps> = (props) => {
   const { toggleDrawer, menu, openSideBar, typeSideBar } = props;
   const [open, setOpen] = React.useState(typeSideBar === 'permanent');
 
-  const onToggle = (ev: any) => openSideBar ? setOpen(prevState => !prevState) : toggleDrawer(true, '')(ev);
+  const onToggle = (ev: any) => setOpen(prevState => !prevState);
   return (
     <React.Fragment>
       <ListItem
         onClick={onToggle}
+        // onMouseOver={toggleDrawer(true,'')}
+        // onMouseLeave={toggleDrawer(false,'')}
         className="text-end"
         disablePadding
         sx={{ display: 'block' }}
@@ -57,18 +60,20 @@ const MenuMain: React.FC<IMenuProps> = (props) => {
         </ListItemButton>
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <List>
-          {menu?.children?.map((item) => (
-            <ListItem key={item.menuId} disablePadding>
-              <ListItemButton onClick={toggleDrawer(false,`${menu.menuUrl}${item.menuUrl}`)}>
-                <ListItemIcon sx={{ pl: 1 }} >
-                  <FontAwesomeIcon iconLabel={item.icon} size="lg" />
-                </ListItemIcon>
-                <ListItemText primary={item.menuName} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+        <ClickAwayListener onClickAway={() => { }}>
+          <List>
+            {menu?.children?.map((item) => (
+              <ListItem key={item.menuId} disablePadding>
+                <ListItemButton onClick={toggleDrawer(false, `${menu.menuUrl}${item.menuUrl}`)}>
+                  <ListItemIcon sx={{ pl: 1 }} >
+                    <FontAwesomeIcon iconLabel={item.icon} size="lg" />
+                  </ListItemIcon>
+                  <ListItemText primary={item.menuName} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </ClickAwayListener>
       </Collapse>
       {menu.menuId === 'dashboard' && <Divider />}
     </React.Fragment>

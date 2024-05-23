@@ -52,7 +52,8 @@ const DashBoardTemplate = () => {
   } = useUI();
   const location = useLocation();
   const navigate = useNavigate();
-  const [openSideBar, setOpenSideBar] = React.useState<{ open: boolean, type: 'permanent' | 'temporary' }>({ open: false, type: 'temporary' });
+  const [openSideBar, setOpenSideBar] = React.useState<boolean>(false);
+  const [typeSideBar, setTypeSideBar] = React.useState<'permanent' | 'temporary'>('temporary');
 
   React.useEffect(() => {
     onMenu(user!);
@@ -69,17 +70,29 @@ const DashBoardTemplate = () => {
   }, [location.pathname]);
 
   React.useEffect(() => {
-    onSideBarOpen(openSideBar.open);
+    onSideBarOpen(typeSideBar === 'permanent' ? openSideBar : false);
   }, [openSideBar]);
 
   return (
     <React.Fragment>
       <Paper className="h-[100vh] overflow-hidden" elevation={1}>
-        <NavBar setOpenSideBar={setOpenSideBar} openSideBar={openSideBar.open} />
+        <NavBar setOpenSideBar={setOpenSideBar} setTypeSideBar={setTypeSideBar} openSideBar={openSideBar} />
         <NavBarMobile menu={menu.main} />
-        <SideBarMenu menu={menu.main} others={menu.secondary} open={openSideBar.open} setOpen={setOpenSideBar} typeSideBar={openSideBar.type} />
-        <Breadcrumbs open={openSideBar.open} />
-        <Container maxWidth="xxl" disableGutters id="container-page" className="container-scroll" open={openSideBar.open} >
+        <SideBarMenu
+          menu={menu.main}
+          others={menu.secondary}
+          open={openSideBar}
+          setOpen={setOpenSideBar}
+          typeSideBar={typeSideBar}
+        />
+        <Breadcrumbs open={typeSideBar === 'permanent' ? openSideBar : false} />
+        <Container
+          maxWidth="xxl"
+          disableGutters
+          id="container-page"
+          className="container-scroll"
+          open={typeSideBar === 'permanent' ? openSideBar : false}
+        >
           <AboutModal isOpen={about.isOpen} onClose={() => { onAboutMenu(!about.isOpen); }} />
           <TitleRouter />
           <Outlet />
