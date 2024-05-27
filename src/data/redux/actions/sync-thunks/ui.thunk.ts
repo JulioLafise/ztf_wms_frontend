@@ -6,7 +6,8 @@ import {
   onPaletteColor,
   onMenuList,
   onAboutMenu,
-  onSideBarOpen
+  onSideBarOpen,
+  onMobile
 } from '../../../redux/reducer/slices/ui.slice';
 
 export const changeMode = (isModeDark: boolean, isLogout = false) => {
@@ -49,6 +50,17 @@ export const changueSideBarState = (isOpen: boolean) => {
     try {
       dispatch(onSideBarOpen(isOpen));
       return isOpen;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+};
+
+export const changueMobileState = (isMobile: boolean) => {
+  return (dispatch: AppDispatch) => {
+    try {
+      dispatch(onMobile(isMobile));
+      return isMobile;
     } catch (error: any) {
       throw new Error(error);
     }

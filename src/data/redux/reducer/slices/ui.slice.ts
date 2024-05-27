@@ -14,6 +14,7 @@ const initialState: IUIProps = {
     isOpen: false
   },
   isSideBarOpen: false,
+  isMobile: false,
   error: undefined
 };
 
@@ -36,6 +37,9 @@ const uiSlice = createSlice({
     onSideBarOpen: (state, { payload }) => {
       state.isSideBarOpen = payload;
     },
+    onMobile: (state, { payload }) => {
+      state.isMobile = payload;
+    },
     onReset: () => initialState,
   },
 });
@@ -47,6 +51,7 @@ export const {
   onMenuList,
   onAboutMenu,
   onSideBarOpen,
+  onMobile,
   onReset,
 } = uiSlice.actions;
 

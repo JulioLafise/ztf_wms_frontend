@@ -30,14 +30,14 @@ const Menu = (props: IProps) => {
         vertical: 'bottom',
         horizontal: 'right',
       }}
-      keepMounted
+      // keepMounted
       transformOrigin={{
         vertical: 'bottom',
         horizontal: 'right',
       }}
       open={isMenuOpen}
       onClose={handleMenuClose}
-      sx={{ zIndex: '9999 !important', left: 55 }}
+      sx={{ zIndex: '9998 !important', left: 55 }}
     >
       {
         subMenu.map(item => (

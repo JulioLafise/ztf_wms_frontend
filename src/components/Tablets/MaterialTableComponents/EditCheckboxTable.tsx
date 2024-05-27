@@ -21,6 +21,7 @@ const EditCheckboxTable = <T extends MRT_RowData>(props: IProps<T>) => {
   const [isChecked, setIsChecked] = React.useState<boolean>(false);
 
   React.useEffect(() => {
+    console.log(cell.getValue<boolean>());
     if (cell.getValue<boolean>()) {
       setIsChecked(cell.getValue<boolean>());
       setCheckState && setCheckState(oldData => ({
@@ -29,6 +30,7 @@ const EditCheckboxTable = <T extends MRT_RowData>(props: IProps<T>) => {
       }));
     }
   }, []);
+
   return (
     <>
       <FormControlLabel

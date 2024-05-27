@@ -5,7 +5,7 @@ import { uiSyncThunks } from '@wms/redux/actions';
 const useUI = () => {
   const dispatch = useAppDispatch();
 
-  const { theme, menu, about, isSideBarOpen } = useAppSelector(state => state.uiReducer);
+  const { theme, menu, about, isSideBarOpen, isMobile } = useAppSelector(state => state.uiReducer);
 
   const onDarkMode = (isActive: boolean, isLogout = false) => {
     try {
@@ -39,6 +39,14 @@ const useUI = () => {
     }
   };
 
+  const onMobile = (isMobile: boolean) => {
+    try {
+      return dispatch(uiSyncThunks.changueSideBarState(isMobile));
+    } catch (error) {
+      return error;
+    }
+  };
+
   const onMenu = (user: any) => {
     try {
       return dispatch(uiSyncThunks.onMenus(user));
@@ -53,12 +61,14 @@ const useUI = () => {
     menu,
     about,
     isSideBarOpen,
+    isMobile,
     // METHODS
     onDarkMode,
     changePaletteColors,
     onMenu,
     onAboutMenu,
-    onSideBarOpen
+    onSideBarOpen,
+    onMobile
   };
 };
 

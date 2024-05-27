@@ -10,18 +10,23 @@ export interface IJsonBody<T>  {
   statusCode: number
 }
 
-export interface IJsonResponseMIS<T>  {
+export interface IJsonResponse<T>  {
   detail: T
   status: string,
   statusCode: number
 }
 
 
+// export interface IPaginationResp<T> {
+//   rowsNumber: number,
+//   pageNumber: number,
+//   rowsOfPage: number,
+//   rowsData: T[]
+// }
+
 export interface IPaginationResp<T> {
-  rowsNumber: number,
-  pageNumber: number,
-  rowsOfPage: number,
-  rowsData: T[]
+  count: number,
+  data: T[]
 }
 
 export interface IParamsProps<T> extends IHttp {

@@ -30,6 +30,7 @@ export interface IUIProps {
     isOpen: boolean
   },
   isSideBarOpen: boolean,
+  isMobile: boolean,
   error: any
 }
 

@@ -16,6 +16,9 @@ export default defineConfig({
       { find: '@wms/config', replacement: path.resolve(__dirname, 'src/config/index.ts') },
       { find: '@wms/apis', replacement: path.resolve(__dirname, 'src/data/apis/index.ts') },
       { find: '@wms/static', replacement: path.resolve(__dirname, 'src/data/static/index.ts') },
+      { find: '@wms/entities', replacement: path.resolve(__dirname, 'src/data/entities/index.ts') },
+      { find: '@wms/dtos', replacement: path.resolve(__dirname, 'src/data/dtos/index.ts') },
+      { find: '@wms/mappers', replacement: path.resolve(__dirname, 'src/data/mappers/index.ts') },
       { find: '@wms/redux/store', replacement: path.resolve(__dirname, 'src/data/redux/store/store.ts') },
       { find: '@wms/redux/selector', replacement: path.resolve(__dirname, 'src/data/redux/selector/selector.ts') },
       { find: '@wms/redux/reducer', replacement: path.resolve(__dirname, 'src/data/redux/reducer/reducer.ts') },
@@ -39,7 +42,7 @@ export default defineConfig({
     cors: false,
     host: '0.0.0.0',
     port: 5173,
-    strictPort: true,
+    strictPort: false,
     headers: {
       'Referrer-Policy': 'no-referrer-when-downgrade',
       'Cross-Origin-Opener-Policy': ['same-origin', 'same-origin-allow-popups']

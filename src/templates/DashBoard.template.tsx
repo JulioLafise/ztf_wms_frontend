@@ -4,7 +4,9 @@ import {
   Container as MuiContainer,
   type ContainerProps as MuiContainerProps,
   Paper,
-  styled
+  styled,
+  useMediaQuery,
+  Theme
 } from '@mui/material';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import NavBar from './layouts/NavBar';
@@ -41,6 +43,7 @@ const Container = styled(MuiContainer, {
 );
 
 const DashBoardTemplate = () => {
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
   const { user } = useAuth();
   const {
     menu,
@@ -48,7 +51,8 @@ const DashBoardTemplate = () => {
     onMenu,
     onDarkMode,
     onAboutMenu,
-    onSideBarOpen
+    onSideBarOpen,
+    onMobile
   } = useUI();
   const location = useLocation();
   const navigate = useNavigate();
@@ -72,6 +76,10 @@ const DashBoardTemplate = () => {
   React.useEffect(() => {
     onSideBarOpen(typeSideBar === 'permanent' ? openSideBar : false);
   }, [openSideBar]);
+
+  React.useEffect(() => {
+    onMobile(isMobile);
+  }, [isMobile]);
 
   return (
     <React.Fragment>

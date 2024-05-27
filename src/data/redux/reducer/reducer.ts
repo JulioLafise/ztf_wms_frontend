@@ -2,13 +2,15 @@ import { combineReducers } from '@reduxjs/toolkit';
 import {
   authReducer,
   uiReducer,
-  userReducer
+  userReducer,
+  unitMeasureReducer
 } from './slices';
 
 const reducers = combineReducers({
   authReducer,
   uiReducer,
-  userReducer
+  userReducer,
+  unitMeasureReducer
 });
 
 export default reducers;

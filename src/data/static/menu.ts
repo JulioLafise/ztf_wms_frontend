@@ -82,11 +82,11 @@ export const settings: IMenuList[] = [
     description: '',
     children: [
       {
-        menuId: 'departaments',
-        menuUrl: '/departaments',
-        menuName: 'Departaments',
-        icon: 'layer-group',
-        description: 'Managing departaments',
+        menuId: 'unit-measure',
+        menuUrl: '/unit-measure',
+        menuName: 'Unit Measure',
+        icon: 'ruler',
+        description: 'Administracion de unidad de medidas',
         roles: ['dev'],
       },
       {
