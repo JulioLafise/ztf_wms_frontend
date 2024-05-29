@@ -1,22 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { UnitMeasureEntity } from '@wms/entities';
+import { BrandEntity } from '@wms/entities';
 import { ICatalogueProps } from '@wms/interfaces';
-import { unitMeasureAsyncThunks } from '@wms/redux/actions';
+import { brandAsyncThunks } from '@wms/redux/actions';
 
-interface IUnitMeasureProps<T> extends ICatalogueProps<T> {
+interface IBrandProps<T> extends ICatalogueProps<T> {
 
 }
 
-const initialState: IUnitMeasureProps<UnitMeasureEntity> = {
+const initialState: IBrandProps<BrandEntity> = {
   data: [],
   rowCount: 0,
   isGenerate: false,
   error: null
 };
 
-const unitMeasureSlice = createSlice({
+const brandSlice = createSlice({
   initialState,
-  name: 'unit-measure',
+  name: 'brand',
   reducers: {
     onReset: () => initialState,
     onGenerate: (state) => {
@@ -28,12 +28,12 @@ const unitMeasureSlice = createSlice({
   },
   extraReducers: (builder) => {
     // VISIT METHODS LIST
-    builder.addCase(unitMeasureAsyncThunks.getUnitMeasureList.fulfilled, (state, { payload }) => {
+    builder.addCase(brandAsyncThunks.getBrandList.fulfilled, (state, { payload }) => {
       state.data = payload;
       state.isGenerate = true;
       state.error = undefined;
     });
-    builder.addCase(unitMeasureAsyncThunks.getUnitMeasureList.rejected, (state, { payload }) => {
+    builder.addCase(brandAsyncThunks.getBrandList.rejected, (state, { payload }) => {
       state.data = [];
       state.isGenerate = true;
       state.error = payload;
@@ -45,6 +45,6 @@ export const {
   onReset,
   onRowCount,
   onGenerate
-} = unitMeasureSlice.actions;
+} = brandSlice.actions;
 
-export default unitMeasureSlice.reducer;
+export default brandSlice.reducer;

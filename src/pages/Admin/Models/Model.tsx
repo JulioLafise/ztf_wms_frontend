@@ -3,50 +3,57 @@ import type { MRT_ColumnDef, MRT_TableInstance } from 'material-react-table';
 import { Paper } from '@mui/material';
 import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
 import * as Yup from 'yup';
-import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows } from '@wms/interfaces';
+import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows, ComboBoxSelectTable } from '@wms/interfaces';
 import { Validator } from '@wms/helpers';
-import { useAlertNotification, useUI, useUnitMeasure } from '@wms/hooks';
+import { useAlertNotification, useUI, useModel, useBrand } from '@wms/hooks';
 import { MaterialTable, ButtonActions, EditCheckboxTable } from '@wms/components';
-import { UnitMeasureEntity } from '@wms/entities';
-import UnitMeasureModal from './UnitMeasureModal';
+import { ModelEntity } from '@wms/entities';
+import ModelModal from './ModelModal';
 
 interface ISchemaValidationTable {
   description?: string,
-  abbreviation?: string,
+  brandId?: number,
   isActive?: Yup.Maybe<boolean>
 }
 
 const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.object().shape({
   description: Yup.string().required('Description is required'),
-  abbreviation: Yup.string().required('Abbreviation is required'),
+  brandId: Yup.number().required('Brand is required'),
   isActive: Yup.boolean().notRequired()
 });
 
-const UnitMeasurePage = () => {
-  const { swalToastError, swalToastWait, swalToastSuccess, swalToastWarn } = useAlertNotification();
+type ComboBoxItems = { brands: object[] };
+
+const ModelPage = () => {
+  const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
   const { isMobile } = useUI();
   const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
   const [isOpen, setIsOpen] = React.useState(false);
-  const [checkState, setCheckState] = React.useState<Partial<UnitMeasureEntity>>({
+  const [checkState, setCheckState] = React.useState<Partial<ModelEntity>>({
     isActive: false,
   });
-  const [edit, setEdit] = React.useState<UnitMeasureEntity | null>(null);
-  const [ref, setRef] = React.useState<MRT_TableInstance<UnitMeasureEntity>>();
+  const [selectData, setSelectData] = React.useState<ComboBoxSelectTable<ComboBoxItems>>({
+    brands: []
+  });
+  const [edit, setEdit] = React.useState<ModelEntity | null>(null);
+  const [ref, setRef] = React.useState<MRT_TableInstance<ModelEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { isGenerate, rowCount, useUnitMeasureListQuery, useUnitMeasureMutation } = useUnitMeasure();
-  const { data, isLoading, isError, refetch } = useUnitMeasureListQuery({ ...pagination, filter: globalFilter });
-  const mutation = useUnitMeasureMutation({ ...pagination, filter: globalFilter }, optionsQuery);
+  const { useBrandListQuery } = useBrand();
+  const { isGenerate, rowCount, useModelListQuery, useModelMutation } = useModel();
+  const { data, isLoading, isError, refetch } = useModelListQuery({ ...pagination, filter: globalFilter });
+  const { data: brandsData } = useBrandListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
+  const mutation = useModelMutation({ ...pagination, filter: globalFilter }, optionsQuery);
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<ISchemaValidationTable>>({});
 
-  const columns = React.useMemo<MRT_ColumnDef<UnitMeasureEntity>[]>(() => [
+  const columns = React.useMemo<MRT_ColumnDef<ModelEntity>[]>(() => [
     {
-      id: 'unitMeasureId',
-      accessorKey: 'unitMeasureId',
-      header: 'Unidad de Medida ID',
+      id: 'modelId',
+      accessorKey: 'modelId',
+      header: 'Modelo ID',
       enableEditing: false,
       minSize: 150,
     },
@@ -62,15 +69,19 @@ const UnitMeasurePage = () => {
       },
     },
     {
-      id: 'abbreviation',
-      accessorKey: 'abbreviation',
-      header: 'Abreviacion',
+      id: 'brandId',
+      accessorKey: 'brandId',
+      accessorFn: (row) => row.brand?.brandId,
+      header: 'Marca',
       minSize: 150,
+      editVariant: 'select',
       muiEditTextFieldProps: {      
         required: true,
-        error: !!validationErrors.abbreviation,
-        helperText: validationErrors.abbreviation
+        error: !!validationErrors.brandId,
+        helperText: validationErrors.brandId
       },
+      editSelectOptions: selectData.brands,
+      Cell: ({ row }) => <span>{row.original.brand?.description}</span>
     },
     {
       id: 'isActive',
@@ -87,23 +98,23 @@ const UnitMeasurePage = () => {
       Edit: (props) => <EditCheckboxTable {...props} setCheckState={setCheckState} />,
       Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
     },
-  ], [validationErrors]);
+  ], [validationErrors, selectData]);
 
-  const onSaveOrEdit: IOnSaveAndEditRows<UnitMeasureEntity> = async (row, table, values, validation): Promise<void> => {
+  const onSaveOrEdit: IOnSaveAndEditRows<ModelEntity> = async (row, table, values, validation): Promise<void> => {
     if (!isMobile) {
       setOptionsQuery({
-        typeMutation: row.original.unitMeasureId ? 'put' : 'post'
+        typeMutation: row.original.modelId ? 'put' : 'post'
       });
-      const data: UnitMeasureEntity = {
+      const data: ModelEntity = {
         ...values,
         ...checkState,
-        isActive: row.original.unitMeasureId ? row.original.isActive : true
+        isActive: row.original.modelId ? row.original.isActive : true
       };
       const [isPassed, errors] = await Validator.yupSchemaValidation({ schema: schemaValidationTable, data });
-      if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.unitMeasureId ? true : false); return; }
+      if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.modelId ? true : false); return; }
       setValidationErrors({});
-      validation!({})(table, row.original.unitMeasureId ? true : false);
-      onTransaction({ unitMeasureId: row.original.unitMeasureId, ...data });
+      validation!({})(table, row.original.modelId ? true : false);
+      onTransaction({ modelId: row.original.modelId, ...data });
     }
     else {
       setEdit(row.original);
@@ -113,13 +124,13 @@ const UnitMeasurePage = () => {
 
   const onSubmit = (values: { [x: string]: any }) => {
     setOptionsQuery({
-      typeMutation: values.unitMeasureId ? 'put' : 'post'
+      typeMutation: values.modelId ? 'put' : 'post'
     });
     onTransaction(values);
   };
 
   const onTransaction = (values: { [x: string]: any }) => {
-    const title = !values.unitMeasureId ? 'Saving Unit Measure!' : 'Updating Unit Measure!';
+    const title = !values.modelId ? 'Saving Model!' : 'Updating Model!';
     swalToastWait(title, {
       message: 'Please wait a few minutes',
       showLoading: true,
@@ -135,7 +146,7 @@ const UnitMeasurePage = () => {
 
   const onChangeState = async (values: { [key: string]: any }) => {
     setOptionsQuery({ typeMutation: 'delete'});
-    const title = values.isActive ? 'Desactive Unit Measure!' : 'Active Unit Measure!';
+    const title = values.isActive ? 'Desactive Model!' : 'Active Model!';
     swalToastWait(title, {
       message: 'Please wait a few minutes',
       showLoading: true,
@@ -149,13 +160,19 @@ const UnitMeasurePage = () => {
       .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
   };
 
+  React.useEffect(() => {
+    if (brandsData) {
+      setSelectData(oldData => ({ ...oldData, brands: brandsData.map(obj => ({ label: obj.description, value: obj.brandId })) }));
+    }
+  }, [brandsData]);
+
   return (
     <Paper elevation={4}>
-      <MaterialTable<UnitMeasureEntity>
+      <MaterialTable<ModelEntity>
         columns={columns}
         data={data || []}
         enableRowActions
-        columnsVisible={{ unitMeasureId: false }}
+        columnsVisible={{ modelId: false }}
         setRef={setRef}
         pagination={pagination}
         rowCount={rowCount}
@@ -173,9 +190,9 @@ const UnitMeasurePage = () => {
         onActionRefreshTable={() => refetch()}       
       />
       {isMobile && <ButtonActions title="New" onClick={() => { setIsOpen(true); setEdit(null); }} />}
-      <UnitMeasureModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} />
+      <ModelModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} />
     </Paper>
   );
 };
 
-export default UnitMeasurePage;
+export default ModelPage;

@@ -47,6 +47,13 @@ const useUnitMeasure = () => {
         Validator.httpValidation(dataNew as any);
         return UnitMeasureMapper.getItem(dataNew);
       }
+      if (options?.typeMutation === 'delete') {
+        const [errors, unitMeasureDto] = await UnitMeasureDTO.updated({ ...data });
+        if (errors) throw new Error(errors);
+        const dataNew = (await dispatch(unitMeasureAsyncThunks.onDeleteUnitMeasure(unitMeasureDto!))).payload;
+        Validator.httpValidation(dataNew as any);
+        return data;
+      }
       return data;
     },
     onSuccess: (data) => {

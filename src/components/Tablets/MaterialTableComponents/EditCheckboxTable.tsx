@@ -13,21 +13,29 @@ interface IProps<T extends MRT_RowData> {
   column: MRT_Column<T, unknown>;
   row: MRT_Row<T>;
   table: MRT_TableInstance<T>;
-  setCheckState?: React.Dispatch<React.SetStateAction<T>>
+  setCheckState?: React.Dispatch<React.SetStateAction<T>>,
+  defaultValue?: boolean
 }
 
 const EditCheckboxTable = <T extends MRT_RowData>(props: IProps<T>) => {
-  const { cell, column, table, row, setCheckState } = props;
+  const { cell, column, table, row, setCheckState, defaultValue } = props;
   const [isChecked, setIsChecked] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    console.log(cell.getValue<boolean>());
     if (cell.getValue<boolean>()) {
       setIsChecked(cell.getValue<boolean>());
       setCheckState && setCheckState(oldData => ({
         ...oldData,
         [cell.column.id]: cell.getValue<boolean>()
       }));
+    } else {
+      if (defaultValue != undefined) {
+        setIsChecked(defaultValue);
+        setCheckState && setCheckState(oldData => ({
+          ...oldData,
+          [cell.column.id]: defaultValue
+        }));
+      }
     }
   }, []);
 

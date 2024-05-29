@@ -31,7 +31,7 @@ export const updateUnitMeasurePUT = async (options: IBodyProps<UnitMeasureDTO>):
   }
 });
 
-export const updateUnitMeasureDELETE = async (options: IBodyProps<UnitMeasureDTO>): Promise<IJsonBody<UnitMeasureEntity | string>> => await httpClient.delete({
+export const eliminateUnitMeasureDELETE = async (options: IBodyProps<UnitMeasureDTO>): Promise<IJsonBody<UnitMeasureEntity | string>> => await httpClient.delete({
   url: `unidadmedida/${options.body.unidadMedidaId}/`,
   options: {
     data: options.body

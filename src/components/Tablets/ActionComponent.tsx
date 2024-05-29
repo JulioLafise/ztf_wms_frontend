@@ -16,7 +16,9 @@ import {
   Edit,
   PictureAsPdf,
   LockResetRounded,
-  AddPhotoAlternate
+  AddPhotoAlternate,
+  DoneAll,
+  DoDisturbOn
 } from '@mui/icons-material';
 import { useAlertNotification } from '@wms/hooks';
 
@@ -115,7 +117,7 @@ const ActionComponent = <T extends MRT_RowData,>({
                 }
               });              
             }}>
-              {row.original.isActive ? <CheckBoxOutlineBlank color="primary" /> : <CheckBox color="primary" />}
+              {row.original.isActive ? <DoDisturbOn color="error" /> : <DoneAll color="success" />}
             </IconButton>
           </Tooltip>
         )

@@ -2,6 +2,8 @@ import { RouteObject, Outlet } from 'react-router-dom';
 import { PanelRouter, Error } from '@wms/components';
 import {
   UnitMeasurePageLazy,
+  BrandPageLazy,
+  ModelPageLazy
 } from '@wms/pages';
 
 export const catalogueRouter: RouteObject = {
@@ -18,13 +20,13 @@ export const catalogueRouter: RouteObject = {
       errorElement: <Error />
     },
     {
-      path: 'appointments',
-      element: <Outlet />,
+      path: 'brand',
+      element: <BrandPageLazy />,
       errorElement: <Error />
     },
     {
-      path: 'visit-types',
-      element: <Outlet />,
+      path: 'model',
+      element: <ModelPageLazy />,
       errorElement: <Error />
     },
     {
