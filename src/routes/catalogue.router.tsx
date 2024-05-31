@@ -3,7 +3,8 @@ import { PanelRouter, Error } from '@wms/components';
 import {
   UnitMeasurePageLazy,
   BrandPageLazy,
-  ModelPageLazy
+  ModelPageLazy,
+  WarehousePageLazy
 } from '@wms/pages';
 
 export const catalogueRouter: RouteObject = {
@@ -30,8 +31,8 @@ export const catalogueRouter: RouteObject = {
       errorElement: <Error />
     },
     {
-      path: 'visit-methods',
-      element: <Outlet />,
+      path: 'warehouse',
+      element: <WarehousePageLazy />,
       errorElement: <Error />
     },
     {

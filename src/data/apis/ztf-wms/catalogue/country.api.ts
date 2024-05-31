@@ -16,7 +16,7 @@ export const countryListGET = async (options: IPaginationProps<PaginationDTO>): 
   }
 });
 
-export const countryGET = async (options: IBodyProps<{ countryId: number }>): Promise<IJsonBody<CountryEntity>> => await httpClient.get({
+export const countryGET = async (options: IBodyProps<{ countryId: number }>): Promise<IJsonBody<{ data: CountryEntity}>> => await httpClient.get({
   url: `country/${options.body.countryId}/`,
   options: {}
 });

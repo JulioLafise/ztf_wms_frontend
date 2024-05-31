@@ -4,3 +4,4 @@ export * from './PurchaseOrder';
 export * from './UnitMeasures';
 export * from './Brands';
 export * from './Models';
+export * from './Warehouses';

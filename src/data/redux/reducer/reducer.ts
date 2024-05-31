@@ -6,7 +6,8 @@ import {
   unitMeasureReducer,
   brandReducer,
   modelReducer,
-  countryReducer
+  countryReducer,
+  warehouseReducer
 } from './slices';
 
 const reducers = combineReducers({
@@ -16,7 +17,8 @@ const reducers = combineReducers({
   unitMeasureReducer,
   brandReducer,
   modelReducer,
-  countryReducer
+  countryReducer,
+  warehouseReducer
 });
 
 export default reducers;

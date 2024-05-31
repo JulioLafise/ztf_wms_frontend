@@ -9,9 +9,9 @@ export class CountryMapper {
     if (!Validator.isObjectEmpty(values as any)) {
       const value: any = values;
       data = {
-        countryId: value.countryId,
+        countryId: value.paisId,
         description: value.descripcion,
-        departaments: [...value.departament],
+        departaments: [...value.departamentos],
         isActive: value.isActivo
       };
     } else throw new Error('An object was expected');
@@ -25,7 +25,7 @@ export class CountryMapper {
         data = [
           ...data,
           {
-            countryId: value.countryId,
+            countryId: value.paisId,
             description: value.descripcion,
             isActive: value.isActivo
           }
@@ -38,12 +38,12 @@ export class CountryMapper {
   static getDepartamentList(values: unknown): DepartamentEntity[] {
     let data: DepartamentEntity[] = [];
     const value: any = values;
-    if (Array.isArray(value.departament)) {
-      value.departament.forEach((item: any) => {
+    if (Array.isArray(value.departamentos)) {
+      value.departamentos.forEach((item: any) => {
         data = [
           ...data,
           {
-            departamentId: item.departamentId,
+            departamentId: item.departamentoId,
             description: item.descripcion,
             isActive: item.isActivo
           }

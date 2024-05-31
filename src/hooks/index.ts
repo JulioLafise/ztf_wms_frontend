@@ -9,3 +9,4 @@ export { default as useUnitMeasure } from './useUnitMeasure';
 export { default as useBrand } from './useBrand';
 export { default as useModel } from './useModel';
 export { default as useCountry } from './useCountry';
+export { default as useWarehouse } from './useWarehouse';

@@ -22,7 +22,7 @@ export const menu: IMenuList[] = [
     roles: ['dev']
   },
   {
-    menuId: 'visit-control',
+    menuId: 'inventory',
     menuUrl: '/app/inventory',
     menuName: 'Inventory',
     icon: 'warehouse',
@@ -106,11 +106,11 @@ export const settings: IMenuList[] = [
         roles: ['dev'],
       },
       {
-        menuId: 'visit-methods',
-        menuUrl: '/visit-methods',
-        menuName: 'Visit Methods',
-        icon: 'mobile-button',
-        description: 'Managing visit methods',
+        menuId: 'warehouse',
+        menuUrl: '/warehouse',
+        menuName: 'Warehouses',
+        icon: 'warehouse',
+        description: 'Gestion de las bodegas',
         roles: ['dev'],
       },
       {
