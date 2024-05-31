@@ -7,7 +7,7 @@ import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows, ComboBoxSelectTab
 import { Validator } from '@wms/helpers';
 import { useAlertNotification, useUI, useWarehouse, useCountry } from '@wms/hooks';
 import { MaterialTable, ButtonActions, EditCheckboxTable } from '@wms/components';
-import { WarehouseEntity } from '@wms/entities';
+import { WarehouseEntity, CountryEntity } from '@wms/entities';
 import WarehouseModal from './WarehouseModal';
 
 interface ISchemaValidationTable {
@@ -26,6 +26,7 @@ type ComboBoxItems = { departaments: object[], countries: object[] };
 
 const ModelPage = () => {
   const [countryId, setCountryId] = React.useState<number>(1);
+  const countryFilter = React.useRef<CountryEntity[]>([]);
   const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
   const { isMobile } = useUI();
   const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
@@ -85,7 +86,7 @@ const ModelPage = () => {
         onChange: (_event) => { setCountryId(Number(_event.target.value)); }
       },
       editSelectOptions: selectData.countries,
-      Cell: ({ row }) => <span>{countriesData?.filter(ft => ft.countryId === row.original.departament?.countryId)[0].description}</span>
+      Cell: ({ row }) => <span>{getCountryName(row.original.departament?.countryId)}</span>
     },
     {
       id: 'departamentId',
@@ -118,6 +119,16 @@ const ModelPage = () => {
       Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
     },
   ], [validationErrors, selectData]);
+
+  const getCountryName = (countryId?: number) => {
+    if (countryId) {
+      const country = countryFilter.current.filter(ft => ft.countryId === countryId)[0];
+      if (country) {
+        return country.description;
+      }
+    }
+    return '';
+  };
 
   const onSaveOrEdit: IOnSaveAndEditRows<WarehouseEntity> = async (row, table, values, validation): Promise<void> => {
     if (!isMobile) {
@@ -184,6 +195,7 @@ const ModelPage = () => {
       setSelectData(oldData => ({ ...oldData, departaments: departamentsData.map(obj => ({ label: obj.description, value: obj.departamentId })) }));
     }
     if (countriesData) {
+      countryFilter.current = countriesData;
       setSelectData(oldData => ({ ...oldData, countries: countriesData.map(obj => ({ label: obj.description, value: obj.countryId })) }));
     }
   }, [departamentsData, countriesData, countryId]);
