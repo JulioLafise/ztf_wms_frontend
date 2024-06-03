@@ -8,3 +8,4 @@ export * as supplierAsyncThunks from './supplier.thunk';
 export * as featuresAsyncThunks from './features.thunk';
 export * as categoryAsyncThunks from './category.thunk';
 export * as customerAsyncThunks from './customer.thunk';
+export * as productStatusAsyncThunks from './product-status.thunk';

@@ -10,3 +10,4 @@ export { default as supplierReducer } from './supplier.slice';
 export { default as featuresReducer } from './features.slice';
 export { default as categoryReducer } from './category.slice';
 export { default as customerReducer } from './customer.slice';
+export { default as productStatusReducer } from './product-status.slice';
