@@ -10,3 +10,5 @@ export { default as useBrand } from './useBrand';
 export { default as useModel } from './useModel';
 export { default as useCountry } from './useCountry';
 export { default as useWarehouse } from './useWarehouse';
+export { default as useSupplier } from './useSupplier';
+export { default as useFeatures } from './useFeatures';

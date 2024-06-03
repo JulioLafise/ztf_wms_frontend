@@ -6,3 +6,5 @@ export { default as brandReducer } from './brand.slice';
 export { default as modelReducer } from './model.slice';
 export { default as countryReducer } from './country.slice';
 export { default as warehouseReducer } from './warehouse.slice';
+export { default as supplierReducer } from './supplier.slice';
+export { default as featuresReducer } from './features.slice';
