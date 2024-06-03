@@ -7,7 +7,7 @@ import {
   List,
   Divider,
   Box,
-  useTheme
+  type DrawerProps
 } from '@mui/material';
 import { v4 as uuid } from 'uuid';
 import { useNavigate } from 'react-router-dom';
@@ -19,8 +19,9 @@ import { MenuOthers, MenuMain } from './components';
 
 const drawerWidth = 240;
 
-const openedMixin = (theme: Theme): CSSObject => ({
+const openedMixin = (theme: Theme, type: 'permanent' | 'temporary'): CSSObject => ({
   width: drawerWidth,
+  boxShadow: type === 'permanent' ? undefined : '5px 10px 18px #888888',
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -54,15 +55,19 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
+interface IDrawerProps extends DrawerProps {
+  type: 'permanent' | 'temporary'
+}
+
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })<IDrawerProps>(
+  ({ theme, open, type }) => ({
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
     ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
+      ...openedMixin(theme, type),
+      '& .MuiDrawer-paper': openedMixin(theme, type),
     }),
     ...(!open && {
       ...closedMixin(theme),
@@ -126,7 +131,7 @@ const SideBarMenu = (props: IProps) => {
     
   return (
     <BoxSideBar>
-      <Drawer variant="permanent" anchor="left" open={openSideBar}>
+      <Drawer variant="permanent" anchor="left" open={openSideBar} type={typeSideBar}>
         <DrawerHeader />
         <Divider />
         <Box onMouseOver={toggleDrawer(true, '')} onMouseLeave={toggleDrawer(false, '')}>
