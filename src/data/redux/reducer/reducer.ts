@@ -9,7 +9,9 @@ import {
   countryReducer,
   warehouseReducer,
   supplierReducer,
-  featuresReducer
+  featuresReducer,
+  categoryReducer,
+  customerReducer
 } from './slices';
 
 const reducers = combineReducers({
@@ -22,7 +24,9 @@ const reducers = combineReducers({
   countryReducer,
   warehouseReducer,
   supplierReducer,
-  featuresReducer
+  featuresReducer,
+  categoryReducer,
+  customerReducer
 });
 
 export default reducers;

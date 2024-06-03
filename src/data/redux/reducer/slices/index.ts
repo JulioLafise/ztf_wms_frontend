@@ -8,3 +8,5 @@ export { default as countryReducer } from './country.slice';
 export { default as warehouseReducer } from './warehouse.slice';
 export { default as supplierReducer } from './supplier.slice';
 export { default as featuresReducer } from './features.slice';
+export { default as categoryReducer } from './category.slice';
+export { default as customerReducer } from './customer.slice';

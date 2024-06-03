@@ -12,7 +12,7 @@ export class CustomerEntity {
     public email?: string,
     public address?: string,
     public identificationCard?: string,
-    public departamentId?: DepartamentEntity,
+    public departament?: DepartamentEntity,
     public isActive?: boolean
   ) {}
 }

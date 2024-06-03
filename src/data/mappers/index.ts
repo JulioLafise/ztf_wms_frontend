@@ -5,3 +5,5 @@ export * from './country.mapper';
 export * from './warehouse.mapper';
 export * from './supplier.mapper';
 export * from './features.mapper';
+export * from './category.mapper';
+export * from './customer.mapper';

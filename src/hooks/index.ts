@@ -12,3 +12,5 @@ export { default as useCountry } from './useCountry';
 export { default as useWarehouse } from './useWarehouse';
 export { default as useSupplier } from './useSupplier';
 export { default as useFeatures } from './useFeatures';
+export { default as useCategory } from './useCategory';
+export { default as useCustomer } from './useCustomer';

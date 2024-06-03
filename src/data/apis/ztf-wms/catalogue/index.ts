@@ -5,3 +5,5 @@ export * from './country.api';
 export * from './warehouse.api';
 export * from './supplier.api';
 export * from './features.api';
+export * from './category.api';
+export * from './customer.api';
