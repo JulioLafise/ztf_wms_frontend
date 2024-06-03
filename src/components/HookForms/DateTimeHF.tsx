@@ -46,7 +46,7 @@ const DateTimeHF = (props: Props) => {
   
   return (
     <React.Fragment>
-      <Box component="div" className={`my-1 mx-1 ${className}`}>
+      <Box component="div" className={`p-1 ${className}`}>
         <Controller
           control={control}
           name={name}

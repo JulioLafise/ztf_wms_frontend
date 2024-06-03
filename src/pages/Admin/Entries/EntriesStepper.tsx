@@ -17,19 +17,17 @@ const DeparturesStepper = () => {
   const steps = React.useMemo(() => [
     { label: 'Entry' },
     { label: 'Detail Entry' },
-    { label: 'Summary Entry' },
+    { label: 'Report Entry' },
   ], []);
   const ComponentStep = (step: number) => {
     switch (step) {
       case 1:
         return (<DetailEntry />);
 
+        // case 2:
+        //   return (<>Summary</>);
+
       case 2:
-
-        return (<>Summary</>);
-
-      case 3:
-
         return (<>Report</>);
 
       default:

@@ -22,7 +22,42 @@ const HeaderDeparture = () => {
       <Box sx={{ p: 2 }}>
         <FormProvider {...methods}>
           <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-nowrap flex-col">
-            <Box component="div" className="w-full flex flex-row-reverse">
+
+            {/* <TextFieldHF
+              name="noEntry"
+              label="No Entrada"
+              className="w-2/12"
+              readOnly
+            /> */}
+            <Box component="div" className="w-full flex flex-wrap">
+              <AutoCompleteHF
+                name="country"
+                label="Pais"
+                optionsData={[]}
+                getOptionLabel={(option: any) => option.description}
+                className="w-2/12"
+              />
+              <AutoCompleteHF
+                name="warehouse"
+                label="Bodega"
+                optionsData={[]}
+                getOptionLabel={(option: any) => option.description}
+                className="w-2/12"
+              />
+              <AutoCompleteHF
+                name="inventoryType"
+                label="Tipo Inventario"
+                optionsData={[]}
+                getOptionLabel={(option: any) => option.description}
+                className="w-2/12"
+              />
+              <AutoCompleteHF
+                name="currency"
+                label="Moneda"
+                optionsData={[]}
+                getOptionLabel={(option: any) => option.description}
+                className="w-2/12"
+              />
               <DateTimeHF
                 name="createDate"
                 label="Fecha"
@@ -35,7 +70,14 @@ const HeaderDeparture = () => {
                 readOnly
               />
             </Box>
-            <Box component="div" className="flex flex-wrap pt-5">
+            <Box component="div" className=" w-full flex flex-wrap">
+              <AutoCompleteHF
+                name="proveedor"
+                label="Proveedor"
+                optionsData={[]}
+                getOptionLabel={(option: any) => option.description}
+                className="w-2/12"
+              />
               <AutoCompleteHF
                 name="employee"
                 label="Empleado"
@@ -43,12 +85,23 @@ const HeaderDeparture = () => {
                 getOptionLabel={(option: any) => option.description}
                 className="w-2/12"
               />
-              <AutoCompleteHF
-                name="currentType"
-                label="Tipo Moneda"
-                optionsData={[]}
-                getOptionLabel={(option: any) => option.description}
+              <TextFieldHF
+                name="client"
+                label="Entrega"
                 className="w-2/12"
+                readOnly
+              />
+              <TextFieldHF
+                name="placa"
+                label="Placa"
+                className="w-2/12"
+                readOnly
+              />
+              <TextFieldHF
+                name="identification"
+                label="No. Identificacion"
+                className="w-2/12"
+                readOnly
               />
               <TextFieldHF
                 name="description"

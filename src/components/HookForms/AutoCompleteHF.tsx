@@ -54,7 +54,7 @@ const AutoCompleteHF = <T,>(props: Props<T>) => {
   } = props;
   const { control, formState: { errors } } = useFormContext();
   return (
-    <Box component="div" className={`m-1 ${className}`}>
+    <Box component="div" className={`p-1 ${className}`}>
       <Controller
         control={control}
         name={name}
