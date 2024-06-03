@@ -3,3 +3,4 @@ export * from './brand.api';
 export * from './model.api';
 export * from './country.api';
 export * from './warehouse.api';
+export * from './supplier.api';
