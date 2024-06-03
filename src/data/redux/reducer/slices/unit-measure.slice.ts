@@ -14,7 +14,7 @@ const initialState: IUnitMeasureProps<UnitMeasureEntity> = {
   error: null
 };
 
-const typePersonerySlice = createSlice({
+const unitMeasureSlice = createSlice({
   initialState,
   name: 'unit-measure',
   reducers: {
@@ -45,6 +45,6 @@ export const {
   onReset,
   onRowCount,
   onGenerate
-} = typePersonerySlice.actions;
+} = unitMeasureSlice.actions;
 
-export default typePersonerySlice.reducer;
+export default unitMeasureSlice.reducer;

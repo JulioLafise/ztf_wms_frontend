@@ -3,14 +3,22 @@ import {
   authReducer,
   uiReducer,
   userReducer,
-  unitMeasureReducer
+  unitMeasureReducer,
+  brandReducer,
+  modelReducer,
+  countryReducer,
+  warehouseReducer
 } from './slices';
 
 const reducers = combineReducers({
   authReducer,
   uiReducer,
   userReducer,
-  unitMeasureReducer
+  unitMeasureReducer,
+  brandReducer,
+  modelReducer,
+  countryReducer,
+  warehouseReducer
 });
 
 export default reducers;

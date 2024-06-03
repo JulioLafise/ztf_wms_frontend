@@ -41,7 +41,7 @@ const useUI = () => {
 
   const onMobile = (isMobile: boolean) => {
     try {
-      return dispatch(uiSyncThunks.changueSideBarState(isMobile));
+      return dispatch(uiSyncThunks.changueMobileState(isMobile));
     } catch (error) {
       return error;
     }

@@ -8,7 +8,7 @@ import { Validator } from '@wms/helpers';
 import { useAlertNotification, useUI, useUnitMeasure } from '@wms/hooks';
 import { MaterialTable, ButtonActions, EditCheckboxTable } from '@wms/components';
 import { UnitMeasureEntity } from '@wms/entities';
-// import TypePersoneryModal from './TypePersoneryModal';
+import UnitMeasureModal from './UnitMeasureModal';
 
 interface ISchemaValidationTable {
   description?: string,
@@ -19,11 +19,11 @@ interface ISchemaValidationTable {
 const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.object().shape({
   description: Yup.string().required('Description is required'),
   abbreviation: Yup.string().required('Abbreviation is required'),
-  isActive: Yup.boolean()
+  isActive: Yup.boolean().notRequired()
 });
 
 const UnitMeasurePage = () => {
-  const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
+  const { swalToastError, swalToastWait, swalToastSuccess, swalToastWarn } = useAlertNotification();
   const { isMobile } = useUI();
   const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
   const [isOpen, setIsOpen] = React.useState(false);
@@ -75,8 +75,9 @@ const UnitMeasurePage = () => {
     {
       id: 'isActive',
       accessorKey: 'isActive',
-      header: 'Active',
+      header: 'Activo',
       minSize: 150,
+      enableEditing: false,
       editVariant: undefined,
       muiEditTextFieldProps: {
         required: true,
@@ -94,7 +95,9 @@ const UnitMeasurePage = () => {
         typeMutation: row.original.unitMeasureId ? 'put' : 'post'
       });
       const data: UnitMeasureEntity = {
-        ...values, ...checkState
+        ...values,
+        ...checkState,
+        isActive: row.original.unitMeasureId ? row.original.isActive : true
       };
       const [isPassed, errors] = await Validator.yupSchemaValidation({ schema: schemaValidationTable, data });
       if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.unitMeasureId ? true : false); return; }
@@ -130,6 +133,22 @@ const UnitMeasurePage = () => {
       .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
   };
 
+  const onChangeState = async (values: { [key: string]: any }) => {
+    setOptionsQuery({ typeMutation: 'delete'});
+    const title = values.isActive ? 'Desactive Unit Measure!' : 'Active Unit Measure!';
+    swalToastWait(title, {
+      message: 'Please wait a few minutes',
+      showLoading: true,
+    });
+    mutation.mutateAsync(values)
+      .then(() => {
+        setIsOpen(false);
+        setEdit(null);
+        swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+      })
+      .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
+  };
+
   return (
     <Paper elevation={4}>
       <MaterialTable<UnitMeasureEntity>
@@ -147,13 +166,14 @@ const UnitMeasurePage = () => {
         onActionEdit={onSaveOrEdit}
         onActionSave={onSaveOrEdit}
         isLoading={isLoading}
+        onActionStateChange={(row) => onChangeState(row.original)}
         isGenerate={isGenerate}
         isError={isError}
         setValidationErrors={setValidationErrors} 
         onActionRefreshTable={() => refetch()}       
       />
       {isMobile && <ButtonActions title="New" onClick={() => { setIsOpen(true); setEdit(null); }} />}
-      {/* <TypePersoneryModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} /> */}
+      <UnitMeasureModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} />
     </Paper>
   );
 };

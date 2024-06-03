@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import { IMenuList } from '@wms/interfaces';
 import { FontAwesomeIcon } from '@wms/components';
-
+import { sleep } from '@wms/helpers';
 
 interface IProps {
   anchorEl: HTMLElement | null, 
@@ -18,8 +18,9 @@ const Menu = (props: IProps) => {
   const isMenuOpen = Boolean(anchorEl);
   const navigate = useNavigate();
   
-  const handleMenuClose = () => {
+  const handleMenuClose = (menu: string) => (event: any) => {
     setAnchorEl(null);
+    sleep(0.0000001).then(() => navigate(menu, { replace: true }));
   };
   
   return (
@@ -30,7 +31,7 @@ const Menu = (props: IProps) => {
         vertical: 'bottom',
         horizontal: 'right',
       }}
-      // keepMounted
+      keepMounted
       transformOrigin={{
         vertical: 'bottom',
         horizontal: 'right',
@@ -41,7 +42,7 @@ const Menu = (props: IProps) => {
     >
       {
         subMenu.map(item => (
-          <MenuItem key={uuid()} onClick={() => { handleMenuClose(); navigate(`${menuMain.menuUrl}${item.menuUrl}`, { replace: true }); }} className="text-gray-600">
+          <MenuItem key={uuid()} onClick={handleMenuClose(`${menuMain.menuUrl}${item.menuUrl}`)} className="text-gray-600">
             <ListItemIcon><FontAwesomeIcon iconLabel={item.icon} size="lg" className="pr-4" /></ListItemIcon>
             {item.menuName}
           </MenuItem>
