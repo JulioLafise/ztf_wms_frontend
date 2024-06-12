@@ -6,3 +6,6 @@ export * from './warehouse.dto';
 export * from './type-currency.dto';
 export * from './supplier.dto';
 export * from './product-status.dto';
+export * from './features.dto';
+export * from './category.dto';
+export * from './customer.dto';

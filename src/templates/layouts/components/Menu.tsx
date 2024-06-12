@@ -20,7 +20,7 @@ const Menu = (props: IProps) => {
   
   const handleMenuClose = (menu: string) => (event: any) => {
     setAnchorEl(null);
-    sleep(0.0000001).then(() => navigate(menu, { replace: true }));
+    menu.length > 0 && sleep(0.0000001).then(() => navigate(menu, { replace: true }));
   };
   
   return (
@@ -37,7 +37,7 @@ const Menu = (props: IProps) => {
         horizontal: 'right',
       }}
       open={isMenuOpen}
-      onClose={handleMenuClose}
+      onClose={handleMenuClose('')}
       sx={{ zIndex: '9998 !important', left: 55 }}
     >
       {
