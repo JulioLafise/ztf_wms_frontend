@@ -6,6 +6,7 @@ import { Stepper, ButtonActions } from '@wms/components';
 import { useUI } from '@wms/hooks';
 import HeaderEntry from './Steps/HeaderEntry';
 import DetailEntry from './Steps/DetailEntry';
+import Report from './Steps/ReportEntries';
 
 const DeparturesStepper = () => {
   const { isSideBarOpen } = useUI();
@@ -28,7 +29,7 @@ const DeparturesStepper = () => {
         //   return (<>Summary</>);
 
       case 2:
-        return (<>Report</>);
+        return (<Report />);
 
       default:
         return (<HeaderEntry />);

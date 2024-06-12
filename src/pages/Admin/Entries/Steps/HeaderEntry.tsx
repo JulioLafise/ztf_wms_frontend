@@ -5,9 +5,10 @@ import {
   TextFieldHF,
   AutoCompleteHF,
   DateTimeHF,
-  CheckBoxHF
+  // CheckBoxHF
 } from '@wms/components';
-
+import { CountryEntity, WarehouseEntity } from '@wms/entities';
+import { useCountry, useWarehouse } from '@wms/hooks';
 
 const HeaderDeparture = () => {
   const methods = useForm({
@@ -15,6 +16,22 @@ const HeaderDeparture = () => {
     reValidateMode: 'onChange'
   });
   const { handleSubmit } = methods;
+  const {
+    useCountryListQuery
+  } = useCountry();
+
+  const {
+    useWarehouseListQuery
+  } = useWarehouse();
+
+  const {
+    data: dataCountry, isLoading: isLoadingCountry
+  } = useCountryListQuery({ filter: '', pageIndex: 1, pageSize: 1000 });
+
+  const {
+    data: dataWarehouse, isLoading: isLoadingWarehouse
+  } = useWarehouseListQuery({ filter: '', pageIndex: 1, pageSize: 1000 });
+
 
   const onSubmit = (values: { [key: string]: any }) => { };
   return (
@@ -30,24 +47,26 @@ const HeaderDeparture = () => {
               readOnly
             /> */}
             <Box component="div" className="w-full flex flex-wrap">
-              <AutoCompleteHF
+              <AutoCompleteHF<CountryEntity>
                 name="country"
                 label="Pais"
-                optionsData={[]}
-                getOptionLabel={(option: any) => option.description}
+                optionsData={dataCountry || []}
+                getOptionLabel={(option) => `${option.description}`}
+                loading={isLoadingCountry}
                 className="w-2/12"
               />
-              <AutoCompleteHF
+              <AutoCompleteHF<WarehouseEntity>
                 name="warehouse"
                 label="Bodega"
-                optionsData={[]}
-                getOptionLabel={(option: any) => option.description}
+                optionsData={dataWarehouse || []}
+                loading={isLoadingWarehouse}
+                getOptionLabel={(option) => `${option.description}`}
                 className="w-2/12"
               />
               <AutoCompleteHF
                 name="inventoryType"
                 label="Tipo Inventario"
-                optionsData={[]}
+                optionsData={[]}s
                 getOptionLabel={(option: any) => option.description}
                 className="w-2/12"
               />
