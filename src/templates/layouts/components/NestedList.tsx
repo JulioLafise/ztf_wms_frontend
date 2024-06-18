@@ -25,11 +25,14 @@ interface INestedListProps {
 const NestedList = ({ menu, handleClose }: INestedListProps) => {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
-  const handleClick = () => setOpen(!open);
+  const onToggle = (open: boolean) => (event: any) => setOpen(open);
+  // const handleClick = () => setOpen(!open);
   return (
     <React.Fragment>
       <ListItem
-        onClick={handleClick}
+        // onClick={handleClick}
+        onMouseOver={onToggle(true)}
+        onMouseLeave={onToggle(false)}
         className="text-end"
         secondaryAction={
           <IconButton edge="end" >
@@ -53,7 +56,7 @@ const NestedList = ({ menu, handleClose }: INestedListProps) => {
         <List component="div" disablePadding>
           {
             menu.children!.map(item => (
-              <ListItem key={uuid()} sx={{ pl: 1 }} onClick={handleClose} className="text-end" disablePadding>
+              <ListItem key={uuid()} sx={{ pl: 1 }} onClick={handleClose} className="text-end" disablePadding onMouseOver={onToggle(true)} onMouseLeave={onToggle(false)}>
                 <ListItemButton
                   sx={{
                     minHeight: 48,
