@@ -23,6 +23,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { DarkMode } from '@wms/components';
 import { useAuth, useToastNotification, useUI } from '@wms/hooks';
+import { enviroment } from '@wms/config';
 
 interface IProps {
   window?: () => Window,
@@ -87,13 +88,13 @@ const NavBar: React.FC<{
               }
             </IconButton>
             <Box component="article" className="flex items-center bg-white rounded-full py-2 px-2.5" onClick={onNavHome} >
-              <img src="/img/logo_zt_foundation.png" width="24" />
+              <img src="/img/olpc_color_logotype.png" width="64" />
             </Box>
             <Typography variant="h6" component="div" className="pl-2" fontWeight="bold" onClick={onNavHome}>
-              ZTF - WMS
+              {enviroment.appShortName}
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Tooltip title="About">
                 <IconButton
                   size="large"
@@ -125,8 +126,7 @@ const NavBar: React.FC<{
               </Tooltip>
               <Button
                 variant="contained"
-                color="warning"
-                sx={{ ml: 1, py: 0 }}
+                sx={{ ml: 1, bgcolor: theme => theme.palette.secondary.main }}
                 size="small"
                 onClick={handleSignOut}
               >

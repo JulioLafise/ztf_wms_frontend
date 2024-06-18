@@ -1,6 +1,7 @@
-import { Box, Divider, Typography } from '@mui/material';
 import React from 'react';
+import { Box, Divider, Typography } from '@mui/material';
 import { Outlet } from 'react-router-dom';
+import { enviroment } from '@wms/config';
 
 interface IProps {
   children: React.ReactNode
@@ -11,7 +12,7 @@ const SideForm = ({ children }: IProps) => {
     <Box component="div" className="flex">
       <Box component="div" className="hidden md:flex w-2/3 shadow-2xl" sx={{
         height: '100vh',
-        backgroundImage: 'url(/img/fzt_bg3.jpg)',
+        backgroundImage: 'url(/img/bg_01.jpg)',
         // backgroundImage: 'url(/img/svg/endless_constellation.svg)',
         backgroundSize: 'containt',
         backgroundPosition: 'center center',
@@ -21,15 +22,15 @@ const SideForm = ({ children }: IProps) => {
           <Box component="section" className="flex flex-col items-center justify-center gap-3 w-full">
             <Box>
               <Box component="article" className="flex items-center rounded-lg p-2" >
-                <img src="/img/logo_fzt2.png" width="400" />
+                <img src="/img/olpc_color_logotype.png" width="400" alt="olpc" />
               </Box>
             </Box>
             <Typography
               variant="h3"
-              className="text-cyan-700 p-2"
+              className="text-cyan-700 p-2 text-center"
               fontWeight="500"
             >
-              Warehouse Management System
+              {enviroment.appName}
             </Typography>
           </Box>
         </Box>
@@ -46,14 +47,14 @@ const SideForm = ({ children }: IProps) => {
         bgcolor="ButtonFace">
         <Box component="section" className="flex flex-col md:hidden justify-center items-center text-left h-[30%]">
           <Box component="section" className="flex flex-col items-center justify-center p-1 w-full" >
-            <img src="/img/logo_fzt2.png" width="256" className="" />
-              <Typography
-                variant="body1"
-                className="text-cyan-700 p-2"
-                fontWeight="500"
-              >
-                Warehouse Management System
-              </Typography>
+            <img src="/img/olpc_color_logotype.png" width="256" className="" alt="olpc" />
+            <Typography
+              variant="body1"
+              className="text-cyan-700 p-2"
+              fontWeight="500"
+            >
+              {enviroment.appName}
+            </Typography>
           </Box>
         </Box>
         <Box component="section" className="flex flex-col justify-center h-[50%] md:h-full">

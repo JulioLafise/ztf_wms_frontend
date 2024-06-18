@@ -17,7 +17,7 @@ const SpinnerDoom = () => {
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat'
         }}>
-        <img src="/img/logo_fzt2.png" width="400px" />
+        <img src="/img/olpc_color_logotype.png" alt="olpc" className="w-[50%] md:w-[30%]" />
         <Typography
           variant="h5"
           className="animate-fade animate-infinite animate-duration-[1500ms] animate-ease-in-out animate-alternate-reverse animate-fill-both"

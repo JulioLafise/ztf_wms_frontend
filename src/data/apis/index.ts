@@ -1,1 +1,1 @@
-export * as WMSAPI from './ztf-wms';
+export * as WMSAPI from './wms';

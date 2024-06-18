@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { BackgroundLetterAvatars, DarkMode } from '@wms/components';
 import { useAuth } from '@wms/hooks';
 import { IMenuList } from '@wms/interfaces';
+import { enviroment } from '@wms/config';
 import { MenuProfileMobile } from './components';
 import SideBarMobileMenu from './SideBarMobileMenu';
 
@@ -78,14 +79,14 @@ const NavBarMobile = (props: INavBarMobileProps) => {
               <MenuIcon />
             </IconButton>
             <Box component="article" className="flex items-center bg-white rounded p-2" onClick={onNavHome} >
-              <img src="/img/logo_fzt2.png" width="64" />
+              <img src="/img/olpc_color_logotype.png" width="64" />
             </Box>
             <Typography variant="h6" component="div" className="pl-2" fontWeight="bold" onClick={onNavHome}>
-              ZTF - WMS
+              {enviroment.appShortName}
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
             <Box component="div" >
-              <Box component="div" className="flex">
+              <Box component="div" className="flex items-center">
                 <DarkMode />
                 <IconButton
                   id="positioned-button"

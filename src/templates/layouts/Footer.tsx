@@ -9,6 +9,7 @@ import {
   styled,
   useScrollTrigger
 } from '@mui/material';
+import { enviroment } from '@wms/config';
 
 interface IProps {
   window?: () => Window,
@@ -57,7 +58,7 @@ const Footer = () => {
           <Paper>
             <Toolbar variant="dense" sx={{ height: 0 }}>
               <Box sx={{ flexGrow: 1 }} />
-              <Typography variant="caption" fontSize={10} >© 2024 Zamora Teran Foundation, All rights reserved</Typography>
+              <Typography variant="caption" fontSize={10} >© 2024 {enviroment.appCopyright}, All rights reserved</Typography>
             </Toolbar>
           </Paper>
         </AppBar>

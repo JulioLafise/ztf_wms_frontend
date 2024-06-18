@@ -52,7 +52,8 @@ const DashBoardTemplate = () => {
     onDarkMode,
     onAboutMenu,
     onSideBarOpen,
-    onMobile
+    onMobile,
+    changePaletteColors
   } = useUI();
   const location = useLocation();
   const navigate = useNavigate();
@@ -65,6 +66,7 @@ const DashBoardTemplate = () => {
     const rootPath = LocalStorageConfig.getItems().navPath;
     onDarkMode(isDark);
     rootPath && navigate(rootPath, { replace: true }); 
+    // changePaletteColors('olpc-green-theme');
   }, []);
 
   React.useEffect(() => {

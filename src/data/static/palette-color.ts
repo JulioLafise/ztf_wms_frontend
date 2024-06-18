@@ -1,50 +1,82 @@
 import { Palettes } from '@wms/interfaces';
 
 export default (theme: string): Palettes | undefined => {
-  if (theme === 'lafise-theme') {
+  if (theme === 'olpc-green-theme') {
     return {
       primary: {
-        light: '#076615',
-        main: '#076615',
-        dark: '#048c18',
-        contrastText: '#fff',
+        light: '#008F70',
+        main: '#8BB236',
+        dark: '#45A358',
+        contrastText: '#fff'
       },
       secondary: {
-        light: '#06911a',
-        main: '#06911a',
-        dark: '#013809',
+        light: '#C4299C',
+        main: '#5D36B2',
+        dark: '#FC487A',
         contrastText: '#fff',
       }
     };
   }
-  if (theme === 'oceans-theme') {
+  if (theme === 'olpc-orange-theme') {
     return {
       primary: {
-        light: '#668DC0',
-        main: '#304A6E',
-        dark: '#0F1C30',
+        light: '#8E9233',
+        main: '#D99138',
+        dark: '#4B884E',
         contrastText: '#fff'
       },
       secondary: {
-        light: '#C09966',
-        main: '#6E5430',
-        dark: '#30230F',
+        light: '#30230F',
+        main: '#00A5EC',
+        dark: '#00C5DD',
         contrastText: '#fff',
       }
     };
   }
-  if (theme === 'summer-theme') {
+  if (theme === 'olpc-blue-theme') {
     return {
       primary: {
-        light: '#ffb74d',
-        main: '#ffa726',
-        dark: '#f57c00',
+        light: '#00A9D4',
+        main: '#318AC6',
+        dark: '#00C5CA',
         contrastText: '#fff'
       },
       secondary: {
-        light: '#4D95FF',
-        main: '#267EFF',
-        dark: '#0079F5',
+        light: '#C15459',
+        main: '#C66D31',
+        dark: '#A14F76',
+        contrastText: '#fff',
+      }
+    };
+  }
+  if (theme === 'olpc-pink-theme') {
+    return {
+      primary: {
+        light: '#DC4E65',
+        main: '#B63170',
+        dark: '#F67559',
+        contrastText: '#fff'
+      },
+      secondary: {
+        light: '#00A185',
+        main: '#31B677',
+        dark: '#008B88',
+        contrastText: '#fff',
+      }
+    };
+  }
+  if (theme === 'olpc-gray-theme') {
+    return {
+      primary: {
+        light: '#898E97',
+        main: '#9A999E',
+        dark: '#73848F',
+        contrastText: '#fff'
+      },
+      secondary: {
+        light: '#868D86',
+        main: '#9D9E99',
+        dark: '#6D7C76',
         contrastText: '#fff',
       }
     };

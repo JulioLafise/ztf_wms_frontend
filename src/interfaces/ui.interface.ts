@@ -16,7 +16,7 @@ export interface PaletteColor {
 }
 
 export interface PaletteTheme {
-  paletteColors: 'lafise-theme' | 'summer-theme' | 'oceans-theme'
+  paletteColors: 'olpc-green-theme' | 'olpc-pink-theme' | 'olpc-gray-theme' | 'olpc-blue-theme' | 'olpc-orange-theme'
 }
 
 export interface IMenuList {

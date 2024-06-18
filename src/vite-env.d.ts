@@ -15,5 +15,8 @@ interface ImportMetaEnv {
   readonly VITE_AWS_SECRET_ACCESS_KEY: string,
   readonly VITE_AWS_REGION: string,
   readonly VITE_MINUTES_INACTIVE: string,
+  readonly VITE_APP_COPYRIGHT: string,
+  readonly VITE_APP_VERSION: string,
+  readonly VITE_BUSINESS_NAME: string,
   // more env variables...
 }
