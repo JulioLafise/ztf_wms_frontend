@@ -26,15 +26,17 @@ interface IMenuProps {
 
 const MenuMain: React.FC<IMenuProps> = (props) => {
   const { toggleDrawer, menu, openSideBar, typeSideBar } = props;
-  const [open, setOpen] = React.useState(typeSideBar === 'permanent');
+  const [open, setOpen] = React.useState(false);
+  // const [open, setOpen] = React.useState(typeSideBar === 'permanent');
 
-  const onToggle = (ev: any) => setOpen(prevState => !prevState);
+  // const onToggle = (ev: any) => setOpen(prevState => !prevState);
+  const onToggle = (open: boolean) => (event: any) => setOpen(open);
   return (
     <React.Fragment>
       <ListItem
-        onClick={onToggle}
-        // onMouseOver={toggleDrawer(true,'')}
-        // onMouseLeave={toggleDrawer(false,'')}
+        // onClick={onToggle}
+        onMouseOver={onToggle(true)}
+        onMouseLeave={onToggle(false)}
         className="text-end"
         disablePadding
         sx={{ display: 'block' }}
@@ -63,7 +65,7 @@ const MenuMain: React.FC<IMenuProps> = (props) => {
         <ClickAwayListener onClickAway={() => { }}>
           <List>
             {menu?.children?.map((item) => (
-              <ListItem key={item.menuId} disablePadding>
+              <ListItem key={item.menuId} disablePadding onMouseOver={onToggle(true)} onMouseLeave={onToggle(false)}>
                 <ListItemButton onClick={toggleDrawer(false, `${menu.menuUrl}${item.menuUrl}`)}>
                   <ListItemIcon sx={{ pl: 1 }} >
                     <FontAwesomeIcon iconLabel={item.icon} size="lg" />
