@@ -1,6 +1,7 @@
 import { AppDispatch } from '../../store/store';
 import { PaletteTheme, Palettes } from '@wms/interfaces';
 import { paletteColors, menu as main, settings } from '@wms/static';
+import { LocalStorageConfig } from '@wms/config';
 import {
   onDarkMode,
   onPaletteColor,
@@ -38,6 +39,7 @@ export const changePaletteColors = (theme: PaletteTheme['paletteColors']) => {
     try {
       const palette: Palettes | undefined = paletteColors(theme);
       dispatch(onPaletteColor(palette));
+      LocalStorageConfig.setItem('theme', theme);
       return palette;
     } catch (error: any) {
       throw new Error(error);

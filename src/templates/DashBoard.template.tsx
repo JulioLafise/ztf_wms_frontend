@@ -64,9 +64,10 @@ const DashBoardTemplate = () => {
     onMenu(user!);
     const isDark = LocalStorageConfig.getItems().darkMode;
     const rootPath = LocalStorageConfig.getItems().navPath;
+    const theme = LocalStorageConfig.getItem('theme', 'string', 'olpc-green-theme');
     onDarkMode(isDark);
     rootPath && navigate(rootPath, { replace: true }); 
-    // changePaletteColors('olpc-green-theme');
+    changePaletteColors(theme);
   }, []);
 
   React.useEffect(() => {

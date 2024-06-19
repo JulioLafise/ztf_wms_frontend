@@ -14,7 +14,7 @@ import {
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { BackgroundLetterAvatars, DarkMode } from '@wms/components';
-import { useAuth } from '@wms/hooks';
+import { useAuth, useUI } from '@wms/hooks';
 import { IMenuList } from '@wms/interfaces';
 import { enviroment } from '@wms/config';
 import { MenuProfileMobile } from './components';
@@ -44,6 +44,7 @@ const NavBarMobile = (props: INavBarMobileProps) => {
   const { menu } = props;
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { theme } = useUI();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
   const [openMobile, setOpenMobile] = React.useState(false);
@@ -78,8 +79,8 @@ const NavBarMobile = (props: INavBarMobileProps) => {
             >
               <MenuIcon />
             </IconButton>
-            <Box component="article" className="flex items-center bg-white rounded p-2" onClick={onNavHome} >
-              <img src="/img/olpc_color_logotype.png" width="64" />
+            <Box component="article" className="flex items-center rounded-full p-2" onClick={onNavHome} bgcolor={theme.isDarkMode ? '' : 'white'} >
+              <img src="/img/olpc_color_logotype.png" width="76" alt="olpc" />
             </Box>
             <Typography variant="h6" component="div" className="pl-2" fontWeight="bold" onClick={onNavHome}>
               {enviroment.appShortName}

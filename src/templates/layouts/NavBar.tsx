@@ -10,6 +10,7 @@ import {
   Tooltip,
   Typography,
   styled,
+  Menu as MenuMui,
   useScrollTrigger
 } from '@mui/material';
 import {
@@ -18,10 +19,11 @@ import {
   LogoutRounded,
   InfoRounded,
   Menu,
+  ColorLens,
   Close
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { DarkMode } from '@wms/components';
+import { DarkMode, UIThemePicker } from '@wms/components';
 import { useAuth, useToastNotification, useUI } from '@wms/hooks';
 import { enviroment } from '@wms/config';
 
@@ -51,7 +53,7 @@ const NavBar: React.FC<{
   const { onSignOut } = useAuth();
   const { toastInfo } = useToastNotification();
   const navigate = useNavigate();
-  const { onAboutMenu } = useUI();
+  const { onAboutMenu, theme } = useUI();
   const onNavHome = () => navigate('/app/dashboard', { replace: true });
   const handleSignOut = () => onSignOut().then(() => {
     toastInfo('Finished Session', { duration: 3000, mode: 'light' });
@@ -87,8 +89,8 @@ const NavBar: React.FC<{
                   : <Menu />
               }
             </IconButton>
-            <Box component="article" className="flex items-center bg-white rounded-full py-2 px-2.5" onClick={onNavHome} >
-              <img src="/img/olpc_color_logotype.png" width="64" />
+            <Box component="article" className="flex items-center rounded-full py-2 px-2.5" onClick={onNavHome} bgcolor={theme.isDarkMode ? '' : 'white'} >
+              <img src="/img/olpc_color_logotype.png" width="76" alt="olpc" />
             </Box>
             <Typography variant="h6" component="div" className="pl-2" fontWeight="bold" onClick={onNavHome}>
               {enviroment.appShortName}
@@ -106,6 +108,7 @@ const NavBar: React.FC<{
                 </IconButton>
               </Tooltip>
               <DarkMode />
+              <UIThemePicker />
               <Tooltip title="Messages">
                 <IconButton size="large" aria-label="show 4 new mails" color="inherit">
                   <Badge badgeContent={4} color="error">
@@ -137,6 +140,7 @@ const NavBar: React.FC<{
           </Toolbar>
         </AppBar>
       </ElevationScroll>
+
       <Offset />
     </BoxNavBar>
   );
