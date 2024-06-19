@@ -56,49 +56,84 @@ const ButtonActions = (props: Props) => {
     });
   }, []);
   return (
-    <Tooltip title={title} components={{}}>
-      <Zoom
-        timeout={transitionDuration}
-        in={appState}
-        style={{
-          transitionDelay: `${100}ms`, animation: 'ease-in'
-        }}
-        unmountOnExit
-      >
-        <Fab
-          aria-label={title}
-          variant={variant}
-          size={size}
-          type={typeSubmit || 'button'}
-          color={disabled ? 'inherit' : color || 'primary'}
-          // disabled={disabled}
-          sx={{
-            ':root': {
-              '&.Mui-disabled': {
-                pointerEvents: 'auto'
-              },
-              // '&.MuiFab-root': {
-              //   pointerEvents: disabled ? 'auto' : 'none'
-              // },
-              // '&.MuiButtonBase-root': {
-              //   pointerEvents: disabled ? 'auto' : 'none'
-              // }
-            }
-          }}
-          style={{
-            position: 'fixed',
-            bottom: ubication?.bottom || 50,
-            right: ubication?.right || 50,
-            left: ubication?.left || 'auto',
-            top: ubication?.top || 'auto',
-          }}
-          onClick={disabled ? undefined : onClick}
-        >
-          {ComponentIcon || <Add color={disabled ? 'disabled' : 'inherit'} />}
-          {children}
-        </Fab>
-      </Zoom>
-    </Tooltip>
+    <React.Fragment>
+      {
+        !disabled
+          ? (
+            <Tooltip title={title} >
+              <Zoom
+                timeout={transitionDuration}
+                in={appState}
+                style={{
+                  transitionDelay: `${100}ms`, animation: 'ease-in'
+                }}
+                unmountOnExit
+              >
+                <Fab
+                  aria-label={title}
+                  variant={variant}
+                  size={size}
+                  type={typeSubmit || 'button'}
+                  color={color || 'primary'}
+                  sx={{
+                    ':root': {
+                      '&.Mui-disabled': {
+                        pointerEvents: 'auto'
+                      },
+                    }
+                  }}
+                  style={{
+                    position: 'fixed',
+                    bottom: ubication?.bottom || 50,
+                    right: ubication?.right || 50,
+                    left: ubication?.left || 'auto',
+                    top: ubication?.top || 'auto',
+                  }}
+                  onClick={onClick}
+                >
+                  {ComponentIcon || <Add color={'inherit'} />}
+                  {children}
+                </Fab>
+              </Zoom>
+            </Tooltip >
+          )
+          : (<Zoom
+            timeout={transitionDuration}
+            in={appState}
+            style={{
+              transitionDelay: `${100}ms`, animation: 'ease-in'
+            }}
+            unmountOnExit
+          >
+            <Fab
+              aria-label={title}
+              variant={variant}
+              size={size}
+              type={typeSubmit || 'button'}
+              color={color || 'primary'}
+              disabled={disabled}
+              sx={{
+                ':root': {
+                  '&.Mui-disabled': {
+                    pointerEvents: 'auto'
+                  },
+                }
+              }}
+              style={{
+                position: 'fixed',
+                bottom: ubication?.bottom || 50,
+                right: ubication?.right || 50,
+                left: ubication?.left || 'auto',
+                top: ubication?.top || 'auto',
+              }}
+              onClick={disabled ? undefined : onClick}
+            >
+              {ComponentIcon || <Add color={'inherit'} />}
+              {children}
+            </Fab>
+          </Zoom>)
+      }
+    </React.Fragment>
   );
 };
 
