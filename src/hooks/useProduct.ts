@@ -33,17 +33,17 @@ const useProduct = () => {
     staleTime: 20 * 60 * 60
   });
 
-  const useProductQuery = (args: OptionProductName | OptionProductID) => useQuery<ProductEntity>({
+  const useProductQuery = (args: OptionProductID) => useQuery<ProductEntity>({
     queryKey: ['product', { ...args }],    
     queryFn: async () => {
       try {
         const [errors, productDto] = await ProductDTO.get({ ...args });
         if (errors) throw new Error(errors);
-        if (Object.hasOwn(args, 'name')) {
-          const data = (await dispatch(productAsyncThunks.getProductName(productDto!))).payload;
-          Validator.httpValidation(data as any);
-          return ProductMapper.getItem(data);
-        }
+        // if (Object.hasOwn(args, 'name')) {
+        //   const data = (await dispatch(productAsyncThunks.getProductName(productDto!))).payload;
+        //   Validator.httpValidation(data as any);
+        //   return ProductMapper.getItem(data);
+        // }
         const data = (await dispatch(productAsyncThunks.getProduct(productDto!))).payload;
         Validator.httpValidation(data as any);
         return ProductMapper.getItem(data);
@@ -54,6 +54,15 @@ const useProduct = () => {
     refetchOnWindowFocus: false,
     staleTime: 20 * 60 * 60
   });
+
+  const filterProductExistByName = async (args: { name: string }): Promise<boolean> => {
+    const [errors, productDto] = await ProductDTO.get({ ...args });
+    if (errors) throw new Error(errors);
+    const data = (await dispatch(productAsyncThunks.getProductName(productDto!))).payload as { message: string, exist: boolean };
+    Validator.httpValidation(data as any);
+    return data.exist;
+  };
+
 
   const useProductMutation = (pagination?: IPagination, options?: IOptionsQuery) => useMutation<ProductEntity, Error, ProductEntity>({
     mutationFn: async (data) => { 
@@ -97,7 +106,8 @@ const useProduct = () => {
     //METHODS
     useProductListQuery,
     useProductQuery,
-    useProductMutation
+    useProductMutation,
+    filterProductExistByName
   };
 };
 

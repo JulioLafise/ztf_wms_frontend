@@ -24,8 +24,8 @@ export const productGET = async (options: IParamsProps<ProductDTO>): Promise<IJs
   }
 });
 
-export const productNameGET = async (options: IParamsProps<ProductDTO>): Promise<IJsonBody<ProductEntity | string>> => await httpClient.get({
-  url: `producto/${options.params.nombre}/`,
+export const productNameGET = async (options: IParamsProps<ProductDTO>): Promise<IJsonBody<ProductEntity | { message: string, exist: boolean }>> => await httpClient.get({
+  url: 'producto/verify-name',
   options: {
     params: options.params
   }
