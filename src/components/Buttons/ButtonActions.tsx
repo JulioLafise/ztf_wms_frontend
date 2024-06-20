@@ -6,6 +6,8 @@ import {
   Tooltip,
   Zoom,
   IconProps,
+  SxProps,
+  Theme,
 } from '@mui/material';
 
 interface Props {
@@ -19,7 +21,8 @@ interface Props {
   ubication?: ILocation,
   variant?: 'extended' | 'circular',
   size?: 'small' | 'medium' | 'large',
-  timeIn?: number
+  timeIn?: number,
+  zIndex?: number | string | ((theme: Theme) => number)
 }
 
 type ILocation = {
@@ -41,7 +44,8 @@ const ButtonActions = (props: Props) => {
     variant,
     size,
     children,
-    timeIn
+    timeIn,
+    zIndex
   } = props;
   const transitionDuration = {
     enter: 350,
@@ -60,7 +64,7 @@ const ButtonActions = (props: Props) => {
       {
         !disabled
           ? (
-            <Tooltip title={title}>
+            <Tooltip title={title} sx={{ zIndex }}>
               <Zoom
                 timeout={transitionDuration}
                 in={appState}
