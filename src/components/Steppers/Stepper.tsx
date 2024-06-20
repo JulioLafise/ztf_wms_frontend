@@ -88,7 +88,7 @@ type StepsProps = { label: string };
 const Stepper: React.FC<IProps> = (props) => {
   const { steps, activeStep, orientation } = props;
   return (
-    <Stack sx={{ width: '100%' }} spacing={4}>
+    <Stack sx={{ width: '100%', marginTop: -6 }} spacing={4}>
       <MuiStepper alternativeLabel activeStep={activeStep} connector={<QontoConnector />} orientation={orientation}>
         {steps.map((step) => (
           <Step key={step.label}>

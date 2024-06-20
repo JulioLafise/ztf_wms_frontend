@@ -43,13 +43,6 @@ const DetailEntry = () => {
       editSelectOptions: [{ label: 'Laptops #1', value: 'Laptops #1' }, { label: 'Laptops #2', value: 'Laptops #2' }]
     },
     {
-      id: 'descripcion',
-      accessorKey: 'descripcion',
-      header: 'Descripcion',
-      minSize: 150,
-      enableEditing: false,
-    },
-    {
       id: 'codigoLote',
       accessorKey: 'codigoLote',
       header: 'Codigo Lote',
@@ -57,12 +50,19 @@ const DetailEntry = () => {
       minSize: 150,
     },
     {
-      id: 'precio',
-      accessorKey: 'precio',
-      header: 'Precio',
+      id: 'numeroSerie',
+      accessorKey: 'numeroSerie',
+      header: 'Numero Serie',
       enableEditing: true,
       minSize: 150,
     },
+    // {
+    //   id: 'precio',
+    //   accessorKey: 'precio',
+    //   header: 'Precio',
+    //   enableEditing: true,
+    //   minSize: 150,
+    // },
     {
       id: 'cantidad',
       accessorKey: 'cantidad',
@@ -72,10 +72,17 @@ const DetailEntry = () => {
     {
       id: 'estadoProducto',
       accessorKey: 'estadoProducto',
-      header: 'Estado',
+      header: 'Estado', 
       minSize: 150,
       editVariant: 'select',
       editSelectOptions: [{ label: 'Bueno', value: 'Bueno' }, { label: 'Regular', value: 'Regular' }, { label: 'Malo', value: 'Malo' }]
+    },
+    {
+      id: 'descripcion',
+      accessorKey: 'descripcion',
+      header: 'Observaciones',
+      minSize: 150,
+      enableEditing: true,
     },
   ], [validationErrors]);
 
@@ -85,7 +92,6 @@ const DetailEntry = () => {
       {
         ...values,
         entradaDetalleId: uuid(),
-        descripcion: `${values.producto} equipo de computo kid`,
       }
     ]);
     setValidationErrors({});

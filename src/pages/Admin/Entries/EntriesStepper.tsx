@@ -1,33 +1,44 @@
 import React from 'react';
 import { Paper, useMediaQuery, Theme } from '@mui/material';
-import { ArrowBack, ArrowForward, ExitToApp, Task } from '@mui/icons-material';
+import { ArrowBack, ArrowForward, ExitToApp, Task, Download, Cancel } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Stepper, ButtonActions } from '@wms/components';
 import { useUI } from '@wms/hooks';
 import HeaderEntry from './Steps/HeaderEntry';
 import DetailEntry from './Steps/DetailEntry';
 import Report from './Steps/ReportEntries';
+import { ReactSpreadsheetImport } from 'react-spreadsheet-import';
+import _ from 'lodash';
+import { Result } from 'postcss';
+
+interface IDataExcel {
+  validData: [],
+  invalidData: [],
+  all: []
+}
 
 const DeparturesStepper = () => {
   const { isSideBarOpen } = useUI();
   const navigate = useNavigate();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
   const [activeStep, setActiveStep] = React.useState(0);
+  const [openImport, setOpenImport] = React.useState(false);
   const previousStep = () => setActiveStep(prevState => prevState - 1);
   const nextStep = () => setActiveStep(prevState => prevState + 1);
+  const [data, setData] = React.useState({
+    dataHeader: {}
+  });
+
   const steps = React.useMemo(() => [
     { label: 'Entry' },
     { label: 'Detail Entry' },
     { label: 'Report Entry' },
   ], []);
+
   const ComponentStep = (step: number) => {
     switch (step) {
       case 1:
         return (<DetailEntry />);
-
-        // case 2:
-        //   return (<>Summary</>);
-
       case 2:
         return (<Report />);
 
@@ -35,6 +46,95 @@ const DeparturesStepper = () => {
         return (<HeaderEntry />);
     }
   };
+
+  const fields = [
+    {
+      // Visible in table header and when matching columns.
+      label: 'Nombre',
+      // This is the key used for this field when we call onSubmit.
+      key: 'Nombre',
+      // Allows for better automatic column matching. Optional.
+      // alternateMatches: ['first name', 'first'],
+      // Used when editing and validating information.
+      fieldType: {
+        // There are 3 types - 'input' / 'checkbox' / 'select'.
+        type: 'input',
+      },
+      // Used in the first step to provide an example of what data is expected in this field. Optional.
+      example: 'Stephanie',
+      // Can have multiple validations that are visible in Validation Step table.
+      validations: [
+        {
+          // Can be 'required' / 'unique' / 'regex'
+          rule: 'required',
+          errorMessage: 'Nombre es requerido',
+          // There can be 'info' / 'warning' / 'error' levels. Optional. Default 'error'.
+          level: 'error',
+        },
+      ],
+    },
+    {
+      // Visible in table header and when matching columns.
+      label: 'Apellido',
+      // This is the key used for this field when we call onSubmit.
+      key: 'Apellido',
+      // Allows for better automatic column matching. Optional.
+      // alternateMatches: ['first name', 'first'],
+      // Used when editing and validating information.
+      fieldType: {
+        // There are 3 types - 'input' / 'checkbox' / 'select'.
+        type: 'input',
+      },
+      // Used in the first step to provide an example of what data is expected in this field. Optional.
+      example: 'Mena',
+      // Can have multiple validations that are visible in Validation Step table.
+      validations: [
+        {
+          // Can be 'required' / 'unique' / 'regex'
+          rule: 'required',
+          errorMessage: 'Apellido es requerido',
+          // There can be 'info' / 'warning' / 'error' levels. Optional. Default 'error'.
+          level: 'error',
+        },
+      ],
+    },
+    {
+      // Visible in table header and when matching columns.
+      label: 'Direccion',
+      // This is the key used for this field when we call onSubmit.
+      key: 'Direccion',
+      // Allows for better automatic column matching. Optional.
+      // alternateMatches: ['first name', 'first'],
+      // Used when editing and validating information.
+      fieldType: {
+        // There are 3 types - 'input' / 'checkbox' / 'select'.
+        type: 'input',
+      },
+      // Used in the first step to provide an example of what data is expected in this field. Optional.
+      example: 'Managua',
+      // Can have multiple validations that are visible in Validation Step table.
+      validations: [
+        {
+          // Can be 'required' / 'unique' / 'regex'
+          rule: 'required',
+          errorMessage: 'Direccion es requerida',
+          // There can be 'info' / 'warning' / 'error' levels. Optional. Default 'error'.
+          level: 'error',
+        },
+      ],
+    },
+  ] as const;
+
+  const onSubmit = (data: IDataExcel) => {
+    console.log(data.invalidData);
+    if (data.invalidData.length > 0) {
+      console.log(data.invalidData, 'invalid');
+    }
+    const dataUnique = _.uniqBy(data.validData, (obj: any) => obj.Nombre).map((obj: any) => obj.Nombre);
+    console.log(dataUnique);
+    // dataUnique.map(name => Api.validate(name));
+  };
+
   return (
     <React.Fragment>
       <Stepper
@@ -56,6 +156,31 @@ const DeparturesStepper = () => {
           ComponentIcon={<ExitToApp />}
           ubication={isMobile ? { left: 90 } : { bottom: 99, left: isSideBarOpen ? 351 : 170 }}
         />
+        {
+          activeStep === 1 && (
+            <>
+              <ButtonActions
+                title="Next"
+                onClick={() => setOpenImport(true)}
+                ComponentIcon={<Download />}
+                ubication={isMobile ? {} : { bottom: 99, right: 180 }}
+              />
+              {/* <div style={{
+                marginTop: 'px'
+              }}> */}
+              <ReactSpreadsheetImport isOpen={openImport} onClose={() => setOpenImport(false)} onSubmit={onSubmit} fields={fields} />
+              {openImport && (
+                <ButtonActions
+                  title="Cancelar"
+                  onClick={() => setOpenImport(false)}
+                  ComponentIcon={<Cancel />}
+                  ubication={isMobile ? {} : { bottom: 99, right: 180 }}
+                />
+              )}
+              {/* </div> */}
+            </>
+          )
+        }
         {
           activeStep != steps.length
             ? (

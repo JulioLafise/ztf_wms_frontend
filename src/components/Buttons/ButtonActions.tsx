@@ -60,7 +60,7 @@ const ButtonActions = (props: Props) => {
       {
         !disabled
           ? (
-            <Tooltip title={title} >
+            <Tooltip title={title}>
               <Zoom
                 timeout={transitionDuration}
                 in={appState}
