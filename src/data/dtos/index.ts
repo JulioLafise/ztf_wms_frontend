@@ -9,3 +9,5 @@ export * from './product-status.dto';
 export * from './features.dto';
 export * from './category.dto';
 export * from './customer.dto';
+export * from './employee.dto';
+export * from './product.dto';

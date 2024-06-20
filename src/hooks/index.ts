@@ -15,3 +15,6 @@ export { default as useFeatures } from './useFeatures';
 export { default as useCategory } from './useCategory';
 export { default as useCustomer } from './useCustomer';
 export { default as useProductStatus } from './useProductStatus';
+export { default as useTypeCurrency } from './useTypeCurrency';
+export { default as useEmployee } from './useEmployee';
+export { default as useProduct } from './useProduct';

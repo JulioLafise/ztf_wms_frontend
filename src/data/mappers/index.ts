@@ -8,3 +8,6 @@ export * from './features.mapper';
 export * from './category.mapper';
 export * from './customer.mapper';
 export * from './product-status.mapper';
+export * from './type-currency.mapper';
+export * from './employee.mapper';
+export * from './product.mapper';

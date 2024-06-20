@@ -8,3 +8,7 @@ export * from './features.api';
 export * from './category.api';
 export * from './customer.api';
 export * from './product-status.api';
+export * from './employee.api';
+export * from './type-currency.api';
+export * from './product.api';
+export * from './inventory.api';

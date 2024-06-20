@@ -9,3 +9,6 @@ export * as featuresAsyncThunks from './features.thunk';
 export * as categoryAsyncThunks from './category.thunk';
 export * as customerAsyncThunks from './customer.thunk';
 export * as productStatusAsyncThunks from './product-status.thunk';
+export * as typeCurrencyAsyncThunks from './type-currency.thunk';
+export * as employeeAsyncThunks from './employee.thunk';
+export * as productAsyncThunks from './product.thunk';
