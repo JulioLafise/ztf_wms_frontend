@@ -56,9 +56,7 @@ const useProduct = () => {
   });
 
   const filterProductExistByName = async (args: { name: string }): Promise<boolean> => {
-    const [errors, productDto] = await ProductDTO.get({ ...args });
-    if (errors) throw new Error(errors);
-    const data = (await dispatch(productAsyncThunks.getProductName(productDto!))).payload as { message: string, exist: boolean };
+    const data = (await dispatch(productAsyncThunks.getProductName(args))).payload as { message: string, exist: boolean };
     Validator.httpValidation(data as any);
     return data.exist;
   };

@@ -34,10 +34,10 @@ export const getProduct = createAsyncThunk(
 
 export const getProductName = createAsyncThunk(
   'catalogue/getProductName',
-  async (productDto: ProductDTO, { rejectWithValue, dispatch }) => {
+  async (args: { name: string }, { rejectWithValue, dispatch }) => {
     try {
       dispatch(onGenerate());
-      const { data } = await WMSAPI.productNameGET({ params: productDto });
+      const { data } = await WMSAPI.productNameGET({ params: args });
       return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
