@@ -14,7 +14,7 @@ const useCustomer = () => {
 
   const { data, isGenerate, rowCount } = useAppSelector(state => state.customerReducer);
 
-  const useCustomerQuery = (pagination: IPagination) => useQuery<CustomerEntity[]>({
+  const useCustomerListQuery = (pagination: IPagination) => useQuery<CustomerEntity[]>({
     queryKey: ['customer-list', { ...pagination }],    
     queryFn: async () => {
       try {
@@ -71,7 +71,7 @@ const useCustomer = () => {
     isGenerate,
     rowCount,
     //METHODS
-    useCustomerQuery,
+    useCustomerListQuery,
     useCustomerMutation
   };
 };

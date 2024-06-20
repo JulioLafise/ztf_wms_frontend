@@ -114,11 +114,11 @@ export const settings: IMenuList[] = [
         roles: ['dev'],
       },
       {
-        menuId: 'type-personery',
-        menuUrl: '/type-personery',
-        menuName: 'Type Personery',
-        icon: 'address-book',
-        description: 'Managing type personery',
+        menuId: 'type-currency',
+        menuUrl: '/type-currency',
+        menuName: 'Type Currency',
+        icon: 'coins',
+        description: 'Managing type currency',
         roles: ['dev'],
       },
       {

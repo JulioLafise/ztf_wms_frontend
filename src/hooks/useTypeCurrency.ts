@@ -14,7 +14,7 @@ const useTypeCurrency = () => {
 
   const { data, isGenerate, rowCount } = useAppSelector(state => state.typeCurrencyReducer);
 
-  const useTypeCurrencyQuery = (pagination: IPagination) => useQuery<TypeCurrencyEntity[]>({
+  const useTypeCurrencyListQuery = (pagination: IPagination) => useQuery<TypeCurrencyEntity[]>({
     queryKey: ['type-currency-list', { ...pagination }],    
     queryFn: async () => {
       try {
@@ -71,7 +71,7 @@ const useTypeCurrency = () => {
     isGenerate,
     rowCount,
     //METHODS
-    useTypeCurrencyQuery,
+    useTypeCurrencyListQuery,
     useTypeCurrencyMutation
   };
 };

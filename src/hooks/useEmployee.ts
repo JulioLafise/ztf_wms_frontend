@@ -14,7 +14,7 @@ const useEmployee = () => {
 
   const { data, isGenerate, rowCount } = useAppSelector(state => state.employeeReducer);
 
-  const useEmployeeQuery = (pagination: IPagination) => useQuery<EmployeeEntity[]>({
+  const useEmployeeListQuery = (pagination: IPagination) => useQuery<EmployeeEntity[]>({
     queryKey: ['employee-list', { ...pagination }],    
     queryFn: async () => {
       try {
@@ -71,7 +71,7 @@ const useEmployee = () => {
     isGenerate,
     rowCount,
     //METHODS
-    useEmployeeQuery,
+    useEmployeeListQuery,
     useEmployeeMutation
   };
 };

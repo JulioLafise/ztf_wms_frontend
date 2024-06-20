@@ -14,7 +14,7 @@ const useFeatures = () => {
 
   const { data, isGenerate, rowCount } = useAppSelector(state => state.featuresReducer);
 
-  const useFeaturesQuery = (pagination: IPagination) => useQuery<FeaturesEntity[]>({
+  const useFeaturesListQuery = (pagination: IPagination) => useQuery<FeaturesEntity[]>({
     queryKey: ['features-list', { ...pagination }],    
     queryFn: async () => {
       try {
@@ -71,7 +71,7 @@ const useFeatures = () => {
     isGenerate,
     rowCount,
     //METHODS
-    useFeaturesQuery,
+    useFeaturesListQuery,
     useFeaturesMutation
   };
 };

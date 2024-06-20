@@ -14,7 +14,7 @@ const useCategory = () => {
 
   const { data, isGenerate, rowCount } = useAppSelector(state => state.categoryReducer);
 
-  const useCategoryQuery = (pagination: IPagination) => useQuery<CategoryEntity[]>({
+  const useCategoryListQuery = (pagination: IPagination) => useQuery<CategoryEntity[]>({
     queryKey: ['category-list', { ...pagination }],    
     queryFn: async () => {
       try {
@@ -71,7 +71,7 @@ const useCategory = () => {
     isGenerate,
     rowCount,
     //METHODS
-    useCategoryQuery,
+    useCategoryListQuery,
     useCategoryMutation
   };
 };
