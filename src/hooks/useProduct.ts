@@ -55,8 +55,8 @@ const useProduct = () => {
     staleTime: 20 * 60 * 60
   });
 
-  const filterProductExistByName = async (args: { name: string }): Promise<boolean> => {
-    const data = (await dispatch(productAsyncThunks.getProductName(args))).payload as { message: string, exist: boolean };
+  const filterProductExistByName = async (arrayProductsName: { nombre: string }[]): Promise<boolean> => {
+    const data = (await dispatch(productAsyncThunks.getProductName(arrayProductsName))).payload as { message: string, exist: boolean };
     Validator.httpValidation(data as any);
     return data.exist;
   };

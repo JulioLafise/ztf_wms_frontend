@@ -3,20 +3,20 @@ import { Paper, useMediaQuery, Theme } from '@mui/material';
 import { ArrowBack, ArrowForward, ExitToApp, Task, Download, Cancel } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Stepper, ButtonActions } from '@wms/components';
-import { useUI } from '@wms/hooks';
+import { useUI, useProduct } from '@wms/hooks';
 import HeaderEntry from './Steps/HeaderEntry';
 import DetailEntry from './Steps/DetailEntry';
 import Report from './Steps/ReportEntries';
 import { ReactSpreadsheetImport } from 'react-spreadsheet-import';
 import _ from 'lodash';
-import { Result } from 'postcss';
+import { Data } from 'react-spreadsheet-import/types/types';
+import { Meta } from 'react-spreadsheet-import/types/steps/ValidationStep/types';
 
 interface IDataExcel {
-  validData: [],
-  invalidData: [],
-  all: []
+  all: (Data<string> & Meta)[],
+  validData: Data<string>[],
+  invalidData: Data<string>[],
 }
-
 const DeparturesStepper = () => {
   const { isSideBarOpen } = useUI();
   const navigate = useNavigate();
@@ -28,6 +28,10 @@ const DeparturesStepper = () => {
   const [data, setData] = React.useState({
     dataHeader: {}
   });
+
+  const {
+    filterProductExistByName
+  } = useProduct();
 
   const steps = React.useMemo(() => [
     { label: 'Entry' },
@@ -130,9 +134,8 @@ const DeparturesStepper = () => {
     if (data.invalidData.length > 0) {
       console.log(data.invalidData, 'invalid');
     }
-    const dataUnique = _.uniqBy(data.validData, (obj: any) => obj.Nombre).map((obj: any) => obj.Nombre);
-    console.log(dataUnique);
-    // dataUnique.map(name => Api.validate(name));
+    const dataUnique: { nombre: string }[] = _.uniqBy(data.validData, (obj: any) => obj.Nombre).map((obj: any) => ({ nombre: obj.Nombre }));
+    filterProductExistByName(dataUnique).then((res: boolean) => console.log(res));
   };
 
   return (
@@ -148,13 +151,13 @@ const DeparturesStepper = () => {
           onClick={previousStep}
           disabled={activeStep === 0}
           ComponentIcon={<ArrowBack color={activeStep === 0 ? 'disabled' : 'inherit'} />}
-          ubication={isMobile ? { left: 50 } : { bottom: 99, left: isSideBarOpen ? 280 : 99 }}
+          ubication={isMobile ? { left: 50 } : { bottom: 55, left: isSideBarOpen ? 280 : 99 }}
         />
         <ButtonActions
           title="Exit"
           onClick={() => navigate('/app/inventory/departures', { replace: true })}
           ComponentIcon={<ExitToApp />}
-          ubication={isMobile ? { left: 90 } : { bottom: 99, left: isSideBarOpen ? 351 : 170 }}
+          ubication={isMobile ? { left: 90 } : { bottom: 55, left: isSideBarOpen ? 351 : 170 }}
         />
         {
           activeStep === 1 && (
@@ -163,18 +166,19 @@ const DeparturesStepper = () => {
                 title="Next"
                 onClick={() => setOpenImport(true)}
                 ComponentIcon={<Download />}
-                ubication={isMobile ? {} : { bottom: 99, right: 180 }}
+                ubication={isMobile ? {} : { bottom: 55, right: 180 }}
               />
               {/* <div style={{
                 marginTop: 'px'
               }}> */}
-              <ReactSpreadsheetImport isOpen={openImport} onClose={() => setOpenImport(false)} onSubmit={onSubmit} fields={fields} />
+              <ReactSpreadsheetImport isOpen={openImport} onClose={() => setOpenImport(false)} onSubmit={(result) => onSubmit(result)} fields={fields} />
               {openImport && (
                 <ButtonActions
                   title="Cancelar"
                   onClick={() => setOpenImport(false)}
                   ComponentIcon={<Cancel />}
-                  ubication={isMobile ? {} : { bottom: 99, right: 180 }}
+                  zIndex={100000000}
+                  ubication={isMobile ? {} : { bottom: 30, right: 60 }}
                 />
               )}
               {/* </div> */}
@@ -188,7 +192,7 @@ const DeparturesStepper = () => {
                 title="Next"
                 onClick={nextStep}
                 ComponentIcon={<ArrowForward />}
-                ubication={isMobile ? {} : { bottom: 99, right: 99 }}
+                ubication={isMobile ? {} : { bottom: 55, right: 99 }}
               />
             )
             : (
@@ -196,7 +200,7 @@ const DeparturesStepper = () => {
                 title="Finish"
                 // onClick={nextStep}
                 ComponentIcon={<Task />}
-                ubication={isMobile ? {} : { bottom: 99, right: 99 }}
+                ubication={isMobile ? {} : { bottom: 55, right: 99 }}
               />
             )
         }

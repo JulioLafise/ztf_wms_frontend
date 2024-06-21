@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Paper } from '@mui/material';
+import { Box, Paper, useStepContext } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
   TextFieldHF,
@@ -8,7 +8,8 @@ import {
   // CheckBoxHF
 } from '@wms/components';
 import { CountryEntity, WarehouseEntity } from '@wms/entities';
-import { useCountry, useWarehouse } from '@wms/hooks';
+import { useCountry, useWarehouse, useTypeCurrency, useEmployee, useSupplier } from '@wms/hooks';
+import { useEffect } from 'react';
 
 const HeaderDeparture = () => {
   const methods = useForm({
@@ -16,13 +17,27 @@ const HeaderDeparture = () => {
     reValidateMode: 'onChange'
   });
   const { handleSubmit } = methods;
+  const [countryId, setCountryId] = React.useState(0);
   const {
-    useCountryListQuery
+    useCountryListQuery,
+    // countryId && useDepartamentQuery()
   } = useCountry();
 
   const {
     useWarehouseListQuery
   } = useWarehouse();
+
+  const {
+    useEmployeeListQuery
+  } = useEmployee();
+
+  const {
+    useSupplierQuery
+  } = useSupplier();
+
+  const {
+    useTypeCurrencyListQuery
+  } = useTypeCurrency();
 
   const {
     data: dataCountry, isLoading: isLoadingCountry
@@ -32,7 +47,23 @@ const HeaderDeparture = () => {
     data: dataWarehouse, isLoading: isLoadingWarehouse
   } = useWarehouseListQuery({ filter: '', pageIndex: 1, pageSize: 1000 });
 
+  const {
+    data: dataEmployee, isLoading: isLoadingEmployee
+  } = useEmployeeListQuery({ filter: '', pageIndex: 1, pageSize: 1000 });
 
+  const {
+    data: dataSupplier, isLoading: isLoadingSupplier
+  } = useSupplierQuery({ filter: '', pageIndex: 1, pageSize: 1000 });
+
+  const {
+    data: dataTypeCurrency, isLoading: isLoadingTypeCurrency
+  } = useTypeCurrencyListQuery({ filter: '', pageIndex: 1, pageSize: 1000 });
+
+  useEffect(() => {
+    setCountryId(1);
+  }, []);
+
+  console.log(dataCountry, dataEmployee, dataSupplier, dataTypeCurrency, dataWarehouse);
   const onSubmit = (values: { [key: string]: any }) => { };
   return (
     <Paper elevation={4}>
@@ -43,7 +74,7 @@ const HeaderDeparture = () => {
             {/* <TextFieldHF
               name="noEntry"
               label="No Entrada"
-              className="w-2/12"
+              className="w-full md:w-4/12 lg:w-2/12"
               readOnly
             /> */}
             <Box component="div" className="w-full flex flex-wrap">
@@ -53,7 +84,15 @@ const HeaderDeparture = () => {
                 optionsData={dataCountry || []}
                 getOptionLabel={(option) => `${option.description}`}
                 loading={isLoadingCountry}
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
+              />
+              <AutoCompleteHF
+                name="department"
+                label="Departamento"
+                optionsData={dataCountry || []}
+                getOptionLabel={(option) => `${option.description}`}
+                loading={isLoadingCountry}
+                className="w-full md:w-4/12 lg:w-2/12"
               />
               <AutoCompleteHF<WarehouseEntity>
                 name="warehouse"
@@ -61,31 +100,32 @@ const HeaderDeparture = () => {
                 optionsData={dataWarehouse || []}
                 loading={isLoadingWarehouse}
                 getOptionLabel={(option) => `${option.description}`}
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
               />
               <AutoCompleteHF
                 name="inventoryType"
                 label="Tipo Inventario"
-                optionsData={[]}s
+                optionsData={[]}
                 getOptionLabel={(option: any) => option.description}
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
               />
               <AutoCompleteHF
                 name="currency"
                 label="Moneda"
-                optionsData={[]}
-                getOptionLabel={(option: any) => option.description}
-                className="w-2/12"
+                optionsData={dataTypeCurrency || []}
+                loading={isLoadingTypeCurrency}
+                getOptionLabel={(option) => `${option.description}`}
+                className="w-full md:w-4/12 lg:w-2/12"
               />
               <DateTimeHF
                 name="createDate"
                 label="Fecha"
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
               />
               <TextFieldHF
                 name="noEntry"
                 label="No Entrada"
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
                 readOnly
               />
             </Box>
@@ -93,33 +133,35 @@ const HeaderDeparture = () => {
               <AutoCompleteHF
                 name="proveedor"
                 label="Proveedor"
-                optionsData={[]}
-                getOptionLabel={(option: any) => option.description}
-                className="w-2/12"
+                optionsData={dataSupplier || []}
+                loading={isLoadingSupplier}
+                getOptionLabel={(option) => `${option.firstName}`}
+                className="w-full md:w-4/12 lg:w-2/12"
               />
               <AutoCompleteHF
                 name="employee"
                 label="Empleado"
-                optionsData={[]}
-                getOptionLabel={(option: any) => option.description}
-                className="w-2/12"
+                optionsData={dataEmployee || []}
+                loading={isLoadingEmployee}
+                getOptionLabel={(option) => `${option.firstName}`}
+                className="w-full md:w-4/12 lg:w-2/12"
               />
               <TextFieldHF
                 name="client"
                 label="Entrega"
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
                 readOnly
               />
               <TextFieldHF
                 name="placa"
                 label="Placa"
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
                 readOnly
               />
               <TextFieldHF
                 name="identification"
                 label="No. Identificacion"
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
                 readOnly
               />
               <TextFieldHF

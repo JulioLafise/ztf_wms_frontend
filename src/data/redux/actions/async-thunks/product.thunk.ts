@@ -34,7 +34,7 @@ export const getProduct = createAsyncThunk(
 
 export const getProductName = createAsyncThunk(
   'catalogue/getProductName',
-  async (args: { name: string }, { rejectWithValue, dispatch }) => {
+  async (args: { nombre: string }[], { rejectWithValue, dispatch }) => {
     try {
       dispatch(onGenerate());
       const { data } = await WMSAPI.productNameGET({ params: args });
