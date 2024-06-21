@@ -16,7 +16,6 @@ import {
   TextFieldHF,
 } from '@wms/components';
 import { useCountry } from '@wms/hooks';
-import { DepartamentEntity } from '@wms/entities';
 
 interface IForm {
   filter: string
@@ -46,7 +45,7 @@ const CountryDetailModal = (props: IProps) => {
   });
   const { handleSubmit, reset } = methods;
   const onSubmit = (values: IForm) => {
-    setDepartamentName(values.filter);
+    setDepartamentName(values.filter.toLowerCase());
     onClick && onClick(values);
   };
   React.useEffect(() => {
@@ -68,7 +67,7 @@ const CountryDetailModal = (props: IProps) => {
           <Box component="div" className="overflow-auto h-[50vh] md:h-[30vh]">
             <List>
               {
-                data?.filter(ft => departamentName.includes('') || ft.description?.indexOf(departamentName) === -1).map(departament => (
+                data?.filter(ft => (ft.description?.toLocaleLowerCase().indexOf(departamentName) !== -1)).map(departament => (
                   <React.Fragment>
                     <ListItem>
                       <ListItemIcon><Public /></ListItemIcon>
