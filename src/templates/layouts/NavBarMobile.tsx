@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { BackgroundLetterAvatars, DarkMode } from '@wms/components';
+import { BackgroundLetterAvatars, DarkMode, UIThemePicker } from '@wms/components';
 import { useAuth, useUI } from '@wms/hooks';
 import { IMenuList } from '@wms/interfaces';
 import { enviroment } from '@wms/config';
@@ -79,16 +79,30 @@ const NavBarMobile = (props: INavBarMobileProps) => {
             >
               <MenuIcon />
             </IconButton>
-            <Box component="article" className="flex items-center rounded-full p-2" onClick={onNavHome} bgcolor={theme.isDarkMode ? '' : 'white'} >
+            <Box
+              component="article"
+              className="flex items-center rounded-full p-2"
+              onClick={onNavHome}
+              bgcolor={theme.isDarkMode ? '' : 'white'}
+            >
               <img src="/img/olpc_color_logotype.png" width="76" alt="olpc" />
             </Box>
-            <Typography variant="h6" component="div" className="pl-2" fontWeight="bold" onClick={onNavHome}>
+            <Typography
+              variant="h6"
+              component="div"
+              className="pl-2"
+              fontWeight="bold"
+              onClick={onNavHome}
+              minWidth={378}
+              display={{ xs: 'none', sm: 'initial', md: 'initial' }}
+            >
               {enviroment.appShortName}
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
             <Box component="div" >
               <Box component="div" className="flex items-center">
                 <DarkMode />
+                <UIThemePicker />
                 <IconButton
                   id="positioned-button"
                   aria-describedby="positioned-menu"

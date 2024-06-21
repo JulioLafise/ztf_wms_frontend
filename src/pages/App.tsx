@@ -27,7 +27,7 @@ const App = () => {
             <Toaster />
           </MonitorProvider>
         </React.Suspense>
-        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ThemeProvider>
   );

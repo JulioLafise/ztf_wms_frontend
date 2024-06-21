@@ -82,9 +82,12 @@ const UIThemePicker = () => {
     return colors;
   }, []);
 
+  const getNameTheme = (value: string) => value.replace('-theme', '').replace('-', ' ').toUpperCase();
+
   const onClick = (value: PaletteTheme['paletteColors']) => (_event: any) => {
     setTheme(value);
     changePaletteColors(value);
+    onClose(_event);
   };
 
   const getColor = (value: PaletteTheme['paletteColors']) => paletteColors(value)?.primary.main;
@@ -138,11 +141,13 @@ const UIThemePicker = () => {
                   bgcolor={getColor(values)}
                   onKeyDown={onListKeyDown}
                 >
-                  <IconButton
-                    onClick={onClick(values)}
-                  >
-                    <FontAwesomeIcon iconLabel="palette" size="xs" />
-                  </IconButton>
+                  <Tooltip title={getNameTheme(values)}>
+                    <IconButton
+                      onClick={onClick(values)}
+                    >
+                      <FontAwesomeIcon iconLabel="palette" size="xs" />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
               )
             }

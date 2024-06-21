@@ -71,7 +71,6 @@ const useCountry = () => {
     useCountryListQuery,
     useDepartamentQuery,
     useCountryQuery,
-
   };
 };
 

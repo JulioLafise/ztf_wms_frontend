@@ -25,7 +25,7 @@ export const getCountry = createAsyncThunk(
     try {
       dispatch(onGenerate());
       const { data } = await WMSAPI.countryGET({ body: args });
-      return data.data;
+      return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
     }

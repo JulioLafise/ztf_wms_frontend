@@ -42,10 +42,12 @@ const countrySlice = createSlice({
     // VISIT METHODS LIST
     builder.addCase(countryAsyncThunks.getCountry.fulfilled, (state, { payload }) => {
       state.selected = payload;
+      state.isGenerate = true;
       state.error = undefined;
     });
     builder.addCase(countryAsyncThunks.getCountry.rejected, (state, { payload }) => {
       state.selected = null;
+      state.isGenerate = true;
       state.error = payload;
     });
   },
