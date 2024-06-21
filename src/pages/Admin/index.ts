@@ -6,3 +6,6 @@ export * from './Brands';
 export * from './Models';
 export * from './Warehouses';
 export * from './TypeCurrency';
+export * from './Features';
+export * from './Categories';
+export * from './Countries';
