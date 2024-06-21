@@ -46,7 +46,6 @@ const CountryDetailModal = (props: IProps) => {
   });
   const { handleSubmit, reset } = methods;
   const onSubmit = (values: IForm) => {
-    console.log(values);
     setDepartamentName(values.filter);
     onClick && onClick(values);
   };
