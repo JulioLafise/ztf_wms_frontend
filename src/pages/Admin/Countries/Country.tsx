@@ -4,7 +4,7 @@ import { Box, IconButton, Paper, Tooltip } from '@mui/material';
 import { CheckBox, CheckBoxOutlineBlank, MoreHoriz } from '@mui/icons-material';
 import { useCountry } from '@wms/hooks';
 import { MaterialTable } from '@wms/components';
-import { DepartamentEntity, CountryEntity } from '@wms/entities';
+import { CountryEntity } from '@wms/entities';
 import CountryDetailModal from './CountryDetailModal';
 
 const CountryPage = () => {
