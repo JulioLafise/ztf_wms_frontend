@@ -40,7 +40,7 @@ export class EmployeeMapper {
     return data;
   }
   
-  static getCountriesList(values: unknown): CountryEntity[] {
+  private static getCountriesList(values: unknown): CountryEntity[] {
     let data: CountryEntity[] = [];
     const value: any = values;
     if (Array.isArray(value)) {

@@ -1,0 +1,51 @@
+import { httpClient } from '../http-config';
+import { PaginationDTO, MasterEntryDTO } from '@wms/dtos';
+import {
+  IJsonBody,
+  IPaginationResp,
+  IPaginationProps,
+  IBodyProps,
+  IParamsProps
+} from '@wms/interfaces';
+import { MasterEntryEntity } from '@wms/entities';
+
+
+
+export const masterEntryListGET = async (options: IPaginationProps<PaginationDTO>): Promise<IJsonBody<IPaginationResp<MasterEntryEntity>>> => await httpClient.get({
+  url: 'maestroentrada',
+  options: {
+    params: options.params
+  }
+});
+
+export const masterEntryGET = async (options: IParamsProps<MasterEntryDTO>): Promise<IJsonBody<IPaginationResp<MasterEntryEntity>>> => await httpClient.get({
+  url: `maestroentrada/${options.body.categoriaId}/`,
+  options: {}
+});
+
+
+export const createMasterEntryPOST = async (options: IBodyProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.post({
+  url: 'maestroentrada',
+  options: {
+    data: options.body
+  }
+});
+
+export const updateMasterEntryPUT = async (options: IBodyProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.put({
+  url: `maestroentrada/${options.body.categoriaId}/`,
+  options: {
+    data: options.body
+  }
+});
+
+export const finishMasterEntryPUT = async (options: IParamsProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.put({
+  url: `maestroentrada/${options.params.categoriaId}/finalizar`,
+  options: {}
+});
+
+export const eliminateMasterEntryDELETE = async (options: IBodyProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.delete({
+  url: `maestroentrada/${options.body.categoriaId}/`,
+  options: {
+    data: options.body
+  }
+});

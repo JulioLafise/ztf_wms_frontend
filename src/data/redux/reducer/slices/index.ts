@@ -14,3 +14,5 @@ export { default as productStatusReducer } from './product-status.slice';
 export { default as typeCurrencyReducer } from './type-currency.slice';
 export { default as employeeReducer } from './employee.slice';
 export { default as productReducer } from './product.slice';
+export { default as inventoryReducer } from './inventory.slice';
+export { default as masterEntryReducer } from './master-entry.slice';

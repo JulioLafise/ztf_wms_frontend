@@ -18,3 +18,5 @@ export * from './product-detail.entity';
 export * from './inventory.entity';
 export * from './kit.entity';
 export * from './kit-detail.entity';
+export * from './master-entry.entity';
+export * from './detail-entry.entity';
