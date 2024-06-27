@@ -13,7 +13,12 @@ export class MasterEntryMapper {
         code: value.codigo,
         description: value.descripcion,
         createdAt: value.fechaCrea,
-        createdBy: value.usuarioCrea,
+        createdBy: value.usuarioCrea,        
+        employee: {
+          employeeId: value.empleadoRecibe.empleadoRecibeId,
+          firstName: value.empleadoRecibe.nombre,
+          lastName: value.empleadoRecibe.apellido
+        },
         supplier: {
           supplierId: value.proveedor.clienteId,
           firstName: value.proveedor.nombre,
@@ -28,7 +33,9 @@ export class MasterEntryMapper {
           description: value.categoria.descripcion,
         },
         departament: {
-          description: value.departamento,
+          departamentId: value.departamento.departamentoId,
+          description: value.departamento.departamento,
+          countryId: value.departamento.paisId
         },
         details: this.getDetailEntryList(value.listEntradaDetalle),
         isFinish: value.isFinalizado,
@@ -54,7 +61,7 @@ export class MasterEntryMapper {
               firstName: value.nombreProveedor,
               lastName: value.apellidoProveedor,
               email: value.emailProveedor,
-              cellphone: value.ceularProveedor,
+              cellphone: value.celularProveedor,
             },
             departament: {
               description: value.departamento,
