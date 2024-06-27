@@ -11,3 +11,5 @@ export * from './product-status.mapper';
 export * from './type-currency.mapper';
 export * from './employee.mapper';
 export * from './product.mapper';
+export * from './inventory.mapper';
+export * from './master-entry.mapper';

@@ -18,3 +18,5 @@ export { default as useProductStatus } from './useProductStatus';
 export { default as useTypeCurrency } from './useTypeCurrency';
 export { default as useEmployee } from './useEmployee';
 export { default as useProduct } from './useProduct';
+export { default as useInventory } from './useInventory';
+export { default as useMasterEntry } from './useMasterEntry';

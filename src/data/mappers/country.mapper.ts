@@ -11,7 +11,7 @@ export class CountryMapper {
       data = {
         countryId: value.paisId,
         description: value.descripcion,
-        departaments: this.getDepartamentList(value.departamentos),
+        departaments: this.getDepartamentList(value),
         isActive: value.isActivo
       };
     } else throw new Error('An object was expected');

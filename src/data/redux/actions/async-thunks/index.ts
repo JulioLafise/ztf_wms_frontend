@@ -12,3 +12,5 @@ export * as productStatusAsyncThunks from './product-status.thunk';
 export * as typeCurrencyAsyncThunks from './type-currency.thunk';
 export * as employeeAsyncThunks from './employee.thunk';
 export * as productAsyncThunks from './product.thunk';
+export * as inventoryAsyncThunks from './inventory.thunk';
+export * as masterEntryAsyncThunks from './master-entry.thunk';

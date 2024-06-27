@@ -15,7 +15,9 @@ import {
   productStatusReducer,
   typeCurrencyReducer,
   employeeReducer,
-  productReducer
+  productReducer,
+  inventoryReducer,
+  masterEntryReducer
 } from './slices';
 
 const reducers = combineReducers({
@@ -34,7 +36,9 @@ const reducers = combineReducers({
   productStatusReducer,
   typeCurrencyReducer,
   employeeReducer,
-  productReducer
+  productReducer,
+  inventoryReducer,
+  masterEntryReducer
 });
 
 export default reducers;
