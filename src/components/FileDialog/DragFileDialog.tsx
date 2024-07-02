@@ -16,12 +16,12 @@ const VisuallyHiddenInputFile = styled('input')({
 
 interface IProps {
   type?: 'images' | 'docs' | 'all',
-  isMultiple?: boolean,
+  limitFile?: number,
   onLoadData?: (data: Array<string | ArrayBuffer | null>) => void
 }
 
 const DragFileDialog: React.FC<IProps> = (props) => {
-  const { type = 'images', isMultiple, onLoadData } = props;
+  const { type = 'images', limitFile = 1, onLoadData } = props;
   const apiRef = React.useRef<HTMLInputElement | null>(null);
   const [isDragActive, setIsDragActive] = React.useState<boolean>(false);
   const [loadData, setLoadData] = React.useState<Array<string | ArrayBuffer | null>>([]);
@@ -101,7 +101,7 @@ const DragFileDialog: React.FC<IProps> = (props) => {
       <VisuallyHiddenInputFile
         ref={apiRef}
         id="file-047d"
-        multiple={isMultiple}
+        multiple={limitFile > 1}
         type="file"
         hidden
         onChange={onUploadFile}

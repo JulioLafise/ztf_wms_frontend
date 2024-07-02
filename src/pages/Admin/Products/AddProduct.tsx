@@ -98,7 +98,7 @@ const AddProductPage = () => {
                 <Typography variant="body1">Drop your files here or <Typography component="a" variant="body1" fontWeight="bold" href="#">browse</Typography></Typography>
                 <Typography variant="subtitle2" color="gray">JPG or PNG</Typography>
               </Box> */}
-              <DragFileDialog   />
+              <DragFileDialog onLoadData={console.log} />
               <Box component="div" className="flex flex-nowrap w-full gap-1 overflow-auto container-scroll">
                 <img
                   src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?ixlib=rb-4.0.3"
