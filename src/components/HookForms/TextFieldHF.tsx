@@ -77,16 +77,16 @@ const TextFieldHF: React.FC<OptionRowsProps | OptionMaxRowProps> = (props) => {
         return Mask.CirculationInputMask;
       case 'resident':
         return Mask.ResidentInputMask;
-      // case 'integer':
-      //   return Number.IntegerNumberFormat;
-      // case 'decimal':
-      //   return Number.DecimalNumberFormat;
-      // case 'percent':
-      //   return Number.PercentNumberFormat;
+      case 'integer':
+        return Number.IntegerNumberFormat;
+      case 'decimal':
+        return Number.DecimalNumberFormat;
+      case 'percent':
+        return Number.PercentNumberFormat;
       case 'timer':
         return Mask.TimerInputMask;
-      // case 'integer2':
-      //   return Number.IntegerNumberFormatWithoutThousandSeparator;
+      case 'integer2':
+        return Number.IntegerNumberFormatWithoutThousandSeparator;
       case 'identification':
         return Mask.IdentificationCardInputMask;
       default:
