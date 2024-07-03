@@ -4,3 +4,4 @@ export * from './sleep.helper';
 export * from './generated-data.helper';
 export * from './buffer-tools.helper';
 export * from './validator.helper';
+export * from './paginate-arrays.helper';

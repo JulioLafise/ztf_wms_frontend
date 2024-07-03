@@ -6,7 +6,7 @@ import { IOnSaveAndEditRows, IValidationErrors, ComboBoxSelectTable } from '@wms
 import { MaterialTable } from '@wms/components';
 import { useAlertNotification, useFeatures, useProduct } from '@wms/hooks';
 import { ProductDetailEntity } from '@wms/entities';
-import { Validator } from '@wms/helpers';
+import { Validator, pagintateArray } from '@wms/helpers';
 
 interface IProps {
   rowData: ProductDetailEntity[]
@@ -42,6 +42,7 @@ const DetailProduct: React.FC<IProps> = (props) => {
     features: [],
     products: []
   });
+  const paginateData = React.useMemo(() => pagintateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const { useFeaturesListQuery } = useFeatures();
   const { useProductListQuery } = useProduct();
@@ -69,8 +70,8 @@ const DetailProduct: React.FC<IProps> = (props) => {
       },
     },
     {
-      id: 'product',
-      accessorKey: 'product',
+      id: 'productId',
+      accessorKey: 'productId',
       accessorFn: (row) => row.productId,
       header: 'Producto',
       minSize: 150,
@@ -81,10 +82,11 @@ const DetailProduct: React.FC<IProps> = (props) => {
         helperText: validationErrors.productId
       },
       editSelectOptions: selectData.products,
+      Cell: ({ renderedCellValue }) => <>{productData?.filter(ft => ft.productId === renderedCellValue)[0].name || renderedCellValue}</>
     },
     {
-      id: 'feature',
-      accessorKey: 'feature',
+      id: 'featureId',
+      accessorKey: 'featureId',
       accessorFn: (row) => row.featureId,
       header: 'Caracteristica', 
       minSize: 150,
@@ -95,19 +97,20 @@ const DetailProduct: React.FC<IProps> = (props) => {
         helperText: validationErrors.featureId
       },
       editSelectOptions: selectData.features,
+      Cell: ({ renderedCellValue }) => <>{featureData?.filter(ft => ft.featuresId === renderedCellValue)[0].description || renderedCellValue}</>
     },
   ], [validationErrors, selectData]);
 
-  const onSaveOrEdit: IOnSaveAndEditRows<any> = async (row, table, values, validation): Promise<void> => {
+  const onSaveOrEdit: IOnSaveAndEditRows<ProductDetailEntity> = async (row, table, values, validation): Promise<void> => {
     const [isPassed, errors] = await Validator.yupSchemaValidation({ schema: schemaValidationTable, data: values });
-    if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.modelId ? true : false); return; }
+    if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.productDetailId ? true : false); return; }
     setValidationErrors({});
-    validation!({})(table, row.original.pedidoDetalleId ? true : false);
+    validation!({})(table, row.original.productDetailId ? true : false);
     setRowData(prevState => [
       ...prevState,
       {
         ...values,
-        entradaDetalleId: uuid(),
+        productDetailId: uuid(),
       }
     ]);
   };
@@ -131,10 +134,12 @@ const DetailProduct: React.FC<IProps> = (props) => {
     }
   }, [productData, featureData]);
 
+  React.useEffect(() => { console.log(paginateData); }, [paginateData]);
+
   return (
     <MaterialTable<ProductDetailEntity>
       columns={columns}
-      data={rowData || []}
+      data={paginateData || []}
       enableRowActions
       isEditing
       columnsVisible={{ productDetailId: false }}

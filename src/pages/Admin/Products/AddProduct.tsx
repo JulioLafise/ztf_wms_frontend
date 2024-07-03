@@ -2,14 +2,15 @@ import React from 'react';
 import {
   Box,
   Divider,
+  IconButton,
   Paper,
   Typography
 } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { AutoCompleteHF, TextFieldHF, DragFileDialog } from '@wms/components';
-import { Collections } from '@mui/icons-material';
 import { ProductDetailEntity } from '@wms/entities';
 import DetailProduct from './DetailProduct';
+import { Cancel } from '@mui/icons-material';
 
 
 const AddProductPage = () => {
@@ -18,6 +19,8 @@ const AddProductPage = () => {
     reValidateMode: 'onChange'
   });
   const [rowData, setRowData] = React.useState<ProductDetailEntity[]>([]);
+  const [imageList, setImageList] = React.useState<Array<{ id: string, file: string | ArrayBuffer }>>([]);
+  const onDelete = (id: string) => (_e: any) => setImageList(prevState => [...prevState.filter(ft => ft.id !== id)]);
   return (
     <FormProvider {...methods} >
       <Box component="form" className="flex flex-col gap-2" noValidate>
@@ -92,24 +95,31 @@ const AddProductPage = () => {
             </Box>
             <Divider />
             <Box component="section" className="flex flex-col p-4 gap-2">
-              {/* <Box component="div" className="p-20 border border-dashed rounded-lg flex flex-col items-center justify-center gap-1 cursor-pointer">
-                <input type="file" className="" hidden multiple/>
-                <Collections fontSize="large" color="primary" />
-                <Typography variant="body1">Drop your files here or <Typography component="a" variant="body1" fontWeight="bold" href="#">browse</Typography></Typography>
-                <Typography variant="subtitle2" color="gray">JPG or PNG</Typography>
-              </Box> */}
-              <DragFileDialog onLoadData={console.log} />
-              <Box component="div" className="flex flex-nowrap w-full gap-1 overflow-auto container-scroll">
-                <img
-                  src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?ixlib=rb-4.0.3"
-                  width="40%"
-                  className="border-2 border-solid border-gray-300 rounded-lg shadow"
-                />
-                <img
-                  src="https://t3.ftcdn.net/jpg/05/79/91/90/360_F_579919011_3nUAOTj14Dj0eIGkDk7FwnpOv9QNOWiO.jpg"
-                  width="40%"
-                  className="border-2 border-solid border-gray-300 rounded-lg shadow"
-                />
+              <DragFileDialog limitFile={5} type="images" onLoadData={(data) => {
+                setImageList(prevState => [
+                  ...prevState,
+                  ...data.filter(ft => ft.id)
+                ]);
+              }} />
+              <Box component="div" className="flex flex-nowrap w-full gap-1 overflow-auto container-scroll items-start">
+                {
+                  imageList.map(image => 
+                    <>
+                      <IconButton
+                        sx={{ position: 'sticky', marginRight: -5 }}
+                        color="inherit"
+                        onClick={onDelete(image.id)}
+                      >
+                        <Cancel />
+                      </IconButton>
+                      <img
+                        src={image.file.toString()}
+                        width="40%"
+                        className="border-2 border-solid border-gray-300 rounded-lg shadow"
+                      />
+                    </>
+                  )
+                }
               </Box>
             </Box>
           </Paper>
