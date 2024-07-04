@@ -64,7 +64,7 @@ export const inventoryRouter: RouteObject = {
       errorElement: <Error />
     },
     {
-      path: 'products/:productsId/edit',
+      path: 'products/:productId/edit',
       element: <AddProductPageLazy />,
       errorElement: <Error />
     },

@@ -19,7 +19,8 @@ export class ProductMapper {
           description: value.categoria.categoria,
         },
         unitMeasure: {
-          description: value.unidadMedida,
+          unitMeasureId: value.unidadMedida.unidadMedidaId,
+          description: value.unidadMedida.unidadMedida,          
         },
         model: {
           modelId: value.modelo.modeloId,
@@ -96,7 +97,9 @@ export class ProductMapper {
           {
             productDetailId: item.productoDetalleId,
             description: item.descripcion,
-            featureId: item.caracteristicaDetalleId
+            productId: item.productoId,
+            featureId: item.caracteristicaDetalleId,
+            isActive: item.isActivo
           }
         ];
       });

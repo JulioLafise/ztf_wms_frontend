@@ -125,7 +125,7 @@ const ProductPage = () => {
         isError={isError}
         onActionRefreshTable={() => refetch()}       
       />
-      <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} />
+      <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} />
     </Paper>
   );
 };

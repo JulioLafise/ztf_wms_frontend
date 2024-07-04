@@ -51,7 +51,7 @@ export const DecimalNumberFormat = React.forwardRef<HTMLInputElement, ICustomNum
           Object.assign({} as React.ChangeEvent<HTMLInputElement>, event, {
             target: {
               name: rest.name,
-              value: values.value
+              value: Number(values.value)
             }
           })
         );
