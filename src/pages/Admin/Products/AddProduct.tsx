@@ -2,16 +2,17 @@ import React from 'react';
 import {
   Box,
   Divider,
-  IconButton,
   Paper,
   Typography
 } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
-import { AutoCompleteHF, TextFieldHF, DragFileDialog } from '@wms/components';
+import { AutoCompleteHF, TextFieldHF, DragFileDialog, IconButtonBg } from '@wms/components';
 import { ProductDetailEntity } from '@wms/entities';
 import DetailProduct from './DetailProduct';
 import { Cancel } from '@mui/icons-material';
 
+
+const limitFile = 5;
 
 const AddProductPage = () => {
   const methods = useForm({
@@ -95,28 +96,32 @@ const AddProductPage = () => {
             </Box>
             <Divider />
             <Box component="section" className="flex flex-col p-4 gap-2">
-              <DragFileDialog limitFile={5} type="images" onLoadData={(data) => {
+              <DragFileDialog limitFile={limitFile} type="images" onLoadData={(data) => {
+                if (imageList.length >= limitFile) return;
                 setImageList(prevState => [
                   ...prevState,
-                  ...data.filter(ft => ft.id)
+                  ...data.slice(0, limitFile - imageList.length).filter(ft => ft.id)
                 ]);
               }} />
-              <Box component="div" className="flex flex-nowrap w-full gap-1 overflow-auto container-scroll items-start">
+              <Box component="div" className="flex flex-nowrap w-full gap-2 overflow-auto container-scroll items-start">
                 {
                   imageList.map(image => 
                     <>
-                      <IconButton
-                        sx={{ position: 'sticky', marginRight: -5 }}
-                        color="inherit"
-                        onClick={onDelete(image.id)}
-                      >
-                        <Cancel />
-                      </IconButton>
                       <img
                         src={image.file.toString()}
-                        width="40%"
+                        width="150px"
+                        height="150px"
                         className="border-2 border-solid border-gray-300 rounded-lg shadow"
                       />
+                      <IconButtonBg
+                        sx={{ position: 'sticky', marginLeft: -5, marginTop: 1 }}
+                        bgColors="whitesmoke"
+                        color="inherit"
+                        size="small"
+                        onClick={onDelete(image.id)}
+                      >
+                        <Cancel fontSize="small" />
+                      </IconButtonBg>
                     </>
                   )
                 }

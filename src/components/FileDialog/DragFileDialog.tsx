@@ -36,6 +36,12 @@ const DragFileDialog: React.FC<IProps> = (props) => {
     switch (type) {
       case 'images':
         return 'image/*';
+
+      case 'docs':
+        return '.pdf,.docx,.pptx,.txt,.xlsx';
+
+      case 'all':
+        return '*';
     
       default:
         return 'image/*';
@@ -46,6 +52,12 @@ const DragFileDialog: React.FC<IProps> = (props) => {
     switch (type) {
       case 'images':
         return '.JPG, .PNG, .JPEEG';
+
+      case 'docs':
+        return '.PDF, .DOCX, .PPTX, .TXT, .XLSX';
+
+      case 'all':
+        return 'ALL FILES';
     
       default:
         return '.JPG, .PNG, .JPEEG';
@@ -82,7 +94,7 @@ const DragFileDialog: React.FC<IProps> = (props) => {
   const onFiles = (files: FileList) => {
     setLoadData([]);
     setFiles([]);
-    for (const file of files) {
+    for (const file of Array.from(files).slice(0, limitFile)) {
       // Initializing the FileReader API and reading the file
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -90,6 +102,7 @@ const DragFileDialog: React.FC<IProps> = (props) => {
       // Once the file has been loaded, fire the processing
       reader.onloadend = function (e) {
         if (isValidFileType(file)) {
+
           setFiles(prevState => [...prevState, file]);
           setLoadData(prevState => [...prevState, { id: uuid(), file: e.target!.result || '' }]);
         }
@@ -144,7 +157,7 @@ const DragFileDialog: React.FC<IProps> = (props) => {
             )
         }
       </Box>
-      <Typography variant="body2" fontWeight="semibold" color="gray">Add up to {limitFile} images to your items.</Typography>
+      <Typography variant="body2" fontWeight="semibold" color="gray">Add up to {limitFile} {type} to your items.</Typography>
     </Box>
   );
 };
