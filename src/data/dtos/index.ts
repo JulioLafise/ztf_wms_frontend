@@ -11,4 +11,6 @@ export * from './category.dto';
 export * from './customer.dto';
 export * from './employee.dto';
 export * from './product.dto';
+export * from './color.dto';
+export * from './entry-type.dto';
 export * from './master-entry.dto';

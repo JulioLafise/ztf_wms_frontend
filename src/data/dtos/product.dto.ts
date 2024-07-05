@@ -8,6 +8,8 @@ const schemaPOST: Yup.ObjectSchema<ProductDTO> = Yup.object().shape({
   stockMinimo: Yup.number().required(),
   categoriaId: Yup.number().required(),
   unidadMedidaId: Yup.number().required(),
+  listColor: Yup.array<ProductColor>().required(),
+  listDimension: Yup.array<ProductDimension>().required(),
   listImagen: Yup.array<ProductImage>().required(),
   listDetalle: Yup.array<ProductDetail>().required(),
   isActivo: Yup.boolean()
@@ -21,10 +23,16 @@ const schemaPATCH: Yup.ObjectSchema<ProductDTO> = Yup.object().shape({
   stockMinimo: Yup.number(),
   categoriaId: Yup.number(),
   unidadMedidaId: Yup.number(),
+  listColor: Yup.array<ProductColor>().required(),
+  listDimension: Yup.array<ProductDimension>().required(),
   listImagen: Yup.array<ProductImage>().required(),
   listDetalle: Yup.array<ProductDetail>().required(),
   isActivo: Yup.boolean()
 });
+
+type ProductColor = { tipoColorId?: number  };
+
+type ProductDimension = { unidadMedidaId?: number, descripcion?: string  };
 
 type ProductImage = {
   productoImagenId?: number,
@@ -56,6 +64,10 @@ export class ProductDTO {
 
   public unidadMedidaId?: number;
 
+  public listColor?: Array<ProductColor>;
+
+  public listDimension?: Array<ProductDimension>;
+
   public listImagen?: Array<ProductImage>;
 
   public listDetalle?: Array<ProductDetail>;
@@ -74,6 +86,31 @@ export class ProductDTO {
       dto.modeloId = data.model ? data.model.modelId : data.modelId;
       dto.categoriaId = data.category ? data.category.categoryId : data.categoryId;
       dto.unidadMedidaId = data.unitMeasure ? data.unitMeasure.unitMeasureId : data.unitMeasureId;
+      let colors: any[] = [];
+      if (Array.isArray(data.colors)) {
+        data.colors.forEach(value => {
+          colors = [
+            ...colors,
+            {
+              tipoColorId: value.colorId,
+            }
+          ];
+        });
+      }
+      dto.listColor = colors;
+      let dimensions: any[] = [];
+      if (Array.isArray(data.dimensions)) {
+        data.dimensions.forEach(value => {
+          dimensions = [
+            ...dimensions,
+            {
+              unidadMedidaId: value.unitMeasureId,
+              descripcion: value.description,
+            }
+          ];
+        });
+      }
+      dto.listDimension = dimensions;
       let images: any[] = [];
       if (Array.isArray(data.images)) {
         data.images.forEach(value => {
@@ -131,6 +168,31 @@ export class ProductDTO {
       dto.modeloId = data.model ? data.model.modelId : data.modelId;
       dto.categoriaId = data.category ? data.category.categoryId : data.categoryId;
       dto.unidadMedidaId = data.unitMeasure ? data.unitMeasure.unitMeasureId : data.unitMeasureId;
+      let colors: any[] = [];
+      if (Array.isArray(data.colors)) {
+        data.colors.forEach(value => {
+          colors = [
+            ...colors,
+            {
+              tipoColorId: value.colorId,
+            }
+          ];
+        });
+      }
+      dto.listColor = colors;
+      let dimensions: any[] = [];
+      if (Array.isArray(data.dimensions)) {
+        data.dimensions.forEach(value => {
+          dimensions = [
+            ...dimensions,
+            {
+              unidadMedidaId: value.unitMeasure.unitMeasureId,
+              descripcion: value.description,
+            }
+          ];
+        });
+      }
+      dto.listDimension = dimensions;
       let images: any[] = [];
       if (Array.isArray(data.images)) {
         data.images.forEach(value => {

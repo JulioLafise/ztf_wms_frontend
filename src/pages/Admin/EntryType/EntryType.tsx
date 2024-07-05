@@ -5,10 +5,10 @@ import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
 import * as Yup from 'yup';
 import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows } from '@wms/interfaces';
 import { Validator } from '@wms/helpers';
-import { useAlertNotification, useUI, useBrand } from '@wms/hooks';
+import { useAlertNotification, useUI, useEntryType } from '@wms/hooks';
 import { MaterialTable, ButtonActions, EditCheckboxTable } from '@wms/components';
-import { BrandEntity } from '@wms/entities';
-import BrandModal from './BrandModal';
+import { EntryTypeEntity } from '@wms/entities';
+import EntryTypeModal from './EntryTypeModal';
 
 interface ISchemaValidationTable {
   description?: string,
@@ -20,31 +20,31 @@ const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.obje
   isActive: Yup.boolean().notRequired()
 });
 
-const BrandPage = () => {
+const EntryTypePage = () => {
   const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
   const { isMobile } = useUI();
   const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
   const [isOpen, setIsOpen] = React.useState(false);
-  const [checkState, setCheckState] = React.useState<Partial<BrandEntity>>({
+  const [checkState, setCheckState] = React.useState<Partial<EntryTypeEntity>>({
     isActive: false,
   });
-  const [edit, setEdit] = React.useState<BrandEntity | null>(null);
-  const [ref, setRef] = React.useState<MRT_TableInstance<BrandEntity>>();
+  const [edit, setEdit] = React.useState<EntryTypeEntity | null>(null);
+  const [ref, setRef] = React.useState<MRT_TableInstance<EntryTypeEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { isGenerate, rowCount, useBrandListQuery, useBrandMutation } = useBrand();
-  const { data, isLoading, isError, refetch } = useBrandListQuery({ ...pagination, filter: globalFilter });
-  const mutation = useBrandMutation({ ...pagination, filter: globalFilter }, optionsQuery);
+  const { isGenerate, rowCount, useEntryTypeListQuery, useEntryTypeMutation } = useEntryType();
+  const { data, isLoading, isError, refetch } = useEntryTypeListQuery({ ...pagination, filter: globalFilter });
+  const mutation = useEntryTypeMutation({ ...pagination, filter: globalFilter }, optionsQuery);
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<ISchemaValidationTable>>({});
 
-  const columns = React.useMemo<MRT_ColumnDef<BrandEntity>[]>(() => [
+  const columns = React.useMemo<MRT_ColumnDef<EntryTypeEntity>[]>(() => [
     {
-      id: 'brandId',
-      accessorKey: 'brandId',
-      header: 'Marca ID',
+      id: 'entryTypeId',
+      accessorKey: 'entryTypeId',
+      header: 'Tipo Entrada ID',
       enableEditing: false,
       minSize: 150,
     },
@@ -76,21 +76,21 @@ const BrandPage = () => {
     },
   ], [validationErrors]);
 
-  const onSaveOrEdit: IOnSaveAndEditRows<BrandEntity> = async (row, table, values, validation): Promise<void> => {
+  const onSaveOrEdit: IOnSaveAndEditRows<EntryTypeEntity> = async (row, table, values, validation): Promise<void> => {
     if (!isMobile) {
       setOptionsQuery({
-        typeMutation: row.original.brandId ? 'put' : 'post'
+        typeMutation: row.original.entryTypeId ? 'put' : 'post'
       });
-      const data: BrandEntity = {
+      const data: EntryTypeEntity = {
         ...values,
         ...checkState,
-        isActive: row.original.brandId ? row.original.isActive : true
+        isActive: row.original.entryTypeId ? row.original.isActive : true
       };
       const [isPassed, errors] = await Validator.yupSchemaValidation({ schema: schemaValidationTable, data });
-      if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.brandId ? true : false); return; }
+      if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.entryTypeId ? true : false); return; }
       setValidationErrors({});
-      validation!({})(table, row.original.brandId ? true : false);
-      onTransaction({ brandId: row.original.brandId, ...data });
+      validation!({})(table, row.original.entryTypeId ? true : false);
+      onTransaction({ entryTypeId: row.original.entryTypeId, ...data });
     }
     else {
       setEdit(row.original);
@@ -100,13 +100,13 @@ const BrandPage = () => {
 
   const onSubmit = (values: { [x: string]: any }) => {
     setOptionsQuery({
-      typeMutation: values.brandId ? 'put' : 'post'
+      typeMutation: values.entryTypeId ? 'put' : 'post'
     });
     onTransaction(values);
   };
 
   const onTransaction = (values: { [x: string]: any }) => {
-    const title = !values.brandId ? 'Saving Brand!' : 'Updating Brand!';
+    const title = !values.entryTypeId ? 'Saving Entry Type!' : 'Updating Entry Type!';
     swalToastWait(title, {
       message: 'Please wait a few minutes',
       showLoading: true,
@@ -122,7 +122,7 @@ const BrandPage = () => {
 
   const onChangeState = async (values: { [key: string]: any }) => {
     setOptionsQuery({ typeMutation: 'delete'});
-    const title = values.isActive ? 'Desactive Brand!' : 'Active Brand!';
+    const title = values.isActive ? 'Desactive Entry Type!' : 'Active Entry Type!';
     swalToastWait(title, {
       message: 'Please wait a few minutes',
       showLoading: true,
@@ -138,11 +138,11 @@ const BrandPage = () => {
 
   return (
     <Paper elevation={4}>
-      <MaterialTable<BrandEntity>
+      <MaterialTable<EntryTypeEntity>
         columns={columns}
         data={data || []}
         enableRowActions
-        columnsVisible={{ brandId: false }}
+        columnsVisible={{ entryTypeId: false }}
         setRef={setRef}
         pagination={pagination}
         rowCount={rowCount}
@@ -160,9 +160,9 @@ const BrandPage = () => {
         onActionRefreshTable={() => refetch()}       
       />
       {isMobile && <ButtonActions title="New" onClick={() => { setIsOpen(true); setEdit(null); }} />}
-      <BrandModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} />
+      <EntryTypeModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} />
     </Paper>
   );
 };
 
-export default BrandPage;
+export default EntryTypePage;

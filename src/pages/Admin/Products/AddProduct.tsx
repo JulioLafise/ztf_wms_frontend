@@ -120,6 +120,10 @@ const AddProductPage = () => {
     }
   }, [productData]);
 
+  React.useEffect(()=> {
+    console.log(productData);
+  }, []);
+
   return (
     <FormProvider {...methods} >
       <Box component="form" className="flex flex-col gap-2" noValidate onSubmit={handleSubmit(onSubmit)}>

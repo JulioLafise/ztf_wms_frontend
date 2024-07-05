@@ -1,4 +1,4 @@
-import { ProductEntity, ProductImageEntity, ProductDetailEntity } from '@wms/entities';
+import { ProductEntity, ProductImageEntity, ProductDetailEntity, ColorEntity, ProductDimensionEntity } from '@wms/entities';
 import { Validator } from '@wms/helpers';
 
 export class ProductMapper {
@@ -30,6 +30,8 @@ export class ProductMapper {
             description: value.modelo.marca
           }
         },   
+        colors: this.getColorsList(value.listColor),
+        dimensions: this.getDimensionsList(value.listDimension),
         images: this.getImagesList(value.listImagen),
         details: this.getDetailsList(value.listDetalle),
         isActive: value.isActivo
@@ -66,7 +68,42 @@ export class ProductMapper {
           }
         ];
       });
-    } else throw new Error('An array was expected');
+    } else throw new Error('An array was expected');    
+    return data;
+  }
+
+  static getColorsList(values: unknown): ColorEntity[] {
+    let data: ColorEntity[] = [];
+    const value: any = values;
+    if (Array.isArray(value)) {
+      value.forEach((item: any) => {
+        data = [
+          ...data,
+          {
+            colorId: item.tipoColorId,
+          }
+        ];
+      });
+    } /*else throw new Error('An array was expected');*/
+    return data;
+  }
+
+  static getDimensionsList(values: unknown): ProductDimensionEntity[] {
+    let data: ProductDimensionEntity[] = [];
+    const value: any = values;
+    if (Array.isArray(value)) {
+      value.forEach((item: any) => {
+        data = [
+          ...data,
+          {
+            unitMeasure: {
+              unitMeasureId: item.unidadMedidaId
+            },
+            description: item.descripcion,
+          }
+        ];
+      });
+    } /*else throw new Error('An array was expected');*/
     return data;
   }
 
@@ -83,7 +120,7 @@ export class ProductMapper {
           }
         ];
       });
-    } else throw new Error('An array was expected');
+    } /*else throw new Error('An array was expected');*/
     return data;
   }
 
@@ -103,7 +140,7 @@ export class ProductMapper {
           }
         ];
       });
-    } else throw new Error('An array was expected');
+    } /*else throw new Error('An array was expected');*/
     return data;
   }
 

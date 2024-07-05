@@ -14,3 +14,6 @@ export * as employeeAsyncThunks from './employee.thunk';
 export * as productAsyncThunks from './product.thunk';
 export * as inventoryAsyncThunks from './inventory.thunk';
 export * as masterEntryAsyncThunks from './master-entry.thunk';
+export * as colorAsyncThunks from './color.thunk';
+export * as awsAsyncThunks from './aws-tools.thunk';
+export * as entryTypeAsyncThunks from './entry-type.thunk';

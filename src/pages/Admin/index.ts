@@ -10,3 +10,5 @@ export * from './Features';
 export * from './Categories';
 export * from './Countries';
 export * from './Products';
+export * from './Colors';
+export * from './EntryType';

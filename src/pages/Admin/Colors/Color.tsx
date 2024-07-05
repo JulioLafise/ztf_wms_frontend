@@ -1,63 +1,78 @@
 import React from 'react';
 import type { MRT_ColumnDef, MRT_TableInstance } from 'material-react-table';
-import { Paper } from '@mui/material';
-import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
+import { IconButton, InputAdornment, Paper } from '@mui/material';
+import { CheckBox, CheckBoxOutlineBlank, FormatColorFill } from '@mui/icons-material';
 import * as Yup from 'yup';
 import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows } from '@wms/interfaces';
 import { Validator } from '@wms/helpers';
-import { useAlertNotification, useUI, useBrand } from '@wms/hooks';
+import { useAlertNotification, useUI, useColor } from '@wms/hooks';
 import { MaterialTable, ButtonActions, EditCheckboxTable } from '@wms/components';
-import { BrandEntity } from '@wms/entities';
-import BrandModal from './BrandModal';
+import { ColorEntity } from '@wms/entities';
+import ColorModal from './ColorModal';
 
 interface ISchemaValidationTable {
-  description?: string,
+  color?: string,
   isActive?: Yup.Maybe<boolean>
 }
 
 const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.object().shape({
-  description: Yup.string().required('Description is required'),
+  color: Yup.string().required('Description is required'),
   isActive: Yup.boolean().notRequired()
 });
 
-const BrandPage = () => {
+const ColorPage = () => {
   const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
+  const [colors, setColors] = React.useState<string>('');
   const { isMobile } = useUI();
   const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
   const [isOpen, setIsOpen] = React.useState(false);
-  const [checkState, setCheckState] = React.useState<Partial<BrandEntity>>({
+  const [checkState, setCheckState] = React.useState<Partial<ColorEntity>>({
     isActive: false,
   });
-  const [edit, setEdit] = React.useState<BrandEntity | null>(null);
-  const [ref, setRef] = React.useState<MRT_TableInstance<BrandEntity>>();
+  const [edit, setEdit] = React.useState<ColorEntity | null>(null);
+  const [ref, setRef] = React.useState<MRT_TableInstance<ColorEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { isGenerate, rowCount, useBrandListQuery, useBrandMutation } = useBrand();
-  const { data, isLoading, isError, refetch } = useBrandListQuery({ ...pagination, filter: globalFilter });
-  const mutation = useBrandMutation({ ...pagination, filter: globalFilter }, optionsQuery);
+  const { isGenerate, rowCount, useColorListQuery, useColorMutation } = useColor();
+  const { data, isLoading, isError, refetch } = useColorListQuery({ ...pagination, filter: globalFilter });
+  const mutation = useColorMutation({ ...pagination, filter: globalFilter }, optionsQuery);
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<ISchemaValidationTable>>({});
 
-  const columns = React.useMemo<MRT_ColumnDef<BrandEntity>[]>(() => [
+  const columns = React.useMemo<MRT_ColumnDef<ColorEntity>[]>(() => [
     {
-      id: 'brandId',
-      accessorKey: 'brandId',
-      header: 'Marca ID',
+      id: 'colorId',
+      accessorKey: 'colorId',
+      header: 'Color ID',
       enableEditing: false,
       minSize: 150,
     },
     {
-      id: 'description',
-      accessorKey: 'description',
+      id: 'color',
+      accessorKey: 'color',
       header: 'Descripcion',
       minSize: 150,
       muiEditTextFieldProps: {      
         required: true,
-        error: !!validationErrors.description,
-        helperText: validationErrors.description
+        error: !!validationErrors.color,
+        helperText: validationErrors.color,
+        onChange: (_e) => { setColors(_e.target.value); },
+        onBlur: (_e) => { setColors(_e.target.value); },
+        InputProps: {
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="color-fill"
+              >
+                <FormatColorFill fontSize="small" sx={{ color: colors }} />
+              </IconButton>
+            </InputAdornment>
+          )
+        }
       },
+      Cell: ({ renderedCellValue }) => <>{renderedCellValue} <FormatColorFill sx={{ color: renderedCellValue as string }} /></> 
     },
     {
       id: 'isActive',
@@ -76,21 +91,21 @@ const BrandPage = () => {
     },
   ], [validationErrors]);
 
-  const onSaveOrEdit: IOnSaveAndEditRows<BrandEntity> = async (row, table, values, validation): Promise<void> => {
+  const onSaveOrEdit: IOnSaveAndEditRows<ColorEntity> = async (row, table, values, validation): Promise<void> => {
     if (!isMobile) {
       setOptionsQuery({
-        typeMutation: row.original.brandId ? 'put' : 'post'
+        typeMutation: row.original.colorId ? 'put' : 'post'
       });
-      const data: BrandEntity = {
+      const data: ColorEntity = {
         ...values,
         ...checkState,
-        isActive: row.original.brandId ? row.original.isActive : true
+        isActive: row.original.colorId ? row.original.isActive : true
       };
       const [isPassed, errors] = await Validator.yupSchemaValidation({ schema: schemaValidationTable, data });
-      if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.brandId ? true : false); return; }
+      if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.colorId ? true : false); return; }
       setValidationErrors({});
-      validation!({})(table, row.original.brandId ? true : false);
-      onTransaction({ brandId: row.original.brandId, ...data });
+      validation!({})(table, row.original.colorId ? true : false);
+      onTransaction({ colorId: row.original.colorId, ...data });
     }
     else {
       setEdit(row.original);
@@ -100,13 +115,13 @@ const BrandPage = () => {
 
   const onSubmit = (values: { [x: string]: any }) => {
     setOptionsQuery({
-      typeMutation: values.brandId ? 'put' : 'post'
+      typeMutation: values.colorId ? 'put' : 'post'
     });
     onTransaction(values);
   };
 
   const onTransaction = (values: { [x: string]: any }) => {
-    const title = !values.brandId ? 'Saving Brand!' : 'Updating Brand!';
+    const title = !values.colorId ? 'Saving Color!' : 'Updating Color!';
     swalToastWait(title, {
       message: 'Please wait a few minutes',
       showLoading: true,
@@ -115,6 +130,7 @@ const BrandPage = () => {
       .then(() => {
         setIsOpen(false);
         setEdit(null);
+        setColors('');
         swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
       })
       .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
@@ -122,7 +138,7 @@ const BrandPage = () => {
 
   const onChangeState = async (values: { [key: string]: any }) => {
     setOptionsQuery({ typeMutation: 'delete'});
-    const title = values.isActive ? 'Desactive Brand!' : 'Active Brand!';
+    const title = values.isActive ? 'Desactive Color!' : 'Active Color!';
     swalToastWait(title, {
       message: 'Please wait a few minutes',
       showLoading: true,
@@ -138,11 +154,11 @@ const BrandPage = () => {
 
   return (
     <Paper elevation={4}>
-      <MaterialTable<BrandEntity>
+      <MaterialTable<ColorEntity>
         columns={columns}
         data={data || []}
         enableRowActions
-        columnsVisible={{ brandId: false }}
+        columnsVisible={{ colorId: false }}
         setRef={setRef}
         pagination={pagination}
         rowCount={rowCount}
@@ -157,12 +173,13 @@ const BrandPage = () => {
         isGenerate={isGenerate}
         isError={isError}
         setValidationErrors={setValidationErrors} 
-        onActionRefreshTable={() => refetch()}       
+        onActionRefreshTable={() => refetch()}      
+        onEditingRowChange={() => { setColors(''); }} 
       />
       {isMobile && <ButtonActions title="New" onClick={() => { setIsOpen(true); setEdit(null); }} />}
-      <BrandModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} />
+      <ColorModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} />
     </Paper>
   );
 };
 
-export default BrandPage;
+export default ColorPage;
