@@ -19,13 +19,14 @@ interface IProps {
   type?: 'images' | 'docs' | 'all',
   limitFile?: number,
   onLoadData?: (data: Array<FileData>) => void,
-  onLoadFiles?: React.Dispatch<React.SetStateAction<File[]>>
+  onLoadFiles?: React.Dispatch<React.SetStateAction<File[]>>,
+  disabled?: boolean
 }
 
 type FileData = { id: string, file: string | ArrayBuffer };
 
 const DragFileDialog: React.FC<IProps> = (props) => {
-  const { type = 'images', limitFile = 1, onLoadData, onLoadFiles } = props;
+  const { type = 'images', limitFile = 1, onLoadData, onLoadFiles, disabled } = props;
   const apiRef = React.useRef<HTMLInputElement | null>(null);
   const [isDragActive, setIsDragActive] = React.useState<boolean>(false);
   const [loadData, setLoadData] = React.useState<Array<FileData>>([]);
@@ -68,6 +69,7 @@ const DragFileDialog: React.FC<IProps> = (props) => {
 
   const onDragActive = (active: boolean) => (_e: any) => {
     _e.preventDefault();
+    if (disabled) return;
     setIsDragActive(active);
   };
 
@@ -83,6 +85,7 @@ const DragFileDialog: React.FC<IProps> = (props) => {
 
   const onEvent = (_e: React.DragEvent<HTMLDivElement>) => {
     _e.preventDefault();
+    if (disabled) return;
     setIsDragActive(false);
     const files = _e.dataTransfer.files;
     if (files.length) {
@@ -139,15 +142,16 @@ const DragFileDialog: React.FC<IProps> = (props) => {
           hidden
           onChange={onUploadFile}
           accept={getAcceptFile(type)}
+          disabled={disabled}
         />
-        <Collections fontSize="large" color="primary" />
+        <Collections fontSize="large" color={disabled ? 'disabled' : 'primary'} />
         {
           isDragActive
             ? (<Typography variant="body1">Drop the files here ...</Typography>)
             : (
               <React.Fragment>
                 <Typography
-                  variant="body1">
+                  variant="body1" color={disabled ? 'gray' : undefined}>
                   Drop your files here or <Typography component="a" variant="body1" fontWeight="bold" className="underline hover:text-purple-950" onClick={onClick}>browse</Typography>
                 </Typography>
                 <Typography variant="subtitle2" color="gray">

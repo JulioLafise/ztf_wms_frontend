@@ -38,4 +38,8 @@ export class GeneratedData {
       .join(''));  
   }
 
+  static getRandomInt(max = 10) {
+    return Math.floor(Math.random() * max);
+  }
+
 }

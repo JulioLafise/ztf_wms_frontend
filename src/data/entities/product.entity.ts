@@ -22,6 +22,7 @@ export class ProductEntity {
     public dimensions?: ProductDimensionEntity[],
     public images?: ProductImageEntity[],
     public details?: ProductDetailEntity[],
+    public isEcommerce?: boolean,
     public isActive?: boolean
   ) {}
 }

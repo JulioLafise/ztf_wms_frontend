@@ -10,7 +10,9 @@ import { Validator, pagintateArray } from '@wms/helpers';
 
 interface IProps {
   rowData: ProductDetailEntity[]
-  setRowData: React.Dispatch<React.SetStateAction<ProductDetailEntity[]>>
+  setRowData: React.Dispatch<React.SetStateAction<ProductDetailEntity[]>>,
+  productId?: number,
+  disabled?: boolean
 }
 
 interface ISchemaValidationTable {
@@ -30,7 +32,7 @@ const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.obje
 type ComboBoxItems = { features: object[], products: object[] };
 
 const DetailProduct: React.FC<IProps> = (props) => {
-  const { rowData, setRowData } = props;
+  const { rowData, setRowData, disabled, productId } = props;
   const { swalToastSuccess } = useAlertNotification();
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<ISchemaValidationTable>>({});
   const [ref, setRef] = React.useState<MRT_TableInstance<ProductDetailEntity>>();
@@ -140,8 +142,8 @@ const DetailProduct: React.FC<IProps> = (props) => {
     <MaterialTable<ProductDetailEntity>
       columns={columns}
       data={paginateData || []}
-      enableRowActions
-      isEditing
+      enableRowActions={!disabled || false}
+      isEditing={!disabled || false}
       columnsVisible={{ productDetailId: false }}
       setRef={setRef}
       pagination={pagination}
@@ -156,7 +158,7 @@ const DetailProduct: React.FC<IProps> = (props) => {
       isLoading={false}
       isGenerate={true}
       isError={false}
-      setValidationErrors={setValidationErrors}
+      setValidationErrors={setValidationErrors}      
     />
   );
 };

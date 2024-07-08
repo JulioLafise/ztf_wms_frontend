@@ -34,6 +34,7 @@ export class ProductMapper {
         dimensions: this.getDimensionsList(value.listDimension),
         images: this.getImagesList(value.listImagen),
         details: this.getDetailsList(value.listDetalle),
+        isEcommerce: value.isEcommerce,
         isActive: value.isActivo
       };
     } else throw new Error('An object was expected');
@@ -80,7 +81,8 @@ export class ProductMapper {
         data = [
           ...data,
           {
-            colorId: item.tipoColorId,
+            colorId: item.productoColorId,
+            color: item.codigoRgb
           }
         ];
       });
@@ -96,8 +98,10 @@ export class ProductMapper {
         data = [
           ...data,
           {
+            dimensionId: item.productoDimensionId,
             unitMeasure: {
-              unitMeasureId: item.unidadMedidaId
+              unitMeasureId: item.unidadMedidaId,
+              description: item.unidadMedida
             },
             description: item.descripcion,
           }
