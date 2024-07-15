@@ -9,6 +9,7 @@ import { ProductMapper } from '@wms/mappers';
 
 type OptionProductName = { productId?: never, name?: string };
 type OptionProductID = { productId?: string, name?: never };
+type ContentsDelete = 'images' | 'colors' | 'dimensions' | 'details' 
 
 const useProduct = () => {
   const queryClient = useQueryClient();
@@ -95,6 +96,33 @@ const useProduct = () => {
     }
   });
 
+  const useProductEliminateItemsMutation = (contents: ContentsDelete[]) => useMutation<boolean, Error, ProductEntity>({
+    mutationFn: async (data) => {
+      const [errors, productDto] = await ProductDTO.created({ ...data });
+      if (errors) throw new Error(errors);
+      if (contents.includes('colors')) {
+        const values = (await dispatch(productAsyncThunks.onDeleteProductColors(productDto!))).payload;
+        Validator.httpValidation(values as any);
+      }
+      if (contents.includes('images')) {
+        const values = (await dispatch(productAsyncThunks.onDeleteProductImages(productDto!))).payload;
+        Validator.httpValidation(values as any);
+      }
+      if (contents.includes('dimensions')) {
+        const values = (await dispatch(productAsyncThunks.onDeleteProductDimensions(productDto!))).payload;
+        Validator.httpValidation(values as any);
+      }
+      if (contents.includes('details')) {
+        const values = (await dispatch(productAsyncThunks.onDeleteProductDetails(productDto!))).payload;
+        Validator.httpValidation(values as any);
+      }
+      return true;
+    },
+    onSuccess: (data) => {
+      return data;
+    }
+  });
+
 
   return {
     //VAR
@@ -105,6 +133,7 @@ const useProduct = () => {
     useProductListQuery,
     useProductQuery,
     useProductMutation,
+    useProductEliminateItemsMutation,
     filterProductExistByName
   };
 };

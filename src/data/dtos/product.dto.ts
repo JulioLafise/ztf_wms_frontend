@@ -104,7 +104,7 @@ export class ProductDTO {
           dimensions = [
             ...dimensions,
             {
-              unidadMedidaId: value.unitMeasureId,
+              unidadMedidaId: value.unitMeasure.unitMeasureId,
               descripcion: value.description,
             }
           ];

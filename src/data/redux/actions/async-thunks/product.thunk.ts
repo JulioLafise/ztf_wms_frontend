@@ -50,6 +50,7 @@ export const onSaveProduct = createAsyncThunk(
   async (productDto: ProductDTO, { rejectWithValue, dispatch }) => {
     try {
       const { data } = await WMSAPI.createProductPOST({ body: productDto });
+      console.log(data);
       return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
@@ -73,7 +74,55 @@ export const onDeleteProduct = createAsyncThunk(
   'catalogue/onDeleteProduct',
   async (productDto: ProductDTO, { rejectWithValue, dispatch }) => {
     try {
-      const { data } = await WMSAPI.eliminateProductDELETE({ body: productDto });
+      const { data } = await WMSAPI.eliminateProductDELETE({ params: productDto });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
+export const onDeleteProductColors = createAsyncThunk(
+  'catalogue/onDeleteProductColors',
+  async (productDto: ProductDTO, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.eliminateProductColorsDELETE({ params: productDto });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
+export const onDeleteProductImages = createAsyncThunk(
+  'catalogue/onDeleteProductImages',
+  async (productDto: ProductDTO, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.eliminateProductImagesDELETE({ params: productDto });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
+export const onDeleteProductDimensions = createAsyncThunk(
+  'catalogue/onDeleteProductDimensions',
+  async (productDto: ProductDTO, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.eliminateProductDimensionsDELETE({ params: productDto });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
+export const onDeleteProductDetails = createAsyncThunk(
+  'catalogue/onDeleteProductDetails',
+  async (productDto: ProductDTO, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.eliminateProductDetailsDELETE({ params: productDto });
       return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));

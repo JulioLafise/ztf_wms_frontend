@@ -20,6 +20,7 @@ import {
   FontAwesomeIcon,
   CheckBoxHF
 } from '@wms/components';
+import { IOptionsQuery } from '@wms/interfaces';
 import {
   useBrand,
   useModel,
@@ -27,9 +28,11 @@ import {
   useUnitMeasure,
   useUI,
   useProduct,
-  useColor
+  useColor,
+  useAlertNotification
 } from '@wms/hooks';
 import {
+  ProductEntity,
   ProductDetailEntity,
   BrandEntity,
   ModelEntity,
@@ -42,9 +45,10 @@ import { Validator, GeneratedData } from '@wms/helpers';
 import DetailProduct from './DetailProduct';
 
 interface IForm {
+  productId: Yup.Maybe<number>,
   name: string,
   description: string,
-  minimun: number,
+  minimum: number,
   color: ColorEntity | null,
   brand: BrandEntity | null,
   model: ModelEntity | null,
@@ -52,13 +56,15 @@ interface IForm {
   unitMeasure: object | null,
   unitMeasure2: object | null,
   dimension: Yup.Maybe<string>,
-  isEcommerce: Yup.Maybe<boolean>
+  isEcommerce: Yup.Maybe<boolean>,
+  isActive: Yup.Maybe<boolean>,
 }
 
 const defaultValues: IForm  = {
+  productId: 0,
   name: '',
   description: '',
-  minimun: 0,
+  minimum: 1,
   color: null,
   brand: null,
   model: null,
@@ -67,12 +73,14 @@ const defaultValues: IForm  = {
   unitMeasure2: null,
   dimension: '',
   isEcommerce: false,
+  isActive: true,
 };
 
 const schemaValidationForm: Yup.ObjectSchema<IForm> = Yup.object().shape({
+  productId: Yup.number().notRequired(),
   name: Yup.string().required('Name is required'),
   description: Yup.string().required('Description is required'),
-  minimun: Yup.number().required('Minimun is required'),
+  minimum: Yup.number().required('Minimum is required').integer().min(1, 'The minimum is 1'),
   color: Yup.object().nullable(),
   brand: Yup.object().nullable().required('Brand is required'),
   model: Yup.object().nullable().required('Model is required'),
@@ -80,7 +88,8 @@ const schemaValidationForm: Yup.ObjectSchema<IForm> = Yup.object().shape({
   unitMeasure: Yup.object().nullable().required('Unit Measure is required'),
   unitMeasure2: Yup.object().nullable(),
   dimension: Yup.string(),
-  isEcommerce: Yup.boolean()
+  isEcommerce: Yup.boolean(),
+  isActive: Yup.boolean(),
 });
 
 const limitFile = 5;
@@ -92,11 +101,13 @@ const AddProductPage = () => {
     mode: 'onSubmit',
     reValidateMode: 'onChange'
   });
+  const { swalToastError, swalToastWait, swalToastSuccess, swalToastWarn } = useAlertNotification();
   const { isMobile, isSideBarOpen } = useUI();
   const navigate = useNavigate();
   const params = useParams();
   const { watch, handleSubmit, setValue, reset } = methods;
   const formValues = watch();
+  const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
   const [dimensions, setDimensions] = React.useState<ProductDimensionEntity[]>([]);
   const [colors, setColors] = React.useState<ColorEntity[]>([]);
   const [rowData, setRowData] = React.useState<ProductDetailEntity[]>([]);
@@ -107,7 +118,7 @@ const AddProductPage = () => {
   const { useModelListQuery } = useModel();
   const { useCategoryListQuery } = useCategory();
   const { useUnitMeasureListQuery } = useUnitMeasure();
-  const { useProductQuery } = useProduct();
+  const { useProductQuery, useProductMutation, useProductEliminateItemsMutation } = useProduct();
   const { useColorListQuery } = useColor();
   const { data: brandData, isLoading: isLoadingBrand } = useBrandListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
   const { data: modelData, isLoading: isLoadingModel } = useModelListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
@@ -115,10 +126,35 @@ const AddProductPage = () => {
   const { data: unitMeasureData, isLoading: isLoadingUnitMeasure } = useUnitMeasureListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
   const { data: colorData, isLoading: isLoadingColor } = useColorListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
   const { data: productData } = useProductQuery({ productId: params.productId });
+  const mutation = useProductMutation({ pageIndex: 0, pageSize: 100, filter: '' }, optionsQuery);
+  const mutationEliminate = useProductEliminateItemsMutation([ 'colors', 'details', 'images', 'dimensions' ]);
 
-  const onSubmit = (values: any) => {
-    const form: IForm = values;
-    console.log(form.minimun);
+  const onSubmit = (values: { [x: string]: any }) => {
+    setOptionsQuery({
+      typeMutation: values.productId ? 'put' : 'post'
+    });
+    const title = values.productId ? 'Updating Product!' : 'Saving Product!';
+    const data: ProductEntity = {
+      ...values,
+      colors,
+      dimensions,
+      details: rowData
+    };
+    swalToastWait(title, {
+      message: 'Please wait a few minutes',
+      showLoading: true,
+    });
+    mutationEliminate.mutateAsync(values)
+      .then(isDelete => {
+        if (isDelete) {
+          mutation.mutateAsync(data)
+            .then(() => {
+              swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+            })
+            .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });        
+        }
+      })
+      .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
   };
 
   const onAddDimension = (_e: any) => {
@@ -186,10 +222,6 @@ const AddProductPage = () => {
     }
   }, [productData]);
 
-  React.useEffect(()=> {
-    console.log(colorData);
-    console.log(productData);
-  }, []);
 
   return (
     <FormProvider {...methods} >
@@ -280,7 +312,13 @@ const AddProductPage = () => {
                 <CheckBoxHF
                   name="isEcommerce"
                   label="Activo Ecommerce"
+                  className="w-1/2"                  
+                />
+                <CheckBoxHF
+                  name="isActive"
+                  label="Activo"
                   className="w-1/2"
+                  disabled
                 />
               </Box>
             </Box>
@@ -426,7 +464,7 @@ const AddProductPage = () => {
           <DetailProduct rowData={rowData} setRowData={setRowData} disabled={formValues.isEcommerce || false} />
         </Paper>
         <ButtonActions
-          title="Previous"
+          title="Back"
           onClick={() => navigate('/app/inventory/products', { replace: true })}
           ComponentIcon={<ArrowBack />}
           ubication={isMobile ? { left: 50 } : { bottom: 99, left: isSideBarOpen ? 280 : 99 }}
@@ -436,7 +474,7 @@ const AddProductPage = () => {
           typeSubmit="submit"
           ubication={isMobile ? {} : { bottom: 99, right: 99 }}
           ComponentIcon={<Save />}
-          disabled={formValues.isEcommerce || false}
+          disabled={(formValues.isEcommerce || mutation.isPending) || false}
         />
       </Box>
     </FormProvider>

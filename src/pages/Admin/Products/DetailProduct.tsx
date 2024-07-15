@@ -1,12 +1,11 @@
 import React from 'react';
 import type { MRT_ColumnDef, MRT_TableInstance, MRT_RowData } from 'material-react-table';
-import { v4 as uuid } from 'uuid';
 import * as Yup from 'yup';
 import { IOnSaveAndEditRows, IValidationErrors, ComboBoxSelectTable } from '@wms/interfaces';
 import { MaterialTable } from '@wms/components';
 import { useAlertNotification, useFeatures, useProduct } from '@wms/hooks';
 import { ProductDetailEntity } from '@wms/entities';
-import { Validator, pagintateArray } from '@wms/helpers';
+import { Validator, pagintateArray, GeneratedData } from '@wms/helpers';
 
 interface IProps {
   rowData: ProductDetailEntity[]
@@ -112,7 +111,7 @@ const DetailProduct: React.FC<IProps> = (props) => {
       ...prevState,
       {
         ...values,
-        productDetailId: uuid(),
+        productDetailId: values.productDetailId || GeneratedData.getRandomInt(3000),
       }
     ]);
   };
@@ -135,8 +134,6 @@ const DetailProduct: React.FC<IProps> = (props) => {
       setSelectData(oldData => ({ ...oldData, features: featureData.map(obj => ({ label: obj.description, value: obj.featuresId })) }));
     }
   }, [productData, featureData]);
-
-  React.useEffect(() => { console.log(paginateData); }, [paginateData]);
 
   return (
     <MaterialTable<ProductDetailEntity>

@@ -45,9 +45,27 @@ export const updateProductPUT = async (options: IBodyProps<ProductDTO>): Promise
   }
 });
 
-export const eliminateProductDELETE = async (options: IBodyProps<ProductDTO>): Promise<IJsonBody<ProductEntity | string>> => await httpClient.delete({
+export const eliminateProductDELETE = async (options: IParamsProps<ProductDTO>): Promise<IJsonBody<ProductEntity | string>> => await httpClient.delete({
   url: `producto/${options.body.productoId}/`,
-  options: {
-    data: options.body
-  }
+  options: {}
+});
+
+export const eliminateProductColorsDELETE = async (options: IParamsProps<ProductDTO>): Promise<IJsonBody<ProductEntity | string>> => await httpClient.delete({
+  url: `producto/${options.params.productoId}/color`,
+  options: {}
+});
+
+export const eliminateProductImagesDELETE = async (options: IParamsProps<ProductDTO>): Promise<IJsonBody<ProductEntity | string>> => await httpClient.delete({
+  url: `producto/${options.params.productoId}/img`,
+  options: {}
+});
+
+export const eliminateProductDimensionsDELETE = async (options: IParamsProps<ProductDTO>): Promise<IJsonBody<ProductEntity | string>> => await httpClient.delete({
+  url: `producto/${options.params.productoId}/dimension`,
+  options: {}
+});
+
+export const eliminateProductDetailsDELETE = async (options: IParamsProps<ProductDTO>): Promise<IJsonBody<ProductEntity | string>> => await httpClient.delete({
+  url: `producto/${options.params.productoId}/detalle`,
+  options: {}
 });
