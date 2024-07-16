@@ -11,6 +11,10 @@ import {
 import { Controller, useFormContext } from 'react-hook-form';
 import { FontAwesomeIcon } from '..';
 
+interface RenderOptionProps<T> extends React.HTMLAttributes<T> {
+  key?: any
+}
+
 interface Props<T> {
   name: string,
   icon?: string,
@@ -19,7 +23,7 @@ interface Props<T> {
   placeholder?: string,
   optionsData: Array<T>,
   getOptionLabel: (option: T) => string,
-  renderOption?: (props: React.HTMLAttributes<HTMLLIElement>, option: T, state: AutocompleteRenderOptionState, ownerState: AutocompleteOwnerState<T, false, boolean, false, 'div'>) => React.ReactNode,
+  renderOption?: (props: RenderOptionProps<HTMLLIElement>, option: T, state: AutocompleteRenderOptionState, ownerState: AutocompleteOwnerState<T, false, boolean, false, 'div'>) => React.ReactNode,
   size?: 'small' | 'medium',
   variant?: 'filled' | 'outlined' | 'standard',
   readOnly?: boolean,

@@ -7,7 +7,7 @@ export const onSaveImageToS3 = createAsyncThunk(
   'aws/onSaveImageToS3',
   async (args: { images: File[] }, { rejectWithValue, dispatch }) => {
     try {
-      const { data } = await WMSAPI.createImageToS3POST({ body: args });
+      const { data } = await WMSAPI.createImageToS3POST({ body: args.images });
       return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));

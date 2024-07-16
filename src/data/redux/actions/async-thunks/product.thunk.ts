@@ -50,7 +50,6 @@ export const onSaveProduct = createAsyncThunk(
   async (productDto: ProductDTO, { rejectWithValue, dispatch }) => {
     try {
       const { data } = await WMSAPI.createProductPOST({ body: productDto });
-      console.log(data);
       return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));

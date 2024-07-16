@@ -69,6 +69,7 @@ const useProduct = () => {
         const [errors, productDto] = await ProductDTO.created({ ...data });
         if (errors) throw new Error(errors);
         const dataNew = (await dispatch(productAsyncThunks.onSaveProduct(productDto!))).payload;
+        console.log(dataNew);
         Validator.httpValidation(dataNew as any);
         return ProductMapper.getItem(dataNew);
       }

@@ -7,10 +7,13 @@ import {
 } from '@wms/interfaces';
 
 
-export const createImageToS3POST = async (options: IBodyProps<{ images: File[] }>): Promise<IJsonBody<string[]>> => await httpClient.post({
+export const createImageToS3POST = async (options: IBodyProps<File[]>): Promise<IJsonBody<string[]>> => await httpClient.post({
   url: 'awss',
   options: {
-    data: options.body
+    data: options.body,
+    headers: {
+      'Content-Type': `multipart/form-data; charset=utf-8; boundary=${Math.random().toString().substring(2)};`
+    }
   }
 });
 

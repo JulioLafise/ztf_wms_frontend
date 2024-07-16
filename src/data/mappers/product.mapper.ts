@@ -1,4 +1,4 @@
-import { ProductEntity, ProductImageEntity, ProductDetailEntity, ColorEntity, ProductDimensionEntity } from '@wms/entities';
+import { ProductEntity, ProductImageEntity, ProductDetailEntity, ProductColorEntity, ProductDimensionEntity } from '@wms/entities';
 import { Validator } from '@wms/helpers';
 
 export class ProductMapper {
@@ -73,15 +73,16 @@ export class ProductMapper {
     return data;
   }
 
-  static getColorsList(values: unknown): ColorEntity[] {
-    let data: ColorEntity[] = [];
+  static getColorsList(values: unknown): ProductColorEntity[] {
+    let data: ProductColorEntity[] = [];
     const value: any = values;
     if (Array.isArray(value)) {
       value.forEach((item: any) => {
         data = [
           ...data,
           {
-            colorId: item.productoColorId,
+            productColorId: item.productoColorId,
+            colorId: item.tipoColorId,
             color: item.codigoRgb
           }
         ];

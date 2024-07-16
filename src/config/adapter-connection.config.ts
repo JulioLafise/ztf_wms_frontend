@@ -3,7 +3,8 @@ import axiosHttp, {
   AxiosHeaders,
   AxiosResponse,
   type AxiosInterceptorOptions,
-  type InternalAxiosRequestConfig
+  type InternalAxiosRequestConfig,
+  AxiosRequestConfig
 } from 'axios';
 import { IJsonBody } from '@wms/interfaces';
 
@@ -13,7 +14,7 @@ interface IMethodHttp {
 }
 
 interface IHttpOptions {
-  headers?: AxiosHeaders,
+  headers?: AxiosRequestConfig<any>['headers'],
   params?: any,
   data?: any
 }
@@ -41,7 +42,25 @@ class AdapterConnection {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
-      }
+      },
+      transformRequest: [(data, headers) => {
+        if (headers['Content-Type'] && headers['Content-Type'].toString().startsWith('multipart/form-data')) {
+          const form = new FormData();
+          for (const key in data) {
+            const values = data[key];
+            if (Array.isArray(values)) {
+              const arrayKey = `${key}[]`;
+              values.forEach(value => {
+                form.append(arrayKey, value);
+              });
+            } else {
+              form.append(key, values);
+            }
+          }
+          return form;
+        }
+        return JSON.stringify(data);
+      }]
     });
 
     const configReq = this.extraInterceptor?.request;

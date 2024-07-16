@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React from 'react';
 import {
   Box,
@@ -7,11 +8,12 @@ import {
   Paper,
   Typography
 } from '@mui/material';
-import { Add, ArrowBack, Cancel, Save } from '@mui/icons-material';
+import { Add, ArrowBack, Cancel, FormatPaint, Image, Info, Save, SquareFoot, TableView } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
+import { v4 as uuid } from 'uuid';
 import {
   AutoCompleteHF,
   TextFieldHF,
@@ -29,7 +31,8 @@ import {
   useUI,
   useProduct,
   useColor,
-  useAlertNotification
+  useAlertNotification,
+  useAws
 } from '@wms/hooks';
 import {
   ProductEntity,
@@ -39,7 +42,8 @@ import {
   CategoryEntity,
   UnitMeasureEntity,
   ColorEntity,
-  ProductDimensionEntity
+  ProductDimensionEntity,
+  ProductImageEntity
 } from '@wms/entities';
 import { Validator, GeneratedData } from '@wms/helpers';
 import DetailProduct from './DetailProduct';
@@ -47,6 +51,7 @@ import DetailProduct from './DetailProduct';
 interface IForm {
   productId: Yup.Maybe<number>,
   name: string,
+  code: Yup.Maybe<string>,
   description: string,
   minimum: number,
   color: ColorEntity | null,
@@ -62,6 +67,7 @@ interface IForm {
 
 const defaultValues: IForm  = {
   productId: 0,
+  code: '',
   name: '',
   description: '',
   minimum: 1,
@@ -78,6 +84,7 @@ const defaultValues: IForm  = {
 
 const schemaValidationForm: Yup.ObjectSchema<IForm> = Yup.object().shape({
   productId: Yup.number().notRequired(),
+  code: Yup.string().notRequired(),
   name: Yup.string().required('Name is required'),
   description: Yup.string().required('Description is required'),
   minimum: Yup.number().required('Minimum is required').integer().min(1, 'The minimum is 1'),
@@ -101,18 +108,20 @@ const AddProductPage = () => {
     mode: 'onSubmit',
     reValidateMode: 'onChange'
   });
-  const { swalToastError, swalToastWait, swalToastSuccess, swalToastWarn } = useAlertNotification();
-  const { isMobile, isSideBarOpen } = useUI();
+  const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
+  const { isMobile, isSideBarOpen, theme } = useUI();
+  const { uploadImageToS3Api } = useAws();
   const navigate = useNavigate();
   const params = useParams();
   const { watch, handleSubmit, setValue, reset } = methods;
   const formValues = watch();
+  const [lock, setLock] = React.useState<boolean>(false);
   const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
   const [dimensions, setDimensions] = React.useState<ProductDimensionEntity[]>([]);
   const [colors, setColors] = React.useState<ColorEntity[]>([]);
   const [rowData, setRowData] = React.useState<ProductDetailEntity[]>([]);
-  const [imageList, setImageList] = React.useState<Array<{ id: any, file: string | ArrayBuffer }>>([]);
-  const [imagesDelete, setImageDelete] = React.useState<Array<{ id: any, file: string | ArrayBuffer }>>([]);
+  const [imageList, setImageList] = React.useState<Array<{ id: any, name: string, file: string | ArrayBuffer }>>([]);
+  const [files, setFiles] = React.useState<File[]>([]);
   const [modelDataFilter, setModelDataFilter] = React.useState<ModelEntity[]>([]);
   const { useBrandListQuery } = useBrand();
   const { useModelListQuery } = useModel();
@@ -125,21 +134,15 @@ const AddProductPage = () => {
   const { data: categoryData, isLoading: isLoadingCategory } = useCategoryListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
   const { data: unitMeasureData, isLoading: isLoadingUnitMeasure } = useUnitMeasureListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
   const { data: colorData, isLoading: isLoadingColor } = useColorListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
-  const { data: productData } = useProductQuery({ productId: params.productId });
+  const { data: productData, refetch: refetchProductData, isRefetching } = useProductQuery({ productId: params.productId });
   const mutation = useProductMutation({ pageIndex: 0, pageSize: 100, filter: '' }, optionsQuery);
-  const mutationEliminate = useProductEliminateItemsMutation([ 'colors', 'details', 'images', 'dimensions' ]);
+  const mutationEliminate = useProductEliminateItemsMutation(['colors', 'images', 'dimensions', 'details']);
 
   const onSubmit = (values: { [x: string]: any }) => {
     setOptionsQuery({
       typeMutation: values.productId ? 'put' : 'post'
     });
     const title = values.productId ? 'Updating Product!' : 'Saving Product!';
-    const data: ProductEntity = {
-      ...values,
-      colors,
-      dimensions,
-      details: rowData
-    };
     swalToastWait(title, {
       message: 'Please wait a few minutes',
       showLoading: true,
@@ -147,11 +150,32 @@ const AddProductPage = () => {
     mutationEliminate.mutateAsync(values)
       .then(isDelete => {
         if (isDelete) {
-          mutation.mutateAsync(data)
-            .then(() => {
-              swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+          uploadImageToS3Api(files)
+            .then(urls => {
+              let images: ProductImageEntity[] = [];
+              if (urls.length) {
+                urls.forEach(url => {
+                  images = [{ url }];
+                });
+              }
+              imageList.filter(ft => ft.file.toString().indexOf('http')).forEach(image => {
+                images = [...images, { url: image.file as string }];
+              });
+              const data: ProductEntity = {
+                ...values,
+                colors,
+                dimensions,
+                images,
+                details: rowData
+              };
+              mutation.mutateAsync(data)
+                .then(() => {
+                  refetchProductData();
+                  swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+                })
+                .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
             })
-            .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });        
+            .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
         }
       })
       .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
@@ -172,16 +196,22 @@ const AddProductPage = () => {
     }
   };
   
-  const onDelete = (id: string) => (_e: any) => {
-    setImageList(prevState => {
-      setImageDelete(prevDelete => [...prevDelete, ...prevState.filter(ft => ft.id === id)]);
-      return [...prevState.filter(ft => ft.id !== id)];
-    });    
-  };
+  const onDelete = (id: string, name: string) => (_e: any) => {
+    console.log(files);
+    setFiles(prevState => [...prevState.filter(ft => ft.name !== name)]);
+    setImageList(prevState => [...prevState.filter(ft => ft.id !== id)]);
+  };    
 
   const onDeleteColor = (id: number) => (_e: any) => setColors(prevState => [...prevState.filter(ft => ft.colorId !== id)]);
 
   const onDeleteDimension = (id: number) => (_e: any) => setDimensions(prevState => [...prevState.filter(ft => ft.dimensionId !== id)]);
+
+  const onArrayClear = () => {
+    setImageList([]);
+    setRowData([]);
+    setColors([]);
+    setDimensions([]);
+  };
 
   React.useEffect(() => {
     const data = modelData?.filter(ft => ft.brand?.brandId === formValues.brand?.brandId) || [];
@@ -205,8 +235,9 @@ const AddProductPage = () => {
       reset(productData);
       setValue('brand', productData?.model?.brand || null);
       setValue('model', productData?.model || null);
+      onArrayClear();
       productData?.images?.forEach(image => {
-        setImageList(prevState => [...prevState, { id: image.productImageId, file: image.url || '' }]);
+        setImageList(prevState => [...prevState, { id: image.productImageId, file: image.url || '', name: '' }]);
       });
       productData?.details?.forEach(detail => {
         setRowData(prevState => [...prevState, detail]);
@@ -220,7 +251,15 @@ const AddProductPage = () => {
     } else {
       reset(defaultValues);
     }
-  }, [productData]);
+  }, [productData, isRefetching]);
+
+  React.useEffect(() => {
+    if (formValues.isEcommerce || mutation.isPending || mutationEliminate.isPending) {
+      setLock(true);
+    } else {
+      setLock(false);
+    }
+  }, [formValues.isEcommerce, mutation.isPending, mutationEliminate.isPending]);
 
 
   return (
@@ -228,11 +267,20 @@ const AddProductPage = () => {
       <Box component="form" className="flex flex-col gap-2" noValidate onSubmit={handleSubmit(onSubmit)}>
         <Box component="div" className="flex flex-wrap md:flex-nowrap gap-2">
           <Paper elevation={4} className="w-full md:w-1/2">
-            <Box component="section" className="p-2">
+            <Box component="section" className="flex items-center gap-2 p-2">
+              <Info color="primary" />
               <Typography variant="h6" fontWeight="bold">Product Info</Typography>
             </Box>
             <Divider />
-            <Box component="section" className="flex flex-col p-4 md:space-y-4">
+            <Box component="section" className="flex flex-col p-4 md:space-y-2">
+              <TextFieldHF
+                className="w-full"
+                label="Codigo"
+                name="code"
+                maxLength={5}
+                size="small"
+                disabled
+              />
               <TextFieldHF
                 className="w-full"
                 label="Nombre"
@@ -248,7 +296,7 @@ const AddProductPage = () => {
                 name="description"
                 size="small"
                 rows={5}
-                disabled={formValues.isEcommerce || false}
+                disabled={lock || false}
                 required
               />
               <TextFieldHF
@@ -257,7 +305,7 @@ const AddProductPage = () => {
                 name="minimum"
                 size="small"
                 mask="decimal"
-                disabled={formValues.isEcommerce || false}
+                disabled={lock || false}
                 required
               />
               <Box component="section" className="flex flex-wrap md:flex-nowrap gap-0 md:gap-2">
@@ -269,7 +317,7 @@ const AddProductPage = () => {
                   loading={isLoadingBrand}
                   getOptionLabel={option => `${option.description}`}
                   size="small"
-                  disabled={formValues.isEcommerce || false}
+                  disabled={lock || false}
                   required
                 />
                 <AutoCompleteHF<ModelEntity>
@@ -280,7 +328,7 @@ const AddProductPage = () => {
                   getOptionLabel={option => `${option.description}`}
                   loading={isLoadingModel}
                   size="small"
-                  disabled={formValues.isEcommerce || false}
+                  disabled={lock || false}
                   required
                 />
               </Box>
@@ -293,7 +341,7 @@ const AddProductPage = () => {
                   getOptionLabel={option => `${option.description}`}
                   loading={isLoadingCategory}
                   size="small"
-                  disabled={formValues.isEcommerce || false}
+                  disabled={lock || false}
                   required
                 />
                 <AutoCompleteHF<UnitMeasureEntity>
@@ -304,7 +352,7 @@ const AddProductPage = () => {
                   getOptionLabel={option => `${option.description}`}
                   loading={isLoadingUnitMeasure}
                   size="small"
-                  disabled={formValues.isEcommerce || false}
+                  disabled={lock || false}
                   required
                 />
               </Box>
@@ -324,18 +372,28 @@ const AddProductPage = () => {
             </Box>
           </Paper>
           <Paper elevation={4} className="w-full md:w-1/2">
-            <Box component="section" className="p-2">
+            <Box component="section" className="flex items-center gap-2 p-2">
+              <Image color="primary" />
               <Typography variant="h6" fontWeight="bold">Images</Typography>
             </Box>
             <Divider />
             <Box component="section" className="flex flex-col p-4 gap-2">
-              <DragFileDialog limitFile={limitFile} type="images" disabled={formValues.isEcommerce || false} onLoadData={(data) => {
+              <DragFileDialog limitFile={limitFile} type="images" disabled={lock || false} onLoadData={(data) => {
                 if (imageList.length >= limitFile) return;
                 setImageList(prevState => [
                   ...prevState,
                   ...data.slice(0, limitFile - imageList.length).filter(ft => ft.id)
                 ]);
-              }} />
+              }} 
+              onLoadFiles={(data) => {
+                if (imageList.length >= limitFile) return;
+                setFiles(prevState => [
+                  ...prevState,
+                  // @ts-expect-error
+                  ...Array.from(data).slice(0, limitFile - imageList.length).filter(ft => ft.name)
+                ]);
+              }}
+              />
               <Box component="div" className="flex flex-nowrap w-full gap-2 overflow-auto container-scroll items-start">
                 {
                   imageList.map(image => 
@@ -350,8 +408,8 @@ const AddProductPage = () => {
                         sx={{ position: 'sticky', marginLeft: -5, marginTop: 1 }}
                         color="inherit"
                         size="small"
-                        onClick={onDelete(image.id)}
-                        disabled={formValues.isEcommerce || false}
+                        onClick={onDelete(image.id, image.name)}
+                        disabled={lock || false}
                       >
                         <Cancel fontSize="small" color="primary" />
                       </IconButton>
@@ -364,7 +422,8 @@ const AddProductPage = () => {
         </Box>
         <Box component="div" className="flex flex-wrap md:flex-nowrap gap-2">
           <Paper elevation={4} className="w-full md:w-1/2">
-            <Box component="section" className="p-2">
+            <Box component="section" className="flex items-center gap-2 p-2">
+              <FormatPaint color="primary" />
               <Typography variant="h6" fontWeight="bold">Colors</Typography>
             </Box>
             <Divider />
@@ -375,13 +434,13 @@ const AddProductPage = () => {
                 name="color"
                 optionsData={colorData || []}
                 getOptionLabel={option => `${option.color}`}
-                renderOption={(props, option) => (
-                  <li {...props}>
+                renderOption={({ key: someKey, ...props }, option) => (
+                  <li key={someKey} {...props}>
                     <FontAwesomeIcon icon="fill-drip" color={option.color} className="pe-1.5" /> {option.color}
                   </li>)
                 }
                 loading={isLoadingColor}
-                disabled={formValues.isEcommerce || false}
+                disabled={lock || false}
                 size="small"
               />
               <Box component="section" className="flex gap-2 flex-wrap py-2">
@@ -394,7 +453,7 @@ const AddProductPage = () => {
                         color="inherit"
                         size="small"
                         onClick={onDeleteColor(color.colorId || 0)}
-                        disabled={formValues.isEcommerce || false}
+                        disabled={lock || false}
                       >
                         <Cancel fontSize="small" color="primary" />
                       </IconButton>
@@ -405,7 +464,8 @@ const AddProductPage = () => {
             </Box>
           </Paper>
           <Paper elevation={4} className="w-full md:w-1/2">
-            <Box component="section" className="p-2">
+            <Box component="section" className="flex items-center gap-2 p-2">
+              <SquareFoot color="primary" />
               <Typography variant="h6" fontWeight="bold">Dimensions</Typography>
             </Box>
             <Divider />
@@ -417,7 +477,7 @@ const AddProductPage = () => {
                   name="dimension"
                   maxLength={5}
                   size="small"
-                  disabled={formValues.isEcommerce || false}
+                  disabled={lock || false}
                 />
                 <AutoCompleteHF<UnitMeasureEntity>
                   className="w-full md:w-1/2"
@@ -427,25 +487,25 @@ const AddProductPage = () => {
                   getOptionLabel={option => `${option.description}`}
                   loading={isLoadingUnitMeasure}
                   size="small"
-                  disabled={formValues.isEcommerce || false}
+                  disabled={lock || false}
                 />
                 {
                   isMobile
-                    ? (<Button variant="contained" onClick={onAddDimension} fullWidth disabled={formValues.isEcommerce || false}>Add</Button>)
-                    : (<IconButton onClick={onAddDimension} disabled={formValues.isEcommerce || false}><Add color="primary" /></IconButton>)
+                    ? (<Button variant="contained" onClick={onAddDimension} fullWidth disabled={lock || false}>Add</Button>)
+                    : (<IconButton onClick={onAddDimension} disabled={lock || false}><Add color="primary" /></IconButton>)
                 }
               </Box>
               <Box component="section" className="flex gap-2 flex-wrap py-2">
                 {
                   dimensions.map(dimension =>
                     <Box component="div" key={dimension.dimensionId} className="bg-gray-200 rounded-full py-0.5 px-1 flex items-center justify-center gap-1">
-                      <FontAwesomeIcon icon="ruler" className="pe-0.5" />
+                      <FontAwesomeIcon icon="ruler" className="pe-0.5" color={theme.paletteColors?.primary.main} />
                       <Typography variant="subtitle2" className="text-black">{dimension.description} {dimension.unitMeasure?.description}</Typography>
                       <IconButton
                         color="inherit"
                         size="small"
                         onClick={onDeleteDimension(dimension.dimensionId || 0)}
-                        disabled={formValues.isEcommerce || false}
+                        disabled={lock || false}
                       >
                         <Cancel fontSize="small" color="primary" />
                       </IconButton>
@@ -457,11 +517,12 @@ const AddProductPage = () => {
           </Paper>
         </Box>
         <Paper elevation={4} className="w-full">
-          <Box component="section" className="p-2">
+          <Box component="section" className="flex items-center gap-2 p-2">
+            <TableView color="primary" />
             <Typography variant="h6" fontWeight="bold">Details</Typography>
           </Box>
           <Divider />
-          <DetailProduct rowData={rowData} setRowData={setRowData} disabled={formValues.isEcommerce || false} />
+          <DetailProduct rowData={rowData} setRowData={setRowData} disabled={lock || false} productId={Number(params.productId)} />
         </Paper>
         <ButtonActions
           title="Back"
@@ -474,7 +535,7 @@ const AddProductPage = () => {
           typeSubmit="submit"
           ubication={isMobile ? {} : { bottom: 99, right: 99 }}
           ComponentIcon={<Save />}
-          disabled={(formValues.isEcommerce || mutation.isPending) || false}
+          disabled={(lock) || false}
         />
       </Box>
     </FormProvider>

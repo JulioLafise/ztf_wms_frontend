@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 
 const schemaPOST: Yup.ObjectSchema<ProductDTO> = Yup.object().shape({
   productoId: Yup.number(),
+  codigo: Yup.string(),
   descripcion: Yup.string().required(),
   nombre: Yup.string().required(),
   modeloId: Yup.number().required(),
@@ -12,11 +13,13 @@ const schemaPOST: Yup.ObjectSchema<ProductDTO> = Yup.object().shape({
   listDimension: Yup.array<ProductDimension>().required(),
   listImagen: Yup.array<ProductImage>().required(),
   listDetalle: Yup.array<ProductDetail>().required(),
-  isActivo: Yup.boolean()
+  isEcommerce: Yup.boolean(),
+  isActivo: Yup.boolean(),
 });
 
 const schemaPATCH: Yup.ObjectSchema<ProductDTO> = Yup.object().shape({
   productoId: Yup.number().required(),
+  codigo: Yup.string(),
   descripcion: Yup.string(),
   nombre: Yup.string(),
   modeloId: Yup.number(),
@@ -27,7 +30,8 @@ const schemaPATCH: Yup.ObjectSchema<ProductDTO> = Yup.object().shape({
   listDimension: Yup.array<ProductDimension>().required(),
   listImagen: Yup.array<ProductImage>().required(),
   listDetalle: Yup.array<ProductDetail>().required(),
-  isActivo: Yup.boolean()
+  isEcommerce: Yup.boolean(),
+  isActivo: Yup.boolean(),
 });
 
 type ProductColor = { tipoColorId?: number  };
@@ -52,6 +56,8 @@ export class ProductDTO {
 
   public productoId?: number;
 
+  public codigo?: string;
+
   public descripcion?: string;
 
   public nombre?: string;
@@ -72,6 +78,8 @@ export class ProductDTO {
 
   public listDetalle?: Array<ProductDetail>;
 
+  public isEcommerce?: boolean;
+
   public isActivo?: boolean;
 
   static async created(data: { [key: string]: any }): Promise<[any?, ProductDTO?]>
@@ -80,6 +88,7 @@ export class ProductDTO {
       const dto = new ProductDTO();
 
       dto.productoId = data.productId || 0;
+      dto.codigo = data.code;
       dto.descripcion = data.description;
       dto.nombre = data.name;
       dto.stockMinimo = data.minimum;
@@ -142,6 +151,7 @@ export class ProductDTO {
       }
       dto.listDetalle = details;
       dto.isActivo = data.isActive;
+      dto.isEcommerce = data.isEcommerce;
 
       await schemaPOST.validate(dto, { abortEarly: false });
 
@@ -162,6 +172,7 @@ export class ProductDTO {
       const dto = new ProductDTO();
 
       dto.productoId = data.productId;
+      dto.codigo = data.code;
       dto.descripcion = data.description;
       dto.nombre = data.name;
       dto.stockMinimo = data.minimum;
@@ -224,6 +235,7 @@ export class ProductDTO {
       }
       dto.listDetalle = details;
       dto.isActivo = data.isActive;
+      dto.isEcommerce = data.isEcommerce;
 
       await schemaPATCH.validate(dto, { abortEarly: false });
 

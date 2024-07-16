@@ -16,6 +16,7 @@ export * from './product-image.entity';
 export * from './product.entity';
 export * from './product-detail.entity';
 export * from './product-dimension.entity';
+export * from './product-color.entity';
 export * from './inventory.entity';
 export * from './kit.entity';
 export * from './kit-detail.entity';

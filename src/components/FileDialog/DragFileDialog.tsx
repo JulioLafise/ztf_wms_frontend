@@ -23,7 +23,7 @@ interface IProps {
   disabled?: boolean
 }
 
-type FileData = { id: string, file: string | ArrayBuffer };
+type FileData = { id: string, name: string, file: string | ArrayBuffer };
 
 const DragFileDialog: React.FC<IProps> = (props) => {
   const { type = 'images', limitFile = 1, onLoadData, onLoadFiles, disabled } = props;
@@ -107,7 +107,7 @@ const DragFileDialog: React.FC<IProps> = (props) => {
         if (isValidFileType(file)) {
 
           setFiles(prevState => [...prevState, file]);
-          setLoadData(prevState => [...prevState, { id: uuid(), file: e.target!.result || '' }]);
+          setLoadData(prevState => [...prevState, { id: uuid(), name: file.name ,file: e.target!.result || '' }]);
         }
       };
     }

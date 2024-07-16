@@ -128,7 +128,7 @@ const DetailProduct: React.FC<IProps> = (props) => {
 
   React.useEffect(() => {
     if (productData) {
-      setSelectData(oldData => ({ ...oldData, products: productData.map(obj => ({ label: obj.name, value: obj.productId })) }));
+      setSelectData(oldData => ({ ...oldData, products: productData.filter(ft => ft.productId !== productId).map(obj => ({ label: obj.name, value: obj.productId })) }));
     }
     if (featureData) {
       setSelectData(oldData => ({ ...oldData, features: featureData.map(obj => ({ label: obj.description, value: obj.featuresId })) }));
@@ -138,7 +138,7 @@ const DetailProduct: React.FC<IProps> = (props) => {
   return (
     <MaterialTable<ProductDetailEntity>
       columns={columns}
-      data={paginateData || []}
+      data={paginateData|| []}
       enableRowActions={!disabled || false}
       isEditing={!disabled || false}
       columnsVisible={{ productDetailId: false }}
