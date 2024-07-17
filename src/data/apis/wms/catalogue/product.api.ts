@@ -45,6 +45,11 @@ export const updateProductPUT = async (options: IBodyProps<ProductDTO>): Promise
   }
 });
 
+export const updateProductIsEcommercePUT = async (options: IParamsProps<ProductDTO>): Promise<IJsonBody<{ result: boolean }>> => await httpClient.put({
+  url: `producto/${options.params.productoId}/is-ecommerce`,
+  options: {}
+});
+
 export const eliminateProductDELETE = async (options: IParamsProps<ProductDTO>): Promise<IJsonBody<ProductEntity | string>> => await httpClient.delete({
   url: `producto/${options.body.productoId}/`,
   options: {}

@@ -45,7 +45,7 @@ import {
   ProductDimensionEntity,
   ProductImageEntity
 } from '@wms/entities';
-import { Validator, GeneratedData } from '@wms/helpers';
+import { Validator, GeneratedData, Colors } from '@wms/helpers';
 import DetailProduct from './DetailProduct';
 
 interface IForm {
@@ -110,10 +110,10 @@ const AddProductPage = () => {
   });
   const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
   const { isMobile, isSideBarOpen, theme } = useUI();
-  const { uploadImageToS3Api } = useAws();
+  const { uploadImageToS3Api, isLoading: isLoadingS3 } = useAws();
   const navigate = useNavigate();
   const params = useParams();
-  const { watch, handleSubmit, setValue, reset } = methods;
+  const { watch, handleSubmit, setValue, reset, setError, setFocus } = methods;
   const formValues = watch();
   const [lock, setLock] = React.useState<boolean>(false);
   const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
@@ -142,6 +142,7 @@ const AddProductPage = () => {
     setOptionsQuery({
       typeMutation: values.productId ? 'put' : 'post'
     });
+    const isPost = values.productId ? false : true;
     const title = values.productId ? 'Updating Product!' : 'Saving Product!';
     swalToastWait(title, {
       message: 'Please wait a few minutes',
@@ -155,10 +156,10 @@ const AddProductPage = () => {
               let images: ProductImageEntity[] = [];
               if (urls.length) {
                 urls.forEach(url => {
-                  images = [{ url }];
+                  images = [...images, { url }];
                 });
               }
-              imageList.filter(ft => ft.file.toString().indexOf('http')).forEach(image => {
+              imageList.filter(ft => ft.file.toString().indexOf('http') > -1).forEach(image => {
                 images = [...images, { url: image.file as string }];
               });
               const data: ProductEntity = {
@@ -169,11 +170,21 @@ const AddProductPage = () => {
                 details: rowData
               };
               mutation.mutateAsync(data)
-                .then(() => {
-                  refetchProductData();
+                .then(resp => {
+                  if (isPost) {
+                    navigate(`/app/inventory/products/${resp.productId}/edit`, { replace: true });
+                  } else {
+                    refetchProductData();
+                  }
                   swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
                 })
-                .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
+                .catch((err) => {
+                  swalToastError(err.message, { showConfirmButton: false, timer: 3000 });
+                  if (String(err.message).indexOf('Duplicate') >= 0) {
+                    setError('name', err.message);
+                    setFocus('name');
+                  }
+                });
             })
             .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
         }
@@ -254,12 +265,12 @@ const AddProductPage = () => {
   }, [productData, isRefetching]);
 
   React.useEffect(() => {
-    if (formValues.isEcommerce || mutation.isPending || mutationEliminate.isPending) {
+    if (formValues.isEcommerce || mutation.isPending || mutationEliminate.isPending || isLoadingS3) {
       setLock(true);
     } else {
       setLock(false);
     }
-  }, [formValues.isEcommerce, mutation.isPending, mutationEliminate.isPending]);
+  }, [formValues.isEcommerce, mutation.isPending, mutationEliminate.isPending, isLoadingS3]);
 
 
   return (
@@ -360,7 +371,8 @@ const AddProductPage = () => {
                 <CheckBoxHF
                   name="isEcommerce"
                   label="Activo Ecommerce"
-                  className="w-1/2"                  
+                  className="w-1/2"    
+                  disabled
                 />
                 <CheckBoxHF
                   name="isActive"
@@ -436,7 +448,7 @@ const AddProductPage = () => {
                 getOptionLabel={option => `${option.color}`}
                 renderOption={({ key: someKey, ...props }, option) => (
                   <li key={someKey} {...props}>
-                    <FontAwesomeIcon icon="fill-drip" color={option.color} className="pe-1.5" /> {option.color}
+                    <FontAwesomeIcon icon="fill-drip" color={option.color} className="pe-1.5" /> {String(Colors.getNameByHex(option.color!).name)}
                   </li>)
                 }
                 loading={isLoadingColor}
@@ -448,7 +460,7 @@ const AddProductPage = () => {
                   colors.map(color =>
                     <Box component="div" key={color.colorId} className="bg-gray-200 rounded-full py-0.5 px-1 flex items-center justify-center gap-1">
                       <FontAwesomeIcon icon="fill-drip" color={color.color} className="pe-0.5" />
-                      <Typography variant="subtitle2" className="text-black">{color.color}</Typography>
+                      <Typography variant="subtitle2" className="text-black">{Colors.getNameByHex(color.color!).name}</Typography>
                       <IconButton
                         color="inherit"
                         size="small"

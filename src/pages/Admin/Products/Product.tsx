@@ -44,6 +44,7 @@ const ProductPage = () => {
       accessorKey: 'description',
       header: 'Descripcion',
       minSize: 150,
+      Cell: ({ renderedCellValue }) => <div className="flex h-12 w-96"><p className="text-wrap break-all">{String(renderedCellValue).slice(0,105)}{String(renderedCellValue).length >= 104 ? '...' : ''}</p></div>
     },
     {
       id: 'brand',
@@ -70,7 +71,7 @@ const ProductPage = () => {
       id: 'unitMeasure',
       accessorKey: 'unitMeasure',
       accessorFn: (row) => row.unitMeasure?.description, 
-      header: 'Categoria',
+      header: 'Unidad de Medida',
       minSize: 150,
     },
     {
@@ -122,8 +123,9 @@ const ProductPage = () => {
         isLoading={isLoading}
         onActionStateChange={(row) => onChangeState(row.original)}
         isGenerate={isGenerate}
-        isError={isError}
-        onActionRefreshTable={() => refetch()}       
+        isError={isError}        
+        onActionRefreshTable={() => refetch()}
+               
       />
       <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} />
     </Paper>

@@ -4,7 +4,7 @@ import { IconButton, InputAdornment, Paper } from '@mui/material';
 import { CheckBox, CheckBoxOutlineBlank, FormatColorFill } from '@mui/icons-material';
 import * as Yup from 'yup';
 import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows } from '@wms/interfaces';
-import { Validator } from '@wms/helpers';
+import { Validator, Colors } from '@wms/helpers';
 import { useAlertNotification, useUI, useColor } from '@wms/hooks';
 import { MaterialTable, ButtonActions, EditCheckboxTable } from '@wms/components';
 import { ColorEntity } from '@wms/entities';
@@ -54,6 +54,7 @@ const ColorPage = () => {
       accessorKey: 'color',
       header: 'Descripcion',
       minSize: 150,
+      editVariant: 'select',
       muiEditTextFieldProps: {      
         required: true,
         error: !!validationErrors.color,
@@ -72,7 +73,7 @@ const ColorPage = () => {
           )
         }
       },
-      Cell: ({ renderedCellValue }) => <>{renderedCellValue} <FormatColorFill sx={{ color: renderedCellValue as string }} /></> 
+      Cell: ({ renderedCellValue }) => <><FormatColorFill sx={{ color: String(renderedCellValue) }} /> {Colors.getNameByHex(String(renderedCellValue)).name}</> 
     },
     {
       id: 'isActive',

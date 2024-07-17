@@ -12,6 +12,7 @@ export const createImageToS3POST = async (options: IBodyProps<File[]>): Promise<
   options: {
     data: options.body,
     headers: {
+      'Accept': 'multipart/form-data;',
       'Content-Type': `multipart/form-data; charset=utf-8; boundary=${Math.random().toString().substring(2)};`
     }
   }

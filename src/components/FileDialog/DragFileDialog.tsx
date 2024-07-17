@@ -52,7 +52,7 @@ const DragFileDialog: React.FC<IProps> = (props) => {
   const getSupportFiles = (type: IProps['type']) => {
     switch (type) {
       case 'images':
-        return '.JPG, .PNG, .JPEEG';
+        return '.JPG, .PNG, .JPEG';
 
       case 'docs':
         return '.PDF, .DOCX, .PPTX, .TXT, .XLSX';
@@ -61,7 +61,7 @@ const DragFileDialog: React.FC<IProps> = (props) => {
         return 'ALL FILES';
     
       default:
-        return '.JPG, .PNG, .JPEEG';
+        return '.JPG, .PNG, .JPEG';
     }
   };
 

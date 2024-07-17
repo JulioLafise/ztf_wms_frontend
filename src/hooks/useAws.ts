@@ -80,17 +80,24 @@ const useAws = () => {
   };
 
   const uploadImageToS3Api = async (images: File[]): Promise<string[]> => {
-    setIsLoading(true);
-    const data = (await dispatch(awsAsyncThunks.onSaveImageToS3({ images }))).payload as string[];
-    Validator.httpValidation(data as any);
-    setIsLoading(false);
-    return data;
+    try {
+      if (images.length <= 0) return [];
+      setIsLoading(true);
+      const data = (await dispatch(awsAsyncThunks.onSaveImageToS3({ images }))).payload as string[];
+      setIsLoading(false);
+      Validator.httpValidation(data as any);
+      return data;      
+    } catch (error) {
+      return Promise.reject(error);
+    }
   };
 
   const deleteImageFromS3Api = async (args: { value: string, type: 'url' | 'uuid' }): Promise<boolean> => {
     const { type = 'uuid', value } = args;
     try {
+      setIsLoading(true);
       const data = (await dispatch(awsAsyncThunks.onDeleteImageFromS3({ id: type === 'url' ? getUUIDFromURL(value) : value }))).payload as ImageS3Api;
+      setIsLoading(false);
       Validator.httpValidation(data as any);
       return Promise.resolve(true);
     } catch (error) {
