@@ -9,7 +9,6 @@ import { enviroment } from './enviroments.config';
 
 export class HttpWMS {
 
-
   static interceptors(): ExtraInterceptor {
     return {
       request: this.interceptorRequest(),
@@ -66,5 +65,4 @@ export class HttpWMS {
       }
     };
   }
-
 }

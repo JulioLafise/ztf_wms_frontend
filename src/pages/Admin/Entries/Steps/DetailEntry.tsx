@@ -2,15 +2,19 @@ import React from 'react';
 import type { MRT_ColumnDef, MRT_TableInstance } from 'material-react-table';
 import { useNavigate } from 'react-router-dom';
 import { Paper, useMediaQuery, Theme } from '@mui/material';
-import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
-import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 import { IOnSaveAndEditRows, IValidationErrors } from '@wms/interfaces';
-import { useAlertNotification } from '@wms/hooks';
+import { useAlertNotification, useProduct, useProductStatus } from '@wms/hooks';
 import { MaterialTable, TextFieldHF } from '@wms/components';
+import _ from 'lodash';
+interface IPropsHeader {
+  setDataGeneral: any,
+  dataGeneral: object,
+  openImport: boolean
+}
 
-const DetailEntry = () => {
+const DetailEntry = (props: IPropsHeader) => {
   const { swalToastSuccess } = useAlertNotification();
   const navigate = useNavigate();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
@@ -19,12 +23,21 @@ const DetailEntry = () => {
     pageIndex: 0,
     pageSize: 10
   });
+  const { dataGeneral, setDataGeneral, openImport } = props;
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [rowData, setRowData] = React.useState<any[]>([]);
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<object>>({});
   const methods = useForm({
     mode: 'onSubmit'
   });
+
+  const {
+    useProductListQuery
+  } = useProduct();
+
+  const {
+    data
+  } = useProductListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
 
   const columns = React.useMemo<MRT_ColumnDef<any>[]>(() => [
     {
@@ -71,7 +84,7 @@ const DetailEntry = () => {
     },
     {
       id: 'estadoProducto',
-      accessorKey: 'estadoProducto',
+      accessorKey: 'estado',
       header: 'Estado', 
       minSize: 150,
       editVariant: 'select',
@@ -87,6 +100,7 @@ const DetailEntry = () => {
   ], [validationErrors]);
 
   const onSaveOrEdit: IOnSaveAndEditRows<any> = async (row, table, values, validation): Promise<void> => {
+    console.log(values);
     setRowData(prevState => [
       ...prevState,
       {
@@ -94,6 +108,7 @@ const DetailEntry = () => {
         entradaDetalleId: uuid(),
       }
     ]);
+    setDataGeneral(prevState => ({ ...prevState, dataDetail: [...dataGeneral.dataDetail, { ...values, entradaDetalleId: uuid()}] }));
     setValidationErrors({});
     validation!({})(table, row.original.pedidoDetalleId ? true : false);
   };
@@ -137,7 +152,7 @@ const DetailEntry = () => {
       <Paper elevation={4}>
         <MaterialTable
           columns={columns}
-          data={rowData || []}
+          data={openImport ? _.get(dataGeneral, 'dataImport', []) : rowData || []}
           enableRowActions
           isEditing
           columnsVisible={{ entradaDetalleId: false }}
