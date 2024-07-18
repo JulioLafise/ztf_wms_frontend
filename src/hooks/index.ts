@@ -20,5 +20,7 @@ export { default as useEmployee } from './useEmployee';
 export { default as useProduct } from './useProduct';
 export { default as useInventory } from './useInventory';
 export { default as useMasterEntry } from './useMasterEntry';
+export { default as useMasterPurchaseOrder } from './useMasterPurchaseOrder';
+export { default as useMasterAccount } from './useMasterAccount';
 export { default as useColor } from './useColor';
 export { default as useEntryType } from './useEntryType';

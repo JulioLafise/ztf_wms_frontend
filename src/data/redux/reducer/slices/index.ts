@@ -16,5 +16,6 @@ export { default as employeeReducer } from './employee.slice';
 export { default as productReducer } from './product.slice';
 export { default as inventoryReducer } from './inventory.slice';
 export { default as masterEntryReducer } from './master-entry.slice';
+export { default as masterPurchaseOrderReducer } from './master-purchase-order';
 export { default as colorReducer } from './color.slice';
 export { default as entryTypeReducer } from './entry-type.slice';

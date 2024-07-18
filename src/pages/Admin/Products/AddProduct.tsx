@@ -298,7 +298,7 @@ const AddProductPage = () => {
                 name="name"
                 maxLength={5}
                 size="small"
-                disabled={!!params.productId}
+                disabled={!!params.productId || lock}
                 required
               />
               <TextFieldHF

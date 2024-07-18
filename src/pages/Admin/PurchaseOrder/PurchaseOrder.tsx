@@ -1,98 +1,182 @@
 import React from 'react';
-import { MaterialReactTable, type MRT_ColumnDef, type MRT_TableInstance } from 'material-react-table';
+import { type MRT_ColumnDef, type MRT_TableInstance } from 'material-react-table';
 import { useNavigate } from 'react-router-dom';
-import { Paper, useMediaQuery, Theme } from '@mui/material';
-import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
+import { Paper, useMediaQuery, Theme, Box, Tooltip, IconButton } from '@mui/material';
+import { AssignmentTurnedIn, CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
 import { IOnSaveAndEditRows } from '@wms/interfaces';
-import { useAlertNotification } from '@wms/hooks';
+import { MasterPurchaseOrderEntity } from '@wms/entities';
+import { useAlertNotification, useMasterPurchaseOrder, useMasterAccount } from '@wms/hooks';
 import { MaterialTable, ButtonActions } from '@wms/components';
 
 const PurchaseOrderPage = () => {
-  const { swalToastError, swalToastSuccess } = useAlertNotification();
+  const { swalToastError, swalToastSuccess, swalToastInfo, swalToastWarn } = useAlertNotification();
+  const { isGenerate, useMasterPurchaseOrderListQuery } = useMasterPurchaseOrder();
+  const { useMasterAccountMutation } = useMasterAccount();
   const navigate = useNavigate();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
-  const [ref, setRef] = React.useState<MRT_TableInstance<any>>();
+  const [ref, setRef] = React.useState<MRT_TableInstance<MasterPurchaseOrderEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
+  const { data, isLoading, isError, refetch } = useMasterPurchaseOrderListQuery({ ...pagination, filter: globalFilter });
+  const mutationAccount = useMasterAccountMutation();
 
-  const columns = React.useMemo<MRT_ColumnDef<any>[]>(() => [
+  const getStatusColor = (status: any) => {
+    switch (status) {
+      case 'EN PROCESO':
+        return 'bg-amber-400';
+      case 'APROBADO':
+        return 'bg-green-400';
+      default:
+        return 'bg-amber-400';
+    }
+  };
+
+  const columns = React.useMemo<MRT_ColumnDef<MasterPurchaseOrderEntity>[]>(() => [
     {
-      id: 'purchaseOrderId',
-      accessorKey: 'purchaseOrderId',
+      id: 'masterPurchaseOrderId',
+      accessorKey: 'masterPurchaseOrderId',
       header: 'ID',
       enableEditing: false,
       minSize: 150,
     },
     {
-      id: 'noPurchaseOrder',
-      accessorKey: 'noPurchaseOrder',
-      header: 'No Purchase Order',
+      id: 'status',
+      accessorKey: 'status',
+      header: 'Estado Pedido',
+      minSize: 150,
+      Cell: ({ renderedCellValue }) => <div className="flex items-center"><p className={`p-2 ${getStatusColor(renderedCellValue)} rounded font-bold`}>{renderedCellValue}</p></div>
+    },
+    {
+      id: 'code',
+      accessorKey: 'code',
+      header: 'No Pedido',
       minSize: 150,
       enableEditing: false,
     },
+    // {
+    //   id: 'description',
+    //   accessorKey: 'description',
+    //   header: 'Descripcion',
+    //   enableEditing: false,
+    //   minSize: 150,
+    // },
     {
-      id: 'visitCode',
-      accessorKey: 'visitCode',
-      header: 'Visit Code',
+      id: 'productName',
+      accessorKey: 'productName',
+      header: 'Producto',
       enableEditing: false,
       minSize: 150,
     },
     {
       id: 'customer',
       accessorKey: 'customer',
+      accessorFn: (row) => row.customer?.customerId, 
       header: 'Cliente',
+      minSize: 150,
+      Cell: ({ row }) => <div className="flex h-12 w-96">
+        <p className="text-wrap break-all">
+          ({row.original.identificationCard}) {row.original.firstName} {row.original.lastName} 
+          , {row.original.email}, {row.original.phone}, {row.original.address}
+        </p>
+      </div>
+    },
+    {
+      id: 'paymentMethod',
+      accessorKey: 'paymentMethod',
+      header: 'Metodo de Pago',
+      enableEditing: false,
       minSize: 150,
     },
     {
-      id: 'createDate',
-      accessorKey: 'createDate',
+      id: 'price',
+      accessorKey: 'price',
+      header: 'Precio',
+      minSize: 150,
+      Cell: ({ row }) => <p className="font-bold text-lg">$ {row.original.price}</p>
+    },
+    {
+      id: 'date',
+      accessorKey: 'date',
       header: 'Fecha Creacion',
       minSize: 150,
     },
-    {
-      id: 'isActive',
-      accessorKey: 'isActive',
-      header: 'Activo',
-      minSize: 150,
-      editVariant: undefined,
-      Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
-    },
+    // {
+    //   id: 'isActive',
+    //   accessorKey: 'isActive',
+    //   header: 'Activo',
+    //   minSize: 150,
+    //   editVariant: undefined,
+    //   Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
+    // },
   ], []);
 
-  const onSaveOrEdit: IOnSaveAndEditRows<any> = async (row, table, values, validation): Promise<void> => {
-    navigate(`${row.original.customerVisitControlId}/edit`, { replace: false });
-  };
-
-  const onStateChange = async (values: { [key: string]: any }) => {
-    const data: any = {
-      isActive: !values.isActive,
-      customerVisitControlId: values.customerVisitControlId
-    };
+  const onAssign = (row: MasterPurchaseOrderEntity) => {
+    if (row.status === 'APROBADO') {
+      swalToastWarn('Already Assigned', {
+        message: `The code ${row.code} has already been approved`,
+        timer: 3000
+      });
+      return;
+    }
+    swalToastInfo('Equipment Assignment', {
+      message: 'Enter the code provided for the assignment',
+      input: 'text',
+      showConfirmButton: true,
+      confirmButtonText: 'Assign',
+      showCancelButton: true,
+      cancelButtonText: 'Cancel'
+    }).then(resp => {
+      if (resp.isConfirmed) {
+        const values = {
+          masterPurchaseOrderId: row.masterPurchaseOrderId,
+          unitNumber: resp.value,
+          customerId: row.customer?.customerUuid,
+          priceGroupId: row.priceGroupId,
+          pay: row.pay
+        };
+        mutationAccount.mutateAsync(values)
+          .then(() => {
+            swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+          })
+          .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
+      }
+    });
   };
 
   return (
     <Paper elevation={4}>
-      <MaterialReactTable<any>
+      <MaterialTable<MasterPurchaseOrderEntity>
         columns={columns}
-        data={[]}
+        data={data || []}
         enableRowActions
-        columnsVisible={{ purchaseOrderId: false }}
+        columnsVisible={{ masterPurchaseOrderId: false }}
         setRef={setRef}
         pagination={pagination}
         rowCount={0}
         onPaginationChange={setPagination}
         globalFilter={globalFilter}
         onGlobalFilterChange={setGlobalFilter}
-        onActionEdit={onSaveOrEdit}
-        onActionSave={onSaveOrEdit}
-        // onActionRefreshTable={() => refetch()}
-        isLoading={false}
-        isGenerate={true}
-        isError={false}
-        onActionStateChange={(row: any) => onStateChange(row.original)}
+        onActionRefreshTable={() => refetch()}
+        isLoading={isLoading}
+        isGenerate={isGenerate}
+        isError={isError}
+        CustomActions={({ row }) => (
+          <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <Tooltip title="Assign">
+              <IconButton
+                sx={{
+                  padding: 0
+                }}
+                onClick={() => onAssign(row.original)}
+              >
+                <AssignmentTurnedIn color="success" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
       />
       {/* <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} /> */}
     </Paper>

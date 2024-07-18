@@ -22,5 +22,8 @@ export * from './kit.entity';
 export * from './kit-detail.entity';
 export * from './master-entry.entity';
 export * from './detail-entry.entity';
+export * from './master-purchase-order.entity';
+export * from './detail-purchase-order.entity';
 export * from './color.entity';
 export * from './entry-type.entity';
+export * from './prices-group.entity';

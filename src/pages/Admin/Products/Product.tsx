@@ -1,7 +1,7 @@
 import React from 'react';
 import type { MRT_ColumnDef, MRT_TableInstance } from 'material-react-table';
-import { Paper } from '@mui/material';
-import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
+import { IconButton, Paper, Tooltip } from '@mui/material';
+import { CheckBox, CheckBoxOutlineBlank, LocalMall } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { IOnSaveAndEditRows, IOptionsQuery } from '@wms/interfaces';
 import { useAlertNotification, useUI, useProduct } from '@wms/hooks';
@@ -20,9 +20,10 @@ const ProductPage = () => {
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { isGenerate, rowCount, useProductListQuery, useProductMutation } = useProduct();
+  const { isGenerate, rowCount, useProductListQuery, useProductMutation, useProductIsEcommerceMutation } = useProduct();
   const { data, isLoading, isError, refetch } = useProductListQuery({ ...pagination, filter: globalFilter });
   const mutation = useProductMutation({ ...pagination, filter: globalFilter }, optionsQuery);
+  const mutationEcommerce = useProductIsEcommerceMutation({ ...pagination, filter: globalFilter });
 
   const columns = React.useMemo<MRT_ColumnDef<ProductEntity>[]>(() => [
     {
@@ -75,6 +76,15 @@ const ProductPage = () => {
       minSize: 150,
     },
     {
+      id: 'isEcommerce',
+      accessorKey: 'isEcommerce',
+      header: 'Activo Ecommerce',
+      minSize: 150,
+      enableEditing: false,
+      editVariant: undefined,
+      Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
+    },
+    {
       id: 'isActive',
       accessorKey: 'isActive',
       header: 'Activo',
@@ -88,7 +98,6 @@ const ProductPage = () => {
   const onSaveOrEdit: IOnSaveAndEditRows<ProductEntity> = async (row, table, values, validation): Promise<void> => {
     navigate(`${row.original.productId}/edit`, { replace: false });
   };
-
 
   const onChangeState = async (values: { [key: string]: any }) => {
     setOptionsQuery({ typeMutation: 'delete'});
@@ -104,6 +113,18 @@ const ProductPage = () => {
       .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
   };
 
+  const onChangeStateEcommerce = (row: ProductEntity) => {
+    const title = row.isEcommerce ? 'Desactive Ecommerce!' : 'Active Ecommerce!';
+    swalToastWait(title, {
+      message: 'Please wait a few minutes',
+      showLoading: true,
+    });
+    mutationEcommerce.mutateAsync(row)
+      .then(() => {
+        swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+      })
+      .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
+  };
 
   return (
     <Paper elevation={4}>
@@ -125,7 +146,18 @@ const ProductPage = () => {
         isGenerate={isGenerate}
         isError={isError}        
         onActionRefreshTable={() => refetch()}
-               
+        AddCustomActions={({ row }) => (
+          <Tooltip title={!row.original.isEcommerce ? 'Active Ecommerce' : 'Disable Ecommerce'}>
+            <IconButton
+              sx={{
+                padding: 0
+              }}
+              onClick={() => onChangeStateEcommerce(row.original)}
+            >
+              <LocalMall color={!row.original.isEcommerce ? 'success' : 'error'} />
+            </IconButton>
+          </Tooltip>
+        )}
       />
       <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} />
     </Paper>

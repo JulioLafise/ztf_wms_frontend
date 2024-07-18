@@ -25,7 +25,7 @@ export const getMasterEntry = createAsyncThunk(
     try {
       dispatch(onGenerate());
       const { data } = await WMSAPI.masterEntryGET({ params: masterEntryDto });
-      return data.data;
+      return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
     }

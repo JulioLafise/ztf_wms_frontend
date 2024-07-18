@@ -35,6 +35,7 @@ interface IProps<T extends MRT_RowData> {
   onActionChangePassword?: (row: MRT_Row<T>) => Promise<void>,
   onActionExportToPDF?: (row: MRT_Row<T>) => Promise<void>,
   CustomActions?: ({ row, table }: ICustomActionsProps<T>) => JSX.Element,
+  AddCustomActions?: ({ row, table }: ICustomActionsProps<T>) => JSX.Element,
   enableRowSelection?: boolean,
   isEditing?: boolean,
   isError?: boolean,
@@ -80,6 +81,7 @@ const MaterialTable = <T extends MRT_RowData,>(props: IProps<T>) => {
     onActionChangePassword,
     onActionExportToPDF,
     CustomActions,
+    AddCustomActions,
     globalFilter,
     onGlobalFilterChange,
     fileNameExport,
@@ -211,6 +213,7 @@ const MaterialTable = <T extends MRT_RowData,>(props: IProps<T>) => {
           onActionStateChange={onActionStateChange}
           onEditingRowChange={onEditingRowChange}
           onActionPickPicture={onActionPickPicture}
+          AddCustomActions={AddCustomActions}
         />
     ),
     renderTopToolbarCustomActions: ({ table }) => (

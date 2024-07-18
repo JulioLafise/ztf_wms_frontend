@@ -18,6 +18,7 @@ import {
   productReducer,
   inventoryReducer,
   masterEntryReducer,
+  masterPurchaseOrderReducer,
   colorReducer,
   entryTypeReducer
 } from './slices';
@@ -41,6 +42,7 @@ const reducers = combineReducers({
   productReducer,
   inventoryReducer,
   masterEntryReducer,
+  masterPurchaseOrderReducer,
   colorReducer,
   entryTypeReducer
 });

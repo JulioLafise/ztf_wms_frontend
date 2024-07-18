@@ -53,6 +53,7 @@ export class ProductMapper {
             description: value.descripcion,
             minimum: value.stockMinimo,
             name: value.nombre,
+            isEcommerce: value.isEcommerce,
             category: {
               description: value.categoria,
             },

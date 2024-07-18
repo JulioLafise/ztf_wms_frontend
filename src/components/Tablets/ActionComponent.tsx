@@ -35,6 +35,12 @@ interface IActionComponentProps<T extends MRT_RowData> {
   onActionExportToPDF?: (row: MRT_Row<T>) => Promise<void>,
   onEditingRowChange?: (state: { cell: MRT_Cell<T, unknown>, row: MRT_Row<T>, staticRowIndex?: number | undefined, table: MRT_TableInstance<T> }) => void,
   onActionPickPicture?: (row: MRT_Row<T>, file: File) => Promise<void>,
+  AddCustomActions?: ({ row, table }: ICustomActionsProps<T>) => JSX.Element,
+}
+
+interface ICustomActionsProps<T extends MRT_RowData> {
+  row: MRT_Row<T>,
+  table: MRT_TableInstance<T>,
 }
 
 const ActionComponent = <T extends MRT_RowData,>({
@@ -49,7 +55,8 @@ const ActionComponent = <T extends MRT_RowData,>({
   onActionChangePassword,
   onActionExportToPDF,
   onEditingRowChange,
-  onActionPickPicture
+  onActionPickPicture,
+  AddCustomActions
 }: IActionComponentProps<T>) => {
   const { swalToastWait, swalToastQuestion, swalToastInfo } = useAlertNotification();
   return (
@@ -203,6 +210,9 @@ const ActionComponent = <T extends MRT_RowData,>({
             </IconButton>
           </Tooltip>
         )
+      }
+      {
+        AddCustomActions && AddCustomActions({ row, table })
       }
     </Box>
   );

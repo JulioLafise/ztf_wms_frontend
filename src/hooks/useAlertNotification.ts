@@ -28,7 +28,7 @@ interface SwalToastOptions {
 const darkModeStyle: React.CSSProperties = {
   borderRadius: '10px',
   background: '#333',
-  color: '#fff',
+  color: '#fff',  
 };
 
 const useAlertNotification = () => {
@@ -45,6 +45,7 @@ const useAlertNotification = () => {
       inputValue: option?.inputValue,    
       confirmButtonText: option?.confirmButtonText,
       showConfirmButton: option?.showConfirmButton,
+      confirmButtonColor: theme.paletteColors?.primary.main,      
       cancelButtonText: option?.cancelButtonText,
       showCancelButton: option?.showCancelButton,
       background: theme.isDarkMode ? darkModeStyle.background?.toString() : '',
@@ -67,6 +68,7 @@ const useAlertNotification = () => {
       inputValue: option?.inputValue,      
       confirmButtonText: option?.confirmButtonText,
       showConfirmButton: option?.showConfirmButton,
+      confirmButtonColor: theme.paletteColors?.primary.main,  
       cancelButtonText: option?.cancelButtonText,
       showCancelButton: option?.showCancelButton,
       background: theme.isDarkMode ? darkModeStyle.background?.toString() : '',
@@ -89,6 +91,7 @@ const useAlertNotification = () => {
       inputValue: option?.inputValue,       
       confirmButtonText: option?.confirmButtonText,
       showConfirmButton: option?.showConfirmButton,
+      confirmButtonColor: theme.paletteColors?.primary.main,  
       cancelButtonText: option?.cancelButtonText,
       showCancelButton: option?.showCancelButton,
       background: theme.isDarkMode ? darkModeStyle.background?.toString() : '',
@@ -111,6 +114,7 @@ const useAlertNotification = () => {
       inputValue: option?.inputValue,        
       confirmButtonText: option?.confirmButtonText,
       showConfirmButton: option?.showConfirmButton,
+      confirmButtonColor: theme.paletteColors?.primary.main,  
       cancelButtonText: option?.cancelButtonText,
       showCancelButton: option?.showCancelButton,
       background: theme.isDarkMode ? darkModeStyle.background?.toString() : '',
@@ -132,6 +136,7 @@ const useAlertNotification = () => {
       inputValue: option?.inputValue,  
       confirmButtonText: option?.confirmButtonText,
       showConfirmButton: option?.showConfirmButton,
+      confirmButtonColor: theme.paletteColors?.primary.main,  
       cancelButtonText: option?.cancelButtonText,
       showCancelButton: option?.showCancelButton,
       background: theme.isDarkMode ? darkModeStyle.background?.toString() : '',
@@ -154,6 +159,7 @@ const useAlertNotification = () => {
       inputValue: option?.inputValue,  
       confirmButtonText: option?.confirmButtonText,
       showConfirmButton: option?.showConfirmButton,
+      confirmButtonColor: theme.paletteColors?.primary.main,  
       showCancelButton: option?.showCancelButton,
       cancelButtonText: option?.cancelButtonText,
       background: theme.isDarkMode ? darkModeStyle.background?.toString() : '',

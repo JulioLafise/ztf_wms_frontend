@@ -18,8 +18,8 @@ export const masterEntryListGET = async (options: IPaginationProps<PaginationDTO
   }
 });
 
-export const masterEntryGET = async (options: IParamsProps<MasterEntryDTO>): Promise<IJsonBody<IPaginationResp<MasterEntryEntity>>> => await httpClient.get({
-  url: `maestroentrada/${options.body.categoriaId}/`,
+export const masterEntryGET = async (options: IParamsProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity>> => await httpClient.get({
+  url: `maestroentrada/${options.params.maestroEntradaId}/`,
   options: {}
 });
 
@@ -39,12 +39,12 @@ export const updateMasterEntryPUT = async (options: IBodyProps<MasterEntryDTO>):
 });
 
 export const finishMasterEntryPUT = async (options: IParamsProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.put({
-  url: `maestroentrada/${options.params.categoriaId}/finalizar`,
+  url: `maestroentrada/${options.params.maestroEntradaId}/finalizar`,
   options: {}
 });
 
 export const eliminateMasterEntryDELETE = async (options: IBodyProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.delete({
-  url: `maestroentrada/${options.body.categoriaId}/`,
+  url: `maestroentrada/${options.body.maestroEntradaId}/`,
   options: {
     data: options.body
   }

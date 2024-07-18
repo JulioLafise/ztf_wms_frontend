@@ -69,7 +69,7 @@ export class MasterEntryDTO {
     try {
       const dto = new MasterEntryDTO();
 
-      dto.maestroEntradaId = data.MasterEntryId || 0;
+      dto.maestroEntradaId = data.masterEntryId || 0;
       dto.descripcion = data.description;
       dto.personaEntrega = data.delivery;
       dto.tipoMonedaId = data.typeCurrency ? data.typeCurrency.typeCurrencyId : data.typeCurrencyId;
@@ -84,15 +84,15 @@ export class MasterEntryDTO {
           details = [
             ...details,
             {
-              entradaDetalleId: value.countryId,
-              descripcion: value.countryId,
-              cantidad: value.countryId,
-              codigoLote: value.countryId,
-              numeroSerie: value.countryId,
-              precio: value.countryId,
+              entradaDetalleId: value.detailEntryId,
+              descripcion: value.description,
+              cantidad: value.quanty,
+              codigoLote: value.lot,
+              numeroSerie: value.serie,
+              precio: value.price,
               maestroentradaId: value.masterEntryId,
-              estadoProductoId: value.countryId,
-              productoId: value.isActive
+              estadoProductoId: value.productStatus ? value.productStatus.productStatusId : value.productStatusId,
+              productoId: value.product ? value.product.productId : value.productId,
             }
           ];
         });
@@ -118,7 +118,7 @@ export class MasterEntryDTO {
     try {
       const dto = new MasterEntryDTO();
 
-      dto.maestroEntradaId = data.MasterEntryId;
+      dto.maestroEntradaId = data.masterEntryId;
       dto.descripcion = data.description;
       dto.personaEntrega = data.delivery;
       dto.tipoMonedaId = data.typeCurrency ? data.typeCurrency.typeCurrencyId : data.typeCurrencyId;
@@ -133,15 +133,15 @@ export class MasterEntryDTO {
           details = [
             ...details,
             {
-              entradaDetalleId: value.countryId,
-              descripcion: value.countryId,
-              cantidad: value.countryId,
-              codigoLote: value.countryId,
-              numeroSerie: value.countryId,
-              precio: value.countryId,
+              entradaDetalleId: value.detailEntryId,
+              descripcion: value.description,
+              cantidad: value.quanty,
+              codigoLote: value.lot,
+              numeroSerie: value.serie,
+              precio: value.price,
               maestroentradaId: value.masterEntryId,
-              estadoProductoId: value.countryId,
-              productoId: value.isActive
+              estadoProductoId: value.productStatus ? value.productStatus.productStatusId : value.productStatusId,
+              productoId: value.product ? value.product.productId : value.productId,
             }
           ];
         });
@@ -167,7 +167,7 @@ export class MasterEntryDTO {
     try {
       const dto = new MasterEntryDTO();
 
-      dto.maestroEntradaId = data.MasterEntryId;
+      dto.maestroEntradaId = data.masterEntryId;
       
       await schemaPATCH.validate(dto, { abortEarly: false });
 
