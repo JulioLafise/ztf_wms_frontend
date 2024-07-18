@@ -1,4 +1,4 @@
-import { ProductEntity, ProductImageEntity, ProductDetailEntity } from '@wms/entities';
+import { ProductEntity, ProductImageEntity, ProductDetailEntity, ProductColorEntity, ProductDimensionEntity } from '@wms/entities';
 import { Validator } from '@wms/helpers';
 
 export class ProductMapper {
@@ -19,7 +19,8 @@ export class ProductMapper {
           description: value.categoria.categoria,
         },
         unitMeasure: {
-          description: value.unidadMedida,
+          unitMeasureId: value.unidadMedida.unidadMedidaId,
+          description: value.unidadMedida.unidadMedida,          
         },
         model: {
           modelId: value.modelo.modeloId,
@@ -29,8 +30,11 @@ export class ProductMapper {
             description: value.modelo.marca
           }
         },   
+        colors: this.getColorsList(value.listColor),
+        dimensions: this.getDimensionsList(value.listDimension),
         images: this.getImagesList(value.listImagen),
         details: this.getDetailsList(value.listDetalle),
+        isEcommerce: value.isEcommerce,
         isActive: value.isActivo
       };
     } else throw new Error('An object was expected');
@@ -65,7 +69,46 @@ export class ProductMapper {
           }
         ];
       });
-    } else throw new Error('An array was expected');
+    } else throw new Error('An array was expected');    
+    return data;
+  }
+
+  static getColorsList(values: unknown): ProductColorEntity[] {
+    let data: ProductColorEntity[] = [];
+    const value: any = values;
+    if (Array.isArray(value)) {
+      value.forEach((item: any) => {
+        data = [
+          ...data,
+          {
+            productColorId: item.productoColorId,
+            colorId: item.tipoColorId,
+            color: item.codigoRgb
+          }
+        ];
+      });
+    } /*else throw new Error('An array was expected');*/
+    return data;
+  }
+
+  static getDimensionsList(values: unknown): ProductDimensionEntity[] {
+    let data: ProductDimensionEntity[] = [];
+    const value: any = values;
+    if (Array.isArray(value)) {
+      value.forEach((item: any) => {
+        data = [
+          ...data,
+          {
+            dimensionId: item.productoDimensionId,
+            unitMeasure: {
+              unitMeasureId: item.unidadMedidaId,
+              description: item.unidadMedida
+            },
+            description: item.descripcion,
+          }
+        ];
+      });
+    } /*else throw new Error('An array was expected');*/
     return data;
   }
 
@@ -82,7 +125,7 @@ export class ProductMapper {
           }
         ];
       });
-    } else throw new Error('An array was expected');
+    } /*else throw new Error('An array was expected');*/
     return data;
   }
 
@@ -96,11 +139,13 @@ export class ProductMapper {
           {
             productDetailId: item.productoDetalleId,
             description: item.descripcion,
-            featureId: item.caracteristicaDetalleId
+            productId: item.productoId,
+            featureId: item.caracteristicaDetalleId,
+            isActive: item.isActivo
           }
         ];
       });
-    } else throw new Error('An array was expected');
+    } /*else throw new Error('An array was expected');*/
     return data;
   }
 

@@ -42,3 +42,24 @@ export interface IBodyProps<T> extends IHttp {
 }
 
 export type IPagination = { pageIndex: number, pageSize: number, filter: string };
+
+
+export interface ImageS3Api {
+  deleteMarker:     null;
+  versionId:        null;
+  requestCharged:   null;
+  responseMetadata: ResponseMetadata;
+  contentLength:    number;
+  httpStatusCode:   number;
+}
+
+interface ResponseMetadata {
+  requestId:                string;
+  metadata:                 Metadata;
+  checksumAlgorithm:        number;
+  checksumValidationStatus: number;
+}
+
+interface Metadata {
+  'x-amz-id-2': string;
+}

@@ -1,6 +1,8 @@
-import React from 'react'
+import React from 'react';
 import {
   Autocomplete,
+  AutocompleteOwnerState,
+  AutocompleteRenderOptionState,
   Box,
   CircularProgress,
   InputAdornment,
@@ -9,6 +11,10 @@ import {
 import { Controller, useFormContext } from 'react-hook-form';
 import { FontAwesomeIcon } from '..';
 
+interface RenderOptionProps<T> extends React.HTMLAttributes<T> {
+  key?: any
+}
+
 interface Props<T> {
   name: string,
   icon?: string,
@@ -16,7 +22,8 @@ interface Props<T> {
   label: string,
   placeholder?: string,
   optionsData: Array<T>,
-  getOptionLabel: (option: T) => string
+  getOptionLabel: (option: T) => string,
+  renderOption?: (props: RenderOptionProps<HTMLLIElement>, option: T, state: AutocompleteRenderOptionState, ownerState: AutocompleteOwnerState<T, false, boolean, false, 'div'>) => React.ReactNode,
   size?: 'small' | 'medium',
   variant?: 'filled' | 'outlined' | 'standard',
   readOnly?: boolean,
@@ -44,6 +51,7 @@ const AutoCompleteHF = <T,>(props: Props<T>) => {
     readOnly = false,
     optionsData,
     getOptionLabel,
+    renderOption,
     loading,
     loadingText,
     disabled,
@@ -66,6 +74,7 @@ const AutoCompleteHF = <T,>(props: Props<T>) => {
             disabled={disabled}
             isOptionEqualToValue={(option: any) => option?.id === value?.id}
             getOptionLabel={getOptionLabel}
+            renderOption={renderOption}
             disablePortal={disablePortal}
             fullWidth
             size={size}

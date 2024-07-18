@@ -13,3 +13,5 @@ export * from './employee.mapper';
 export * from './product.mapper';
 export * from './inventory.mapper';
 export * from './master-entry.mapper';
+export * from './color.mapper';
+export * from './entry-type.mapper';

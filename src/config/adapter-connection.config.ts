@@ -1,9 +1,9 @@
 import axiosHttp, {
   Axios,
-  AxiosHeaders,
   AxiosResponse,
   type AxiosInterceptorOptions,
-  type InternalAxiosRequestConfig
+  type InternalAxiosRequestConfig,
+  AxiosRequestConfig
 } from 'axios';
 import { IJsonBody } from '@wms/interfaces';
 
@@ -13,7 +13,7 @@ interface IMethodHttp {
 }
 
 interface IHttpOptions {
-  headers?: AxiosHeaders,
+  headers?: AxiosRequestConfig<any>['headers'],
   params?: any,
   data?: any
 }
@@ -41,7 +41,26 @@ class AdapterConnection {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
-      }
+      },
+      transformRequest: [(data, headers) => {
+        if (headers['Content-Type'] && headers['Content-Type'].toString().startsWith('multipart/form-data')) {
+          const { headers: header, params, ...rest } = data;
+          const formData = new FormData();
+          for (const key in rest) {
+            const values: File = rest[key];
+            if (Array.isArray(values)) {
+              // const arrayKey = `${key}[]`;
+              values.forEach((value: File) => {
+                formData.append('file', value, values.name);
+              });
+            } else {
+              formData.append('file', values, values.name);
+            }
+          }
+          return formData;
+        }
+        return JSON.stringify(data);
+      }]
     });
 
     const configReq = this.extraInterceptor?.request;
@@ -68,7 +87,7 @@ class AdapterConnection {
       headers: options?.headers,
       params: options?.params,
       ...options?.data
-    });
+    }, { headers: options?.headers });
 
     return {
       data, status: statusText, statusCode: status
@@ -80,7 +99,7 @@ class AdapterConnection {
       headers: options?.headers,
       params: options?.params,
       ...options?.data
-    });
+    }, { headers: options?.headers });
     return {
       data, status: statusText, statusCode: status
     };
@@ -91,7 +110,7 @@ class AdapterConnection {
       headers: options?.headers,
       params: options?.params,
       ...options?.data
-    });
+    }, { headers: options?.headers });
     return {
       data, status: statusText, statusCode: status
     };

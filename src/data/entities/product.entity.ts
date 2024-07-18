@@ -1,10 +1,13 @@
 import {
   CategoryEntity,
   ModelEntity,
+  ProductColorEntity,
   ProductDetailEntity,
+  ProductDimensionEntity,
   ProductImageEntity,
   UnitMeasureEntity
 } from './';
+
 
 export class ProductEntity {
   constructor(
@@ -16,8 +19,11 @@ export class ProductEntity {
     public model?: ModelEntity,
     public category?: CategoryEntity,
     public unitMeasure?: UnitMeasureEntity,
+    public colors?: ProductColorEntity[],
+    public dimensions?: ProductDimensionEntity[],
     public images?: ProductImageEntity[],
     public details?: ProductDetailEntity[],
+    public isEcommerce?: boolean,
     public isActive?: boolean
   ) {}
 }

@@ -67,6 +67,9 @@ export class Validator {
     if (response.statusCode === 404) {
       error = 'Datasource not found';
     }
+    if (response.statusCode === 409) {
+      error = 'Duplicate key value';
+    }
     if (error) throw new Error(error);
   }
 

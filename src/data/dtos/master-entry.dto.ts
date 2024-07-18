@@ -8,6 +8,8 @@ const schemaPOST: Yup.ObjectSchema<MasterEntryDTO> = Yup.object().shape({
   empleadoRecibeId: Yup.number().required(),
   categoriaId: Yup.number().required(),
   proveedorId: Yup.number().required(),
+  departamentoId: Yup.number().required(),
+  bodegaId: Yup.number().required(),
   listaDetalle: Yup.array<DetailEntry>().required(),
   isActivo: Yup.boolean().default(true)
 });
@@ -20,6 +22,8 @@ const schemaPATCH: Yup.ObjectSchema<MasterEntryDTO> = Yup.object().shape({
   empleadoRecibeId: Yup.number(),
   categoriaId: Yup.number(),
   proveedorId: Yup.number(),
+  departamentoId: Yup.number(),
+  bodegaId: Yup.number(),
   listaDetalle: Yup.array<DetailEntry>(),
   isActivo: Yup.boolean().default(true)
 });
@@ -52,6 +56,10 @@ export class MasterEntryDTO {
 
   public proveedorId?: number;
 
+  public departamentoId?: number;
+
+  public bodegaId?: number;
+
   public listaDetalle?: Array<DetailEntry>;
 
   public isActivo?: boolean;
@@ -68,6 +76,8 @@ export class MasterEntryDTO {
       dto.categoriaId = data.category ? data.category.categoryId : data.categoryId;
       dto.empleadoRecibeId = data.employee ? data.employee.employeeId : data.employeeId;
       dto.proveedorId = data.supplier ? data.supplier.supplierId : data.supplierId;
+      dto.departamentoId = data.departament ? data.departament.departamentId : data.departamentId;
+      dto.bodegaId = data.warehouse ? data.warehouse.warehouseId : data.warehouseId;
       let details: any[] = [];
       if (Array.isArray(data.details)) {
         data.details.forEach(value => {
@@ -115,6 +125,8 @@ export class MasterEntryDTO {
       dto.categoriaId = data.category ? data.category.categoryId : data.categoryId;
       dto.empleadoRecibeId = data.employee ? data.employee.employeeId : data.employeeId;
       dto.proveedorId = data.supplier ? data.supplier.supplierId : data.supplierId;
+      dto.departamentoId = data.departament ? data.departament.departamentId : data.departamentId;
+      dto.bodegaId = data.warehouse ? data.warehouse.warehouseId : data.warehouseId;
       let details: any[] = [];
       if (Array.isArray(data.details)) {
         data.details.forEach(value => {

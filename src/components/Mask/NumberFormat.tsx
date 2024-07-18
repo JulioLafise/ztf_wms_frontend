@@ -1,15 +1,18 @@
 import React from 'react';
 import { NumericFormat, type NumericFormatProps } from 'react-number-format';
-import { TextField, type TextFieldProps } from '@mui/material';
+
+interface ICustomNumericFormatProps extends NumericFormatProps {
+  defaultValue?: any
+}
 
 
-export const PercentNumberFormat = React.forwardRef<HTMLInputElement, NumericFormatProps>((props, ref) => {
+export const PercentNumberFormat = React.forwardRef<HTMLInputElement, ICustomNumericFormatProps>((props, ref) => {
   const { onChange, ...rest } = props;
   return (
     <NumericFormat
       {...rest}
+      defaultValue={0}
       getInputRef={ref}
-      // customInput={TextField}
       thousandSeparator
       suffix="%"
       valueIsNumericString
@@ -30,11 +33,12 @@ export const PercentNumberFormat = React.forwardRef<HTMLInputElement, NumericFor
 });
 
 
-export const DecimalNumberFormat = React.forwardRef<HTMLInputElement, NumericFormatProps>((props, ref) => {
+export const DecimalNumberFormat = React.forwardRef<HTMLInputElement, ICustomNumericFormatProps>((props, ref) => {
   const { onChange, suffix, ...rest } = props;
   return (
     <NumericFormat
       {...rest}
+      defaultValue={0}
       getInputRef={ref}
       valueIsNumericString
       suffix={suffix || undefined}
@@ -47,7 +51,7 @@ export const DecimalNumberFormat = React.forwardRef<HTMLInputElement, NumericFor
           Object.assign({} as React.ChangeEvent<HTMLInputElement>, event, {
             target: {
               name: rest.name,
-              value: values.value
+              value: Number(values.value)
             }
           })
         );
@@ -57,11 +61,12 @@ export const DecimalNumberFormat = React.forwardRef<HTMLInputElement, NumericFor
 });
 
 
-export const IntegerNumberFormat = React.forwardRef<HTMLInputElement, NumericFormatProps>((props, ref) => {
+export const IntegerNumberFormat = React.forwardRef<HTMLInputElement, ICustomNumericFormatProps>((props, ref) => {
   const { onChange, suffix, ...rest } = props;
   return (
     <NumericFormat
       {...rest}
+      defaultValue={0}
       getInputRef={ref}
       valueIsNumericString
       suffix={suffix || undefined}
@@ -83,11 +88,12 @@ export const IntegerNumberFormat = React.forwardRef<HTMLInputElement, NumericFor
 });
 
 
-export const IntegerNumberFormatWithoutThousandSeparator = React.forwardRef<HTMLInputElement, NumericFormatProps>((props, ref) => {
+export const IntegerNumberFormatWithoutThousandSeparator = React.forwardRef<HTMLInputElement, ICustomNumericFormatProps>((props, ref) => {
   const { onChange, suffix, ...rest } = props;
   return (
     <NumericFormat
       {...rest}
+      defaultValue={0}
       getInputRef={ref}
       valueIsNumericString
       suffix={suffix || undefined}
@@ -108,11 +114,12 @@ export const IntegerNumberFormatWithoutThousandSeparator = React.forwardRef<HTML
 });
 
 
-export const SimpleNumberFormat = React.forwardRef<HTMLInputElement, NumericFormatProps>((props, ref) => {
+export const SimpleNumberFormat = React.forwardRef<HTMLInputElement, ICustomNumericFormatProps>((props, ref) => {
   const { onChange, ...rest } = props;
   return (
     <NumericFormat
       {...rest}
+      defaultValue={0}
       getInputRef={ref}
       valueIsNumericString
       decimalScale={0}

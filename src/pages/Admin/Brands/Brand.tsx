@@ -122,7 +122,7 @@ const BrandPage = () => {
 
   const onChangeState = async (values: { [key: string]: any }) => {
     setOptionsQuery({ typeMutation: 'delete'});
-    const title = values.isActive ? 'Desactive Unit Measure!' : 'Active Unit Measure!';
+    const title = values.isActive ? 'Desactive Brand!' : 'Active Brand!';
     swalToastWait(title, {
       message: 'Please wait a few minutes',
       showLoading: true,

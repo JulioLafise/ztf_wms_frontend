@@ -5,7 +5,9 @@ import {
   EntriesStepperLazy,
   DeparturePageLazy,
   DeparturesStepperLazy,
-  PurchaseOrderPageLazy
+  PurchaseOrderPageLazy,
+  ProductPageLazy,
+  AddProductPageLazy
 } from '@wms/pages';
 
 export const inventoryRouter: RouteObject = {
@@ -53,7 +55,17 @@ export const inventoryRouter: RouteObject = {
     },
     {
       path: 'products',
-      element: <Outlet />,
+      element: <ProductPageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'products/new',
+      element: <AddProductPageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'products/:productId/edit',
+      element: <AddProductPageLazy />,
       errorElement: <Error />
     },
     {
