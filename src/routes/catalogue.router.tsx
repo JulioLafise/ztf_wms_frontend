@@ -7,6 +7,8 @@ import {
   WarehousePageLazy,
   TypeCurrencyPageLazy,
   FeaturesPageLazy,
+  KitPageLazy,
+  AddKitPageLazy,
   CategoryPageLazy,
   CountryPageLazy,
   ColorPageLazy,
@@ -49,6 +51,21 @@ export const catalogueRouter: RouteObject = {
     {
       path: 'product-features',
       element: <FeaturesPageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'product-kit',
+      element: <KitPageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'product-kit/new',
+      element: <AddKitPageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'product-kit/:kitId/edit',
+      element: <AddKitPageLazy />,
       errorElement: <Error />
     },
     {

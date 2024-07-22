@@ -143,7 +143,7 @@ export class ProductDTO {
               productoDetalleId: value.productDetailId,
               descripcion: value.description,
               productoId: value.productId,
-              caracteristicaDetalleId: value.featureId,
+              caracteristicaDetalleId: value.kitDetail ? value.kitDetail.kitDetailId : value.kitDetailId,
               isActivo: value.isActive
             }
           ];
@@ -227,7 +227,7 @@ export class ProductDTO {
               productoDetalleId: value.productDetailId,
               descripcion: value.description,
               productoId: value.productId,
-              caracteristicaDetalleId: value.featureId,
+              caracteristicaDetalleId: value.kitDetail ? value.kitDetail.kitDetailId : value.kitDetailId,
               isActivo: value.isActive
             }
           ];

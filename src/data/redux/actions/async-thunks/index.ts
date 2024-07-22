@@ -19,3 +19,4 @@ export * as masterAccountAsyncThunks from './master-account.thunk';
 export * as colorAsyncThunks from './color.thunk';
 export * as awsAsyncThunks from './aws-tools.thunk';
 export * as entryTypeAsyncThunks from './entry-type.thunk';
+export * as kitAsyncThunks from './kit.thunk';

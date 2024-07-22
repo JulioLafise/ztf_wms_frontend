@@ -19,3 +19,4 @@ export { default as masterEntryReducer } from './master-entry.slice';
 export { default as masterPurchaseOrderReducer } from './master-purchase-order';
 export { default as colorReducer } from './color.slice';
 export { default as entryTypeReducer } from './entry-type.slice';
+export { default as kitReducer } from './kit.slice';

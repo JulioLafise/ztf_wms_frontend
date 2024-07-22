@@ -1,4 +1,4 @@
-
+import { FeaturesEntity } from './';
 
 
 export class KitDetailEntity {
@@ -6,6 +6,7 @@ export class KitDetailEntity {
     public kitDetailId?: number,
     public description?: string,
     public kitId?: number,
-    public featureId?: number
+    public feature?: FeaturesEntity,
+    public isActive?: boolean,
   ) {}
 }

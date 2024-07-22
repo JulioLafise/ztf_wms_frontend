@@ -24,3 +24,4 @@ export { default as useMasterPurchaseOrder } from './useMasterPurchaseOrder';
 export { default as useMasterAccount } from './useMasterAccount';
 export { default as useColor } from './useColor';
 export { default as useEntryType } from './useEntryType';
+export { default as useKit } from './useKit';

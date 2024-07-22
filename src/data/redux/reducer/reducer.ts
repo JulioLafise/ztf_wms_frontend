@@ -20,7 +20,8 @@ import {
   masterEntryReducer,
   masterPurchaseOrderReducer,
   colorReducer,
-  entryTypeReducer
+  entryTypeReducer,
+  kitReducer
 } from './slices';
 
 const reducers = combineReducers({
@@ -44,7 +45,8 @@ const reducers = combineReducers({
   masterEntryReducer,
   masterPurchaseOrderReducer,
   colorReducer,
-  entryTypeReducer
+  entryTypeReducer,
+  kitReducer
 });
 
 export default reducers;

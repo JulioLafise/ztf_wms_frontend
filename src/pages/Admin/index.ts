@@ -12,3 +12,4 @@ export * from './Countries';
 export * from './Products';
 export * from './Colors';
 export * from './EntryType';
+export * from './Kits';

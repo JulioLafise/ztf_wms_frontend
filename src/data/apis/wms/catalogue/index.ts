@@ -14,3 +14,4 @@ export * from './product.api';
 export * from './inventory.api';
 export * from './color.api';
 export * from './entry-type.api';
+export * from './kit.api';

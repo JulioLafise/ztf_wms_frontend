@@ -138,6 +138,14 @@ export const settings: IMenuList[] = [
         roles: ['dev'],
       },
       {
+        menuId: 'product-kit',
+        menuUrl: '/product-kit',
+        menuName: 'Product Kit',
+        icon: 'boxes-packing',
+        description: 'Managing product kit',
+        roles: ['dev'],
+      },
+      {
         menuId: 'product-category',
         menuUrl: '/product-category',
         menuName: 'Product Category',

@@ -16,14 +16,14 @@ interface IProps {
 
 interface ISchemaValidationTable {
   description?: string,
-  productId?: number,
+  // productId?: number,
   featureId?: number,
   isActive?: Yup.Maybe<boolean>
 }
 
 const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.object().shape({
   description: Yup.string().required('Description is required'),
-  productId: Yup.number().required('Brand is required'),
+  // productId: Yup.number().required('Product is required'),
   featureId: Yup.number().required('Feature is required'),
   isActive: Yup.boolean().notRequired()
 });
@@ -70,25 +70,25 @@ const DetailProduct: React.FC<IProps> = (props) => {
         helperText: validationErrors.description
       },
     },
+    // {
+    //   id: 'productId',
+    //   accessorKey: 'productId',
+    //   accessorFn: (row) => row.productId,
+    //   header: 'Producto',
+    //   minSize: 150,
+    //   editVariant: 'select',
+    //   muiEditTextFieldProps: {      
+    //     required: true,
+    //     error: !!validationErrors.productId,
+    //     helperText: validationErrors.productId
+    //   },
+    //   editSelectOptions: selectData.products,
+    //   Cell: ({ renderedCellValue }) => <>{productData?.filter(ft => ft.productId === renderedCellValue)[0].name || renderedCellValue}</>
+    // },
     {
-      id: 'productId',
-      accessorKey: 'productId',
-      accessorFn: (row) => row.productId,
-      header: 'Producto',
-      minSize: 150,
-      editVariant: 'select',
-      muiEditTextFieldProps: {      
-        required: true,
-        error: !!validationErrors.productId,
-        helperText: validationErrors.productId
-      },
-      editSelectOptions: selectData.products,
-      Cell: ({ renderedCellValue }) => <>{productData?.filter(ft => ft.productId === renderedCellValue)[0].name || renderedCellValue}</>
-    },
-    {
-      id: 'featureId',
-      accessorKey: 'featureId',
-      accessorFn: (row) => row.featureId,
+      id: 'kitDetailId',
+      accessorKey: 'kitDetailId',
+      accessorFn: (row) => row.kitDetail?.kitDetailId,
       header: 'Caracteristica', 
       minSize: 150,
       editVariant: 'select',
