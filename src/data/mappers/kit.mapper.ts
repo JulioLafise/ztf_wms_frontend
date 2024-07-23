@@ -43,6 +43,28 @@ export class KitMapper {
     return data;
   }
 
+  static getListByCategory(values: unknown): KitEntity[] {
+    let data: KitEntity[] = [];
+    if (Array.isArray(values)) {
+      values.forEach(value => {
+        data = [
+          ...data,
+          {
+            kitId: value.catalogoKitId,
+            description: value.descripcion,
+            category: {
+              categoryId: value.categoria.categoriId,
+              description: value.categoria.descripcion
+            },
+            details: this.getDetailEntryList(value.listKitDetalle),
+            isActive: value.isActivo,
+          }
+        ];
+      });
+    } else throw new Error('An array was expected');
+    return data;
+  }
+
   private static getDetailEntryList(values: unknown): KitDetailEntity[] {
     let data: KitDetailEntity[] = [];
     const value: any = values;
@@ -54,10 +76,12 @@ export class KitMapper {
             kitDetailId: item.kitDetalleId,
             description: item.descripcion,
             kitId: item.catalogoKitId,
+            kitName: item.caracteristicaDetalle.kit,
             feature: {
               featuresId: item.caracteristicaDetalle.catalogoCaracteristicaId,
               description: item.caracteristicaDetalle.catalogoCaracteristica,
-            }
+            },
+            isActive: item.isActivo
           }
         ];
       });

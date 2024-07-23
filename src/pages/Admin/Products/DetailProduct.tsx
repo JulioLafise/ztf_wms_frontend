@@ -3,35 +3,33 @@ import type { MRT_ColumnDef, MRT_TableInstance, MRT_RowData } from 'material-rea
 import * as Yup from 'yup';
 import { IOnSaveAndEditRows, IValidationErrors, ComboBoxSelectTable } from '@wms/interfaces';
 import { MaterialTable } from '@wms/components';
-import { useAlertNotification, useFeatures, useProduct } from '@wms/hooks';
-import { ProductDetailEntity } from '@wms/entities';
+import { useAlertNotification, useFeatures, useCategory } from '@wms/hooks';
+import { KitDetailEntity, ProductDetailEntity } from '@wms/entities';
 import { Validator, pagintateArray, GeneratedData } from '@wms/helpers';
 
 interface IProps {
   rowData: ProductDetailEntity[]
   setRowData: React.Dispatch<React.SetStateAction<ProductDetailEntity[]>>,
-  productId?: number,
+  categoryId: number,
   disabled?: boolean
 }
 
 interface ISchemaValidationTable {
   description?: string,
-  // productId?: number,
-  featureId?: number,
+  kitDetailId?: number,
   isActive?: Yup.Maybe<boolean>
 }
 
 const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.object().shape({
   description: Yup.string().required('Description is required'),
-  // productId: Yup.number().required('Product is required'),
-  featureId: Yup.number().required('Feature is required'),
+  kitDetailId: Yup.number().required('Feature is required'),
   isActive: Yup.boolean().notRequired()
 });
 
-type ComboBoxItems = { features: object[], products: object[] };
+type ComboBoxItems = { kits: object[], };
 
 const DetailProduct: React.FC<IProps> = (props) => {
-  const { rowData, setRowData, disabled, productId } = props;
+  const { rowData, setRowData, disabled, categoryId } = props;
   const { swalToastSuccess } = useAlertNotification();
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<ISchemaValidationTable>>({});
   const [ref, setRef] = React.useState<MRT_TableInstance<ProductDetailEntity>>();
@@ -40,15 +38,12 @@ const DetailProduct: React.FC<IProps> = (props) => {
     pageSize: 10
   });
   const [selectData, setSelectData] = React.useState<ComboBoxSelectTable<ComboBoxItems>>({
-    features: [],
-    products: []
+    kits: [],
   });
   const paginateData = React.useMemo(() => pagintateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { useFeaturesListQuery } = useFeatures();
-  const { useProductListQuery } = useProduct();
-  const { data: featureData } = useFeaturesListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
-  const { data: productData } = useProductListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
+  const { useCategoryKitListQuery } = useCategory();
+  const { data: kitData } = useCategoryKitListQuery({ categoryId });
 
   const columns = React.useMemo<MRT_ColumnDef<ProductDetailEntity>[]>(() => [
     {
@@ -70,21 +65,6 @@ const DetailProduct: React.FC<IProps> = (props) => {
         helperText: validationErrors.description
       },
     },
-    // {
-    //   id: 'productId',
-    //   accessorKey: 'productId',
-    //   accessorFn: (row) => row.productId,
-    //   header: 'Producto',
-    //   minSize: 150,
-    //   editVariant: 'select',
-    //   muiEditTextFieldProps: {      
-    //     required: true,
-    //     error: !!validationErrors.productId,
-    //     helperText: validationErrors.productId
-    //   },
-    //   editSelectOptions: selectData.products,
-    //   Cell: ({ renderedCellValue }) => <>{productData?.filter(ft => ft.productId === renderedCellValue)[0].name || renderedCellValue}</>
-    // },
     {
       id: 'kitDetailId',
       accessorKey: 'kitDetailId',
@@ -94,11 +74,11 @@ const DetailProduct: React.FC<IProps> = (props) => {
       editVariant: 'select',
       muiEditTextFieldProps: {      
         required: true,
-        error: !!validationErrors.featureId,
-        helperText: validationErrors.featureId
+        error: !!validationErrors.kitDetailId,
+        helperText: validationErrors.kitDetailId
       },
-      editSelectOptions: selectData.features,
-      Cell: ({ renderedCellValue }) => <>{featureData?.filter(ft => ft.featuresId === renderedCellValue)[0].description || renderedCellValue}</>
+      editSelectOptions: selectData.kits,
+      Cell: ({ row }) => <p>({row.original.kitName}) {row.original.kitDetail?.feature?.description}</p>
     },
   ], [validationErrors, selectData]);
 
@@ -108,10 +88,14 @@ const DetailProduct: React.FC<IProps> = (props) => {
     setValidationErrors({});
     validation!({})(table, row.original.productDetailId ? true : false);
     setRowData(prevState => [
-      ...prevState,
+      ...prevState.filter(ft => ft.productDetailId !== row.original.productDetailId),
       {
+        ...row.original,
         ...values,
-        productDetailId: values.productDetailId || GeneratedData.getRandomInt(3000),
+        productDetailId: row.original.productDetailId || GeneratedData.getRandomInt(3000),
+        kitDetail: {
+          kitDetailId: values.kitDetailId
+        }
       }
     ]);
   };
@@ -127,13 +111,17 @@ const DetailProduct: React.FC<IProps> = (props) => {
   };
 
   React.useEffect(() => {
-    if (productData) {
-      setSelectData(oldData => ({ ...oldData, products: productData.filter(ft => ft.productId !== productId).map(obj => ({ label: obj.name, value: obj.productId })) }));
+    if (kitData) {
+      let data: KitDetailEntity[] = [];
+      kitData.forEach(values => {
+        data = [
+          ...data,
+          ...values.details!
+        ];
+      });
+      setSelectData(oldData => ({ ...oldData, kits: data.map(obj => ({ label: `(${obj.kitName}) ${obj.feature?.description}`, value: obj.kitId })) }));
     }
-    if (featureData) {
-      setSelectData(oldData => ({ ...oldData, features: featureData.map(obj => ({ label: obj.description, value: obj.featuresId })) }));
-    }
-  }, [productData, featureData]);
+  }, [kitData]);
 
   return (
     <MaterialTable<ProductDetailEntity>
@@ -155,7 +143,10 @@ const DetailProduct: React.FC<IProps> = (props) => {
       isLoading={false}
       isGenerate={true}
       isError={false}
-      setValidationErrors={setValidationErrors}      
+      setValidationErrors={setValidationErrors}   
+      onEditingRowChange={({ row }) => {
+        console.log(row);
+      }}   
     />
   );
 };

@@ -2,10 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppSelector, useAppDispatch } from '@wms/redux/selector';
 import { categoryAsyncThunks } from '@wms/redux/actions';
 import { IPagination, IOptionsQuery } from '@wms/interfaces';
-import { CategoryEntity } from '@wms/entities';
+import { CategoryEntity, ProductEntity, KitEntity } from '@wms/entities';
 import { PaginationDTO, CategoryDTO } from '@wms/dtos';
 import { Validator } from '@wms/helpers';
-import { CategoryMapper } from '@wms/mappers';
+import { CategoryMapper, KitMapper, ProductMapper } from '@wms/mappers';
 
 
 const useCategory = () => {
@@ -23,6 +23,40 @@ const useCategory = () => {
         const data = (await dispatch(categoryAsyncThunks.getCategoryList(paginationDto!))).payload;
         Validator.httpValidation(data as any);
         return CategoryMapper.getList(data);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: 20 * 60 * 60
+  });
+
+  const useCategoryKitListQuery = (params: { categoryId: number }) => useQuery<KitEntity[]>({
+    queryKey: ['category-kit-list', { ...params }],    
+    queryFn: async () => {
+      try {
+        const [errors, categoryDto] = await CategoryDTO.get({ ...params });
+        if (errors) throw new Error(errors);
+        const data = (await dispatch(categoryAsyncThunks.getCategoryKitList(categoryDto!))).payload;
+        Validator.httpValidation(data as any);
+        return KitMapper.getListByCategory(data);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: 20 * 60 * 60
+  });
+
+  const useCategoryProductListQuery = (params: { categoryId: number }) => useQuery<ProductEntity[]>({
+    queryKey: ['category-product-list', { ...params }],    
+    queryFn: async () => {
+      try {
+        const [errors, categoryDto] = await CategoryDTO.get({ ...params });
+        if (errors) throw new Error(errors);
+        const data = (await dispatch(categoryAsyncThunks.getCategoryProductList(categoryDto!))).payload;
+        Validator.httpValidation(data as any);
+        return ProductMapper.getList(data);
       } catch (error) {
         return Promise.reject(error);
       }
@@ -72,6 +106,8 @@ const useCategory = () => {
     rowCount,
     //METHODS
     useCategoryListQuery,
+    useCategoryKitListQuery,
+    useCategoryProductListQuery,
     useCategoryMutation
   };
 };

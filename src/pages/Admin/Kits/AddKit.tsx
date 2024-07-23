@@ -8,6 +8,8 @@ import {
 } from '@mui/material';
 import {
   ArrowBack,
+  CheckBox,
+  CheckBoxOutlineBlank,
   CheckCircle,
   CheckCircleOutline,
   PrecisionManufacturing,
@@ -49,7 +51,7 @@ interface IForm {
 const defaultValues: IForm = {
   description: '',
   category: null,
-  isActive: false
+  isActive: true
 };
 
 const schemaValidationForm: Yup.ObjectSchema<IForm> = Yup.object().shape({
@@ -60,14 +62,12 @@ const schemaValidationForm: Yup.ObjectSchema<IForm> = Yup.object().shape({
 
 interface ISchemaValidationTable {
   description?: string,
-  featuresId?: number,
-  isActive?: Yup.Maybe<boolean>
+  featuresId?: number
 }
 
 const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.object().shape({
   description: Yup.string().required('Description is required'),
-  featuresId: Yup.number().required('Feature is required'),
-  isActive: Yup.boolean().notRequired()
+  featuresId: Yup.number().required('Feature is required')
 });
 
 type ComboBoxItems = { features: object[] };
@@ -90,7 +90,7 @@ const AddKitPage = () => {
     setFocus
   } = methods;
   const formValues = watch();
-  const { swalToastSuccess, swalToastError, swalToastWait } = useAlertNotification();
+  const { swalToastSuccess, swalToastError, swalToastWait, swalToastInfo } = useAlertNotification();
   const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
   const [lock, setLock] = React.useState<boolean>(false);
   const [rowData, setRowData] = React.useState<KitDetailEntity[]>([]);
@@ -155,10 +155,17 @@ const AddKitPage = () => {
       editSelectOptions: selectData.features,
       Cell: ({ row }) => <>{row.original.feature?.description}</>
     },
+    {
+      id: 'isActive',
+      accessorKey: 'isActive',
+      header: 'Activo',
+      minSize: 150,
+      enableEditing: false,
+      Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
+    },
   ], [validationErrors, selectData]);
 
   const onSubmit = (values: { [key: string]: any }) => {
-    console.log(values);
     setOptionsQuery({
       typeMutation: values.kitId ? 'put' : 'post'
     });
@@ -204,17 +211,40 @@ const AddKitPage = () => {
           featuresId: values.featuresId,
           description: featureData?.filter(ft => ft.featuresId === values.featuresId)[0].description
         },
+        kitId: row.original.kitId || 0,
         kitDetailId: row.original.kitDetailId || GeneratedData.getRandomInt(3000),
+        isNew: !row.original.kitDetailId,
+        isActive: row.original.isActive || true
       }
     ]);
   };
 
   const onDelete = async (values: { [key: string]: any }) => {
+    if (!values.isNew) {
+      swalToastInfo('Delete is not allowed',{
+        message: 'The record has already been saved',
+        timer: 2500
+      });
+      return;
+    }
     setRowData(prevState => [
       ...prevState.filter(ft => ft.kitDetailId != values.kitDetailId)
     ]);
     swalToastSuccess('Delete item', {
       message: 'Success',
+      timer: 2000
+    });
+  };
+
+  const onChangeState = async (values: { [key: string]: any }) => {
+    setRowData(prevState => [
+      ...prevState.filter(ft => ft.kitDetailId != values.kitDetailId),
+      {
+        ...values,
+        isActive: !values.isActive
+      }
+    ]);
+    swalToastSuccess('Finished', {
       timer: 2000
     });
   };
@@ -243,6 +273,10 @@ const AddKitPage = () => {
     }
   }, [featureData]);
 
+  React.useEffect(() => {
+    console.log(rowData);
+  }, [rowData]);
+
   return (
     <Paper elevation={4}>
       <FormProvider {...methods}>
@@ -256,7 +290,7 @@ const AddKitPage = () => {
               {
                 formValues.isActive
                   ? (<Tooltip title="Activo"><CheckCircle color="success" fontSize="medium" /></Tooltip>)
-                  : (<Tooltip title="Inactivo"><CheckCircleOutline color="error" fontSize="medium"  /></Tooltip>)
+                  : (<Tooltip title="Inactivo"><CheckCircleOutline color="error" fontSize="medium" /></Tooltip>)
               }
             </Box>
             <Divider />
@@ -275,6 +309,7 @@ const AddKitPage = () => {
                 className="w-full md:w-1/2"
                 margin="none"
                 loading={isLoadingCategory}
+                disabled={!!params.kitId || lock}
               />
             </Box>
             <Divider />
@@ -294,6 +329,7 @@ const AddKitPage = () => {
                 onActionEdit={onSaveOrEdit}
                 onActionSave={onSaveOrEdit}
                 onActionDelete={(row) => onDelete(row.original)}
+                onActionStateChange={(row) => onChangeState(row.original)}
                 isLoading={false}
                 isGenerate={true}
                 isError={false}

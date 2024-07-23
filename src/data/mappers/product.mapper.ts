@@ -148,7 +148,7 @@ export class ProductMapper {
               feature: {
                 featuresId: item.caracteristicaDetalle.catalogoCaracteristicaId,
                 description: item.caracteristicaDetalle.catalogoCaracteristica
-              }
+              },              
             },
             isActive: item.isActivo
           }

@@ -53,7 +53,7 @@ export class KitDTO {
               kitDetalleId: value.kitDetailId,
               descripcion: value.description,
               catalogokitId: value.kitId,
-              catalogoCaracteristicasId: value.feature ? value.feature.featureId : value.featureId,
+              catalogoCaracteristicasId: value.feature ? value.feature.featuresId : value.featuresId,
               isActivo: value.isActive
             }
           ];
@@ -89,10 +89,10 @@ export class KitDTO {
           details = [
             ...details,
             {
-              kitDetalleId: value.kitDetailId,
+              kitDetalleId: value.isNew ? 0 : value.kitDetailId,
               descripcion: value.description,
               catalogokitId: value.kitId,
-              catalogoCaracteristicasId: value.feature ? value.feature.featureId : value.featureId,
+              catalogoCaracteristicasId: value.feature ? value.feature.featuresId : value.featuresId,
               isActivo: value.isActive
             }
           ];

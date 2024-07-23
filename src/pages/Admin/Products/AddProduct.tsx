@@ -57,7 +57,7 @@ interface IForm {
   color: ColorEntity | null,
   brand: BrandEntity | null,
   model: ModelEntity | null,
-  category: object | null,
+  category: CategoryEntity | null,
   unitMeasure: object | null,
   unitMeasure2: object | null,
   dimension: Yup.Maybe<string>,
@@ -91,7 +91,7 @@ const schemaValidationForm: Yup.ObjectSchema<IForm> = Yup.object().shape({
   color: Yup.object().nullable(),
   brand: Yup.object().nullable().required('Brand is required'),
   model: Yup.object().nullable().required('Model is required'),
-  category: Yup.object().nullable().required('Category is required'),
+  category: Yup.object<CategoryEntity>().nullable().required('Category is required'),
   unitMeasure: Yup.object().nullable().required('Unit Measure is required'),
   unitMeasure2: Yup.object().nullable(),
   dimension: Yup.string(),
@@ -244,6 +244,8 @@ const AddProductPage = () => {
   React.useEffect(() => {
     if (!Validator.isObjectEmpty(params)) {
       reset(productData);
+      console.log(productData);
+      setValue('category', productData?.category || null);
       setValue('brand', productData?.model?.brand || null);
       setValue('model', productData?.model || null);
       onArrayClear();
@@ -271,7 +273,6 @@ const AddProductPage = () => {
       setLock(false);
     }
   }, [formValues.isEcommerce, mutation.isPending, mutationEliminate.isPending, isLoadingS3]);
-
 
   return (
     <FormProvider {...methods} >
@@ -534,7 +535,7 @@ const AddProductPage = () => {
             <Typography variant="h6" fontWeight="bold">Details</Typography>
           </Box>
           <Divider />
-          <DetailProduct rowData={rowData} setRowData={setRowData} disabled={lock || false} productId={Number(params.productId)} />
+          <DetailProduct rowData={rowData} setRowData={setRowData} disabled={lock || false} categoryId={formValues.category?.categoryId || 0} />
         </Paper>
         <ButtonActions
           title="Back"

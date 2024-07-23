@@ -4,9 +4,10 @@ import {
   IJsonBody,
   IPaginationResp,
   IPaginationProps,
-  IBodyProps
+  IBodyProps,
+  IParamsProps
 } from '@wms/interfaces';
-import { CategoryEntity } from '@wms/entities';
+import { CategoryEntity, ProductEntity, KitEntity } from '@wms/entities';
 
 
 export const categoryListGET = async (options: IPaginationProps<PaginationDTO>): Promise<IJsonBody<IPaginationResp<CategoryEntity>>> => await httpClient.get({
@@ -14,6 +15,16 @@ export const categoryListGET = async (options: IPaginationProps<PaginationDTO>):
   options: {
     params: options.params
   }
+});
+
+export const categoryKitListGET = async (options: IParamsProps<CategoryDTO>): Promise<IJsonBody<KitEntity[]>> => await httpClient.get({
+  url: `categoria/${options.params.categoriaId}/catalogo-kit-all`,
+  options: {}
+});
+
+export const categoryProductListGET = async (options: IParamsProps<CategoryDTO>): Promise<IJsonBody<ProductEntity[]>> => await httpClient.get({
+  url: `categoria/${options.params.categoriaId}/product-all`,
+  options: {}
 });
 
 export const createCategoryPOST = async (options: IBodyProps<CategoryDTO>): Promise<IJsonBody<CategoryEntity | string>> => await httpClient.post({
@@ -30,9 +41,7 @@ export const updateCategoryPUT = async (options: IBodyProps<CategoryDTO>): Promi
   }
 });
 
-export const eliminateCategoryDELETE = async (options: IBodyProps<CategoryDTO>): Promise<IJsonBody<CategoryEntity | string>> => await httpClient.delete({
-  url: `categoria/${options.body.categoriaId}/`,
-  options: {
-    data: options.body
-  }
+export const eliminateCategoryDELETE = async (options: IParamsProps<CategoryDTO>): Promise<IJsonBody<CategoryEntity | string>> => await httpClient.delete({
+  url: `categoria/${options.params.categoriaId}/`,
+  options: {}
 });

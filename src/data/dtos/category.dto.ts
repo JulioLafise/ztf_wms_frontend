@@ -12,7 +12,6 @@ const schemaPATCH: Yup.ObjectSchema<CategoryDTO> = Yup.object().shape({
   isActivo: Yup.boolean()
 });
 
-
 export class CategoryDTO {
 
   public categoriaId?: number;
@@ -53,6 +52,26 @@ export class CategoryDTO {
       dto.isActivo = data.isActive;
 
       await schemaPATCH.validate(dto, { abortEarly: false });
+
+      return [
+        undefined,
+        dto
+      ];
+    } catch (error) {
+      if (error instanceof Yup.ValidationError)
+        return [error.errors];
+      throw new Error();
+    }
+  }
+
+  static async get(data: { [key: string]: any }): Promise<[any?, CategoryDTO?]> 
+  {
+    try {
+      const dto = new CategoryDTO();
+
+      dto.categoriaId = data.categoryId;
+
+      await schemaPATCH.validate(dto, { abortEarly: false });      
 
       return [
         undefined,

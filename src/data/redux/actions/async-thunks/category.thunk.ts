@@ -19,6 +19,30 @@ export const getCategoryList = createAsyncThunk(
   }
 );
 
+export const getCategoryKitList = createAsyncThunk(
+  'catalogue/getCategoryKitList',
+  async (categoryDto: CategoryDTO, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.categoryKitListGET({ params: categoryDto });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
+export const getCategoryProductList = createAsyncThunk(
+  'catalogue/getCategoryProductList',
+  async (categoryDto: CategoryDTO, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.categoryProductListGET({ params: categoryDto });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
 export const onSaveCategory = createAsyncThunk(
   'catalogue/onSaveCategory',
   async (categoryDto: CategoryDTO, { rejectWithValue, dispatch }) => {
@@ -47,7 +71,7 @@ export const onDeleteCategory = createAsyncThunk(
   'catalogue/onDeleteCategory',
   async (categoryDto: CategoryDTO, { rejectWithValue, dispatch }) => {
     try {
-      const { data } = await WMSAPI.eliminateCategoryDELETE({ body: categoryDto });
+      const { data } = await WMSAPI.eliminateCategoryDELETE({ params: categoryDto });
       return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
