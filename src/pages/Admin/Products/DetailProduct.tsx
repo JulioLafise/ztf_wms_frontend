@@ -3,9 +3,9 @@ import type { MRT_ColumnDef, MRT_TableInstance, MRT_RowData } from 'material-rea
 import * as Yup from 'yup';
 import { IOnSaveAndEditRows, IValidationErrors, ComboBoxSelectTable } from '@wms/interfaces';
 import { MaterialTable } from '@wms/components';
-import { useAlertNotification, useFeatures, useCategory } from '@wms/hooks';
+import { useAlertNotification, useCategory } from '@wms/hooks';
 import { KitDetailEntity, ProductDetailEntity } from '@wms/entities';
-import { Validator, pagintateArray, GeneratedData } from '@wms/helpers';
+import { Validator, paginateArray, GeneratedData } from '@wms/helpers';
 
 interface IProps {
   rowData: ProductDetailEntity[]
@@ -40,10 +40,22 @@ const DetailProduct: React.FC<IProps> = (props) => {
   const [selectData, setSelectData] = React.useState<ComboBoxSelectTable<ComboBoxItems>>({
     kits: [],
   });
-  const paginateData = React.useMemo(() => pagintateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
+  const paginateData = React.useMemo(() => paginateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const { useCategoryKitListQuery } = useCategory();
-  const { data: kitData } = useCategoryKitListQuery({ categoryId });
+  const { data: kitData} = useCategoryKitListQuery({ categoryId });
+  const kitDetailData = React.useMemo(() => {
+    let data: KitDetailEntity[] = [];
+    if (kitData?.length) {
+      kitData.forEach(values => {
+        data = [
+          ...data,
+          ...values.details!
+        ];
+      });
+    }
+    return data;
+  }, [kitData]);
 
   const columns = React.useMemo<MRT_ColumnDef<ProductDetailEntity>[]>(() => [
     {
@@ -62,7 +74,7 @@ const DetailProduct: React.FC<IProps> = (props) => {
       muiEditTextFieldProps: {      
         required: true,
         error: !!validationErrors.description,
-        helperText: validationErrors.description
+        helperText: validationErrors.description,
       },
     },
     {
@@ -75,10 +87,10 @@ const DetailProduct: React.FC<IProps> = (props) => {
       muiEditTextFieldProps: {      
         required: true,
         error: !!validationErrors.kitDetailId,
-        helperText: validationErrors.kitDetailId
+        helperText: validationErrors.kitDetailId,
       },
       editSelectOptions: selectData.kits,
-      Cell: ({ row }) => <p>({row.original.kitName}) {row.original.kitDetail?.feature?.description}</p>
+      Cell: ({ row }) => <p>({row.original.kitDetail?.kitName}) {row.original.kitDetail?.feature?.description}</p>
     },
   ], [validationErrors, selectData]);
 
@@ -87,15 +99,14 @@ const DetailProduct: React.FC<IProps> = (props) => {
     if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.productDetailId ? true : false); return; }
     setValidationErrors({});
     validation!({})(table, row.original.productDetailId ? true : false);
+    const kitDetail: KitDetailEntity = kitDetailData.filter(ft => ft.kitDetailId === values.kitDetailId)[0];
     setRowData(prevState => [
       ...prevState.filter(ft => ft.productDetailId !== row.original.productDetailId),
       {
         ...row.original,
         ...values,
         productDetailId: row.original.productDetailId || GeneratedData.getRandomInt(3000),
-        kitDetail: {
-          kitDetailId: values.kitDetailId
-        }
+        kitDetail
       }
     ]);
   };
@@ -111,17 +122,10 @@ const DetailProduct: React.FC<IProps> = (props) => {
   };
 
   React.useEffect(() => {
-    if (kitData) {
-      let data: KitDetailEntity[] = [];
-      kitData.forEach(values => {
-        data = [
-          ...data,
-          ...values.details!
-        ];
-      });
-      setSelectData(oldData => ({ ...oldData, kits: data.map(obj => ({ label: `(${obj.kitName}) ${obj.feature?.description}`, value: obj.kitId })) }));
+    if (kitDetailData) {
+      setSelectData(oldData => ({ ...oldData, kits: kitDetailData.map(obj => ({ label: `(${obj.kitName}) ${obj.feature?.description}`, value: obj.kitDetailId })) }));
     }
-  }, [kitData]);
+  }, [kitDetailData]);
 
   return (
     <MaterialTable<ProductDetailEntity>
@@ -139,14 +143,10 @@ const DetailProduct: React.FC<IProps> = (props) => {
       onActionEdit={onSaveOrEdit}
       onActionSave={onSaveOrEdit}
       onActionDelete={(row) => onDelete(row.original)}
-      // onActionRefreshTable={() => refetch()}
       isLoading={false}
       isGenerate={true}
       isError={false}
-      setValidationErrors={setValidationErrors}   
-      onEditingRowChange={({ row }) => {
-        console.log(row);
-      }}   
+      setValidationErrors={setValidationErrors}  
     />
   );
 };

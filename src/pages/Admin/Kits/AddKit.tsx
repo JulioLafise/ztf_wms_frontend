@@ -40,7 +40,7 @@ import {
   useCategory,
   useKit
 } from '@wms/hooks';
-import { pagintateArray, Validator, GeneratedData } from '@wms/helpers';
+import { paginateArray, Validator, GeneratedData } from '@wms/helpers';
 
 interface IForm {
   description: string,
@@ -103,7 +103,7 @@ const AddKitPage = () => {
   const [selectData, setSelectData] = React.useState<ComboBoxSelectTable<ComboBoxItems>>({
     features: []
   });
-  const paginateData = React.useMemo(() => pagintateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
+  const paginateData = React.useMemo(() => paginateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const { useKitQuery, useKitMutation } = useKit();
   const { useFeaturesListQuery } = useFeatures();

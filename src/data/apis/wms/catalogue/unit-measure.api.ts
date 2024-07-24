@@ -2,10 +2,10 @@ import { httpClient } from '../http-config';
 import { PaginationDTO, UnitMeasureDTO } from '@wms/dtos';
 import {
   IJsonBody,
-  IJsonResponse,
   IPaginationResp,
   IPaginationProps,
-  IBodyProps
+  IBodyProps,
+  IParamsProps
 } from '@wms/interfaces';
 import { UnitMeasureEntity } from '@wms/entities';
 
@@ -31,8 +31,8 @@ export const updateUnitMeasurePUT = async (options: IBodyProps<UnitMeasureDTO>):
   }
 });
 
-export const eliminateUnitMeasureDELETE = async (options: IBodyProps<UnitMeasureDTO>): Promise<IJsonBody<UnitMeasureEntity | string>> => await httpClient.delete({
-  url: `unidadmedida/${options.body.unidadMedidaId}/`,
+export const eliminateUnitMeasureDELETE = async (options: IParamsProps<UnitMeasureDTO>): Promise<IJsonBody<UnitMeasureEntity | string>> => await httpClient.delete({
+  url: `unidadmedida/${options.params.unidadMedidaId}/`,
   options: {
     data: options.body
   }

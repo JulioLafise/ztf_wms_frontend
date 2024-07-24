@@ -47,7 +47,7 @@ export const onDeleteUnitMeasure = createAsyncThunk(
   'catalogue/onDeleteUnitMeasure',
   async (unitMeasureDto: UnitMeasureDTO, { rejectWithValue, dispatch }) => {
     try {
-      const { data } = await WMSAPI.eliminateUnitMeasureDELETE({ body: unitMeasureDto });
+      const { data } = await WMSAPI.eliminateUnitMeasureDELETE({ params: unitMeasureDto });
       return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));

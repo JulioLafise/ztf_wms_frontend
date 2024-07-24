@@ -9,7 +9,7 @@ export class EntryTypeMapper {
     if (!Validator.isObjectEmpty(values as any)){
       const value: any = values;
       data = {
-        entryTypeId: value.marcaId,
+        entryTypeId: value.tipoEntrada,
         description: value.descripcion,
         isActive: value.isActivo
       };
@@ -24,7 +24,7 @@ export class EntryTypeMapper {
         data = [
           ...data,
           {
-            entryTypeId: value.marcaId,
+            entryTypeId: value.tipoEntrada,
             description: value.descripcion,
             isActive: value.isActivo
           }

@@ -8,12 +8,11 @@ import {
   Paper,
   Typography
 } from '@mui/material';
-import { Add, ArrowBack, Cancel, FormatPaint, Image, Info, Save, SquareFoot, TableView } from '@mui/icons-material';
+import { Add, ArrowBack, Cancel, FormatPaint, FormatSize, Image, Info, Save, SquareFoot, TableView } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { v4 as uuid } from 'uuid';
 import {
   AutoCompleteHF,
   TextFieldHF,
@@ -108,7 +107,7 @@ const AddProductPage = () => {
     mode: 'onSubmit',
     reValidateMode: 'onChange'
   });
-  const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
+  const { swalToastError, swalToastWait, swalToastSuccess, swalToastQuestion } = useAlertNotification();
   const { isMobile, isSideBarOpen, theme } = useUI();
   const { uploadImageToS3Api, isLoading: isLoadingS3 } = useAws();
   const navigate = useNavigate();
@@ -224,6 +223,33 @@ const AddProductPage = () => {
     setDimensions([]);
   };
 
+  const onFillDescription = () => {
+    if (formValues.description.length) {
+      swalToastQuestion('Fill Description', {
+        message: 'Do you want to replace your current description?',
+        showConfirmButton: true,
+        confirmButtonText: 'Yes',
+        showCancelButton: true,
+        cancelButtonText: 'No'
+      })
+        .then(result => {
+          if (result.isConfirmed) {
+            functionFillDescription();
+          }
+        });
+    } else {
+      functionFillDescription();
+    }
+  }; 
+
+  const functionFillDescription = () => {
+    let description = '';
+    rowData.forEach(element => {
+      description += `${element.kitDetail?.feature?.description} ${element.description}, `;
+    });
+    setValue('description', description);
+  };
+
   React.useEffect(() => {
     const data = modelData?.filter(ft => ft.brand?.brandId === formValues.brand?.brandId) || [];
     setModelDataFilter(data);
@@ -244,7 +270,6 @@ const AddProductPage = () => {
   React.useEffect(() => {
     if (!Validator.isObjectEmpty(params)) {
       reset(productData);
-      console.log(productData);
       setValue('category', productData?.category || null);
       setValue('brand', productData?.model?.brand || null);
       setValue('model', productData?.model || null);
@@ -310,6 +335,9 @@ const AddProductPage = () => {
                 rows={5}
                 disabled={lock || false}
                 required
+                icon={<FormatSize />}
+                onClickIcon={onFillDescription}
+                textIcon="Fill Description"
               />
               <TextFieldHF
                 className="w-full md:w-1/2"

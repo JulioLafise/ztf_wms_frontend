@@ -145,9 +145,10 @@ export class ProductMapper {
             kitDetail: {
               kitDetailId: item.caracteristicaDetalle.caracteristicaDetalleId,
               description: item.caracteristicaDetalle.descripcion,
+              kitName: item.caracteristicaDetalle.kit,
               feature: {
                 featuresId: item.caracteristicaDetalle.catalogoCaracteristicaId,
-                description: item.caracteristicaDetalle.catalogoCaracteristica
+                description: item.caracteristicaDetalle.catalogoCaracteristica,
               },              
             },
             isActive: item.isActivo

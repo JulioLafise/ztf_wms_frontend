@@ -3,11 +3,12 @@ import type { MRT_ColumnDef, MRT_TableInstance } from 'material-react-table';
 import { IconButton, InputAdornment, Paper } from '@mui/material';
 import { CheckBox, CheckBoxOutlineBlank, FormatColorFill } from '@mui/icons-material';
 import * as Yup from 'yup';
-import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows } from '@wms/interfaces';
+import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows, ComboBoxSelectTable } from '@wms/interfaces';
 import { Validator, Colors } from '@wms/helpers';
 import { useAlertNotification, useUI, useColor } from '@wms/hooks';
 import { MaterialTable, ButtonActions, EditCheckboxTable } from '@wms/components';
 import { ColorEntity } from '@wms/entities';
+import { colorName } from '@wms/static';
 import ColorModal from './ColorModal';
 
 interface ISchemaValidationTable {
@@ -20,6 +21,8 @@ const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.obje
   isActive: Yup.boolean().notRequired()
 });
 
+type ComboBoxItems = { colors: object[] };
+
 const ColorPage = () => {
   const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
   const [colors, setColors] = React.useState<string>('');
@@ -28,6 +31,9 @@ const ColorPage = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [checkState, setCheckState] = React.useState<Partial<ColorEntity>>({
     isActive: false,
+  });
+  const [selectData, setSelectData] = React.useState<ComboBoxSelectTable<ComboBoxItems>>({
+    colors: []
   });
   const [edit, setEdit] = React.useState<ColorEntity | null>(null);
   const [ref, setRef] = React.useState<MRT_TableInstance<ColorEntity>>();
@@ -40,6 +46,7 @@ const ColorPage = () => {
   const { data, isLoading, isError, refetch } = useColorListQuery({ ...pagination, filter: globalFilter });
   const mutation = useColorMutation({ ...pagination, filter: globalFilter }, optionsQuery);
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<ISchemaValidationTable>>({});
+  const colorData = React.useMemo(() => colorName.map(color => ({ colorHex: color[0], colorName: color[1] })), []);
 
   const columns = React.useMemo<MRT_ColumnDef<ColorEntity>[]>(() => [
     {
@@ -73,6 +80,7 @@ const ColorPage = () => {
           )
         }
       },
+      editSelectOptions: selectData.colors,
       Cell: ({ renderedCellValue }) => <><FormatColorFill sx={{ color: String(renderedCellValue) }} /> {Colors.getNameByHex(String(renderedCellValue)).name}</> 
     },
     {
@@ -90,7 +98,7 @@ const ColorPage = () => {
       Edit: (props) => <EditCheckboxTable {...props} setCheckState={setCheckState} />,
       Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
     },
-  ], [validationErrors]);
+  ], [validationErrors, selectData, colors]);
 
   const onSaveOrEdit: IOnSaveAndEditRows<ColorEntity> = async (row, table, values, validation): Promise<void> => {
     if (!isMobile) {
@@ -152,6 +160,12 @@ const ColorPage = () => {
       })
       .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
   };
+
+  React.useEffect(() => {
+    if (colorData) {
+      setSelectData(oldData => ({ ...oldData, colors: colorData.map(obj => ({ label: obj.colorName, value: `#${obj.colorHex}` })) }));
+    }
+  }, [colorData]);
 
   return (
     <Paper elevation={4}>
