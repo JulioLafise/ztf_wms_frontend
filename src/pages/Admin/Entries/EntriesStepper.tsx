@@ -2,23 +2,29 @@ import React from 'react';
 import { Paper, useMediaQuery, Theme } from '@mui/material';
 import { ArrowBack, ArrowForward, ExitToApp, Task, Download, Cancel } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { Stepper, ButtonActions } from '@wms/components';
-import { FormProvider, useForm } from 'react-hook-form';
-import { useUI, useProduct } from '@wms/hooks';
-import HeaderEntry from './Steps/HeaderEntry';
-import DetailEntry from './Steps/DetailEntry';
-import Report from './Steps/ReportEntries';
 import { ReactSpreadsheetImport } from 'react-spreadsheet-import';
 import _ from 'lodash';
 import { Data } from 'react-spreadsheet-import/types/types';
 import { Meta } from 'react-spreadsheet-import/types/steps/ValidationStep/types';
-import { useMasterEntry } from '@wms/hooks';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Stepper, ButtonActions } from '@wms/components';
+import { useUI, useProduct, useMasterEntry } from '@wms/hooks';
+import { MasterEntryEntity, DetailEntryEntity } from '@wms/entities';
+import HeaderEntry from './Steps/HeaderEntry';
+import DetailEntry from './Steps/DetailEntry';
+import Report from './Steps/ReportEntries';
 
 interface IDataExcel {
   all: (Data<string> & Meta)[],
   validData: Data<string>[],
   invalidData: Data<string>[],
 }
+
+type ImportExcelProps = {
+  dataHeader: MasterEntryEntity,
+  dataDetail: DetailEntryEntity[],
+  dataImport: any[]
+};
 
 const DeparturesStepper = () => {
   const { isSideBarOpen } = useUI();
@@ -33,7 +39,7 @@ const DeparturesStepper = () => {
   const [openImport, setOpenImport] = React.useState(false);
   const previousStep = () => setActiveStep(prevState => prevState - 1);
   const nextStep = () => setActiveStep(prevState => prevState + 1);
-  const [dataGeneral, setDataGeneral] = React.useState({
+  const [dataGeneral, setDataGeneral] = React.useState<ImportExcelProps>({
     dataHeader: {},
     dataDetail: [],
     dataImport: []
@@ -239,6 +245,7 @@ const DeparturesStepper = () => {
     // const dataUnique: { nombre: string }[] = _.uniqBy(data.validData, (obj: any) => obj.Nombre).map((obj: any) => ({ nombre: obj.Nombre }));
     // filterProductExistByName(dataUnique).then((res: boolean) => console.log(res));
   };
+
   const onSubmitHeader = (data: any) => {
     console.log(data);
     setDataGeneral(prevState => ({ ...prevState, dataHeader: data }));
@@ -284,11 +291,11 @@ const DeparturesStepper = () => {
     ];
     const dataEntry = {
       descripcion: dataGeneral.dataHeader.description,
-      personaEntrega: dataGeneral.dataHeader.client,
-      tipoMonedaId: dataGeneral.dataHeader.currency.typeCurrencyId,
+      personaEntrega: dataGeneral.dataHeader.supplier?.firstName,
+      tipoMonedaId: dataGeneral.dataHeader.typeCurrency.typeCurrencyId,
       empleadoRecibeId: dataGeneral.dataHeader.employee.employeeId,
       categoriaId: dataGeneral.dataHeader.category.categoryId,
-      proveedorId: dataGeneral.dataHeader.proveedor.supplierId,
+      proveedorId: dataGeneral.dataHeader.supplier.supplierId,
       listaDetalle: dataGeneral.dataDetail,
       departamentoId: dataGeneral.dataHeader.department.departmentId,
       bodegaId: dataGeneral.dataHeader.warehouse.warehouseId
@@ -316,7 +323,7 @@ const DeparturesStepper = () => {
             />
             <ButtonActions
               title="Exit"
-              onClick={() => navigate('/app/inventory/departures', { replace: true })}
+              onClick={() => navigate('/app/inventory/entries', { replace: true })}
               ComponentIcon={<ExitToApp />}
               ubication={isMobile ? { left: 90 } : { bottom: 55, left: isSideBarOpen ? 351 : 170 }}
             />

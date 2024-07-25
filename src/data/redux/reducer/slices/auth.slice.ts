@@ -5,7 +5,7 @@ import { authAsyncThunks } from '@wms/redux/actions';
 const initialState: IAuthProps = {
   user: null,
   isChecking: false,
-  isAuthenticated: true,
+  isAuthenticated: false,
   isChangePassword: false,
   error: undefined
 };
@@ -25,7 +25,7 @@ const authSlice = createSlice({
       state.user = payload;
       state.isChecking = false;
       state.isAuthenticated = true;
-      state.isChangePassword = payload.isChangePassword || false;
+      // state.isChangePassword = payload.isChangePassword || false;
       state.error = undefined;
     });
     builder.addCase(authAsyncThunks.getSignIn.rejected, (state, { payload }) => {

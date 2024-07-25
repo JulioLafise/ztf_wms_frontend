@@ -27,3 +27,4 @@ export * from './detail-purchase-order.entity';
 export * from './color.entity';
 export * from './entry-type.entity';
 export * from './prices-group.entity';
+export * from './auth.entity';

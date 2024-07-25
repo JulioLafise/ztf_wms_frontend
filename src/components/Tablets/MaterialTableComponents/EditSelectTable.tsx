@@ -9,9 +9,17 @@ import type {
 } from 'material-react-table';
 import { 
   Autocomplete,
+  AutocompleteOwnerState,
+  AutocompleteRenderOptionState,
   Box,
-  TextField
+  TextField,
+  InputAdornment
 } from '@mui/material';
+import { FontAwesomeIcon } from '@wms/components';
+
+interface RenderOptionProps<T> extends React.HTMLAttributes<T> {
+  key?: any
+}
 
 interface IProps<T extends MRT_RowData> {
   cell: MRT_Cell<T, unknown>;
@@ -21,7 +29,10 @@ interface IProps<T extends MRT_RowData> {
   setSelectState?: React.Dispatch<React.SetStateAction<T>>,
   options: DropdownOption[],
   getOptionLabel: (option: DropdownOption) => string,
-  width?: React.CSSProperties['width']
+  renderOption?: (props: RenderOptionProps<HTMLLIElement>, option: T, state: AutocompleteRenderOptionState, ownerState: AutocompleteOwnerState<T, false, boolean, false, 'div'>) => React.ReactNode,
+  width?: React.CSSProperties['width'],
+  startIcon?: { icon: string, color: React.CSSProperties['color'] },
+  endIcon?: { icon: string, color: React.CSSProperties['color'] },
 }
 
 type TypeSelectOption = { label?: string, value: any, text?: string };
@@ -35,7 +46,10 @@ const EditSelectTable = React.memo(<T extends MRT_RowData>(props: IProps<T>) => 
     setSelectState,
     options,
     getOptionLabel,
-    width = 100
+    renderOption,
+    width = 100,
+    startIcon,
+    endIcon
   } = props;
   const filter: any = cell.getValue<any>() ? options.filter((ft: any) => ft.value === cell.getValue<any>())[0] : undefined;
   const [isSelect, setIsSelect] = React.useState<TypeSelectOption | null>(null);
@@ -50,16 +64,17 @@ const EditSelectTable = React.memo(<T extends MRT_RowData>(props: IProps<T>) => 
     }
   }, []);
   return (
-    <Box component="section" className="flex items-center justify-center pb-1 ps-1">
-      <Autocomplete
+    <Box component="section" className="flex items-center justify-start pb-1 ps-1">
+      <Autocomplete<T>
         id={column.id}
         fullWidth
         size="medium"
         sx={{ width: width }}
         isOptionEqualToValue={(option: any) => option.value === isSelect?.value}
-        options={options || []}
+        options={options as any || []}
         value={isSelect}
         getOptionLabel={getOptionLabel}
+        renderOption={renderOption}
         noOptionsText="Options not available"
         onChange={(_e, value: TypeSelectOption | null) => {          
           const lastValue = value && typeof value === 'object' ? value.value : value;
@@ -70,7 +85,28 @@ const EditSelectTable = React.memo(<T extends MRT_RowData>(props: IProps<T>) => 
             [cell.column.id]: lastValue
           }));
         }}
-        renderInput={(textProps) => <TextField {...textProps} fullWidth margin="none" variant="standard" />}
+        renderInput={(textProps) => <TextField
+          {...textProps}
+          fullWidth
+          margin="none"
+          variant="standard"
+          InputProps={{
+            ...textProps.InputProps,
+            startAdornment: startIcon && (<InputAdornment position="start" className="pl-2">
+              <FontAwesomeIcon
+                color={startIcon?.color || isSelect?.value}
+                iconLabel={startIcon?.icon}
+              />
+            </InputAdornment>),
+            endAdornment: endIcon ? (<InputAdornment position="end" className="pr-8">
+              <FontAwesomeIcon
+                color={endIcon?.color || isSelect?.value}
+                iconLabel={endIcon?.icon}
+              />
+            </InputAdornment>)
+              : (<React.Fragment>{textProps.InputProps.endAdornment}</React.Fragment>),
+          }}
+        />}
       />
     </Box>
   );

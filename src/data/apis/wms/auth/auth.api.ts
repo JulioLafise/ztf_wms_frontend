@@ -1,6 +1,7 @@
 import { httpClient } from '../http-config';
 import { IJsonBody, IJsonResponse, IBodyProps } from '@wms/interfaces';
-
+import { SignInDTO, ConfirmDTO } from '@wms/dtos';
+import { SingInEntity } from '@wms/entities';
 
 interface ISignInResp {
   user: any,
@@ -10,8 +11,15 @@ interface ISignInResp {
   accessToken: string
 }
 
-export const signInPOST = async (options: IBodyProps<any>): Promise<IJsonBody<IJsonResponse<ISignInResp>>> => await httpClient.post({
-  url: 'security/auth/sign-in/',
+export const signInPOST = async (options: IBodyProps<SignInDTO>): Promise<IJsonBody<{ resultAuth: SingInEntity}>> => await httpClient.post({
+  url: 'authcognitopubcontrollers/signin/',
+  options: {
+    data: options.body
+  }
+});
+
+export const confirmPUT = async (options: IBodyProps<ConfirmDTO>): Promise<IJsonBody<IJsonResponse<any>>> => await httpClient.put({
+  url: 'authcognitopubcontrollers/confirmet/',
   options: {
     data: options.body
   }

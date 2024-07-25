@@ -1,29 +1,36 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { SaveAltRounded, CancelOutlined, FormatColorFill } from '@mui/icons-material';
+import { SaveAltRounded, CancelOutlined } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import {
   SimpleModal,
-  TextFieldHF,
-  CheckBoxHF
+  AutoCompleteHF,
+  CheckBoxHF,
+  FontAwesomeIcon
 } from '@wms/components';
+import { Colors } from '@wms/helpers';
+import { colorName } from '@wms/static';
 import { ColorEntity } from '@wms/entities';
 
+type ColorProps = { colorHex: string, colorName: string };
 interface IForm {
-  color: string,
+  colorId: Yup.Maybe<number>,
+  color: object | null,
   isActive: Yup.Maybe<boolean>
 }
 
 const schemaValidation: Yup.ObjectSchema<IForm> = Yup.object().shape({
-  color: Yup.string().required('Description is required'),
+  colorId: Yup.number().notRequired(),
+  color: Yup.object<ColorProps>().nullable().required('Description is required'),
   isActive: Yup.boolean()
 });
 
 const defaultValues: IForm = {
-  color: '',
+  colorId: 0,
+  color: null,
   isActive: true
 };
 
@@ -43,17 +50,37 @@ const ColorModal = (props: IProps) => {
     reValidateMode: 'onChange',
     resolver: yupResolver(schemaValidation)
   });
-  const { handleSubmit, reset, watch } = methods;
-  const formValues = watch();
+  const colorData = React.useMemo(() => colorName.map(color => ({ colorHex: `#${color[0]}`, colorName: color[1] })), []);
+  const { handleSubmit, reset } = methods;
   React.useEffect(() => {
-    reset(edit ? edit : defaultValues);
+    reset(edit ? {
+      color: {
+        colorHex: edit.color,
+        colorName: colorData.filter(ft => ft.colorHex === edit.color)[0].colorName
+      },
+      colorId: edit.colorId,
+      isActive: edit.isActive
+    } : defaultValues);
   }, [edit, isOpen]);
   return (
     <SimpleModal isOpen={isOpen} onClose={() => !isLoading && setIsOpen(false)} title={`${!edit ? 'New' : 'Edit'}`} >
       <FormProvider {...methods}>
         <form noValidate className="flex flex-col flex-wrap" onSubmit={handleSubmit(onSubmit)}>
           <Box component="div" className="overflow-auto pt-0.5">
-            <TextFieldHF label="Descripcion" name="color" icon={<FormatColorFill sx={{ color: formValues.color }} />} />
+            <AutoCompleteHF<ColorProps>
+              label="Colors"
+              name="color"
+              optionsData={colorData}
+              colorOption="colorHex"
+              getOptionLabel={(option) => `${option.colorName}`}
+              icon="fill-drip"
+              disablePortal
+              renderOption={({ key: someKey, ...props }, option) => (
+                <li key={someKey} {...props}>
+                  <FontAwesomeIcon icon="fill-drip" color={`${option.colorHex}`} className="pe-1.5" /> {String(Colors.getNameByHex(option.colorHex.replace('#', '')!).name)}
+                </li>)
+              }
+            />
             <Box component="section" className="flex items-start" ><CheckBoxHF label="Activo" name="isActive" disabled /></Box>
           </Box>
           <Box component="section" className="flex flex-row-reverse gap-2 pt-3">

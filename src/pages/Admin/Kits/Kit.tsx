@@ -96,7 +96,7 @@ const KitPage = () => {
         isError={isError}
         onActionRefreshTable={() => refetch()}       
       />
-      <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} />
+      <ButtonActions title="New" ubication={isMobile ? undefined : { bottom: 99, right: 99 }} onClick={() => { navigate('new', { replace: false }); }} />
     </Paper>
   );
 };

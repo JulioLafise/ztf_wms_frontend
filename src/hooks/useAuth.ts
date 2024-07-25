@@ -1,6 +1,7 @@
 import { useAppSelector, useAppDispatch } from '@wms/redux/selector';
 import { authAsyncThunks } from '@wms/redux/actions';
 import { LocalStorageConfig } from '@wms/config';
+import { SignInDTO } from '@wms/dtos';
 
 const useAuth = () => {
   const token = LocalStorageConfig.getItem<string>('token', 'string');
@@ -10,7 +11,9 @@ const useAuth = () => {
 
   const onSignIn = async (data: { [key: string]: any }) => {
     try {
-      const result = await dispatch(authAsyncThunks.getSignIn(data));
+      const [errors, signInDto] = await SignInDTO.create({ ...data, isEcommerce: false });
+      if (errors) throw new Error(errors);
+      const result = await dispatch(authAsyncThunks.getSignIn(signInDto!));
       return Promise.resolve(result.payload);
     } catch (error) {      
       return Promise.reject(error);
@@ -19,6 +22,7 @@ const useAuth = () => {
 
   const onSignOut = async () => {
     try {
+      const result = await dispatch(authAsyncThunks.getSignOut(undefined));
       return Promise.resolve(null);
     } catch (error) {
       return Promise.reject(error);

@@ -6,7 +6,13 @@ import * as Yup from 'yup';
 import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows, ComboBoxSelectTable } from '@wms/interfaces';
 import { Validator, Colors } from '@wms/helpers';
 import { useAlertNotification, useUI, useColor } from '@wms/hooks';
-import { MaterialTable, ButtonActions, EditCheckboxTable } from '@wms/components';
+import {
+  MaterialTable,
+  ButtonActions,
+  EditCheckboxTable,
+  EditSelectTable,
+  FontAwesomeIcon
+} from '@wms/components';
 import { ColorEntity } from '@wms/entities';
 import { colorName } from '@wms/static';
 import ColorModal from './ColorModal';
@@ -46,7 +52,7 @@ const ColorPage = () => {
   const { data, isLoading, isError, refetch } = useColorListQuery({ ...pagination, filter: globalFilter });
   const mutation = useColorMutation({ ...pagination, filter: globalFilter }, optionsQuery);
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<ISchemaValidationTable>>({});
-  const colorData = React.useMemo(() => colorName.map(color => ({ colorHex: color[0], colorName: color[1] })), []);
+  const colorData = React.useMemo(() => colorName.map(color => ({ colorHex: `#${color[0]}`, colorName: color[1] })), []);
 
   const columns = React.useMemo<MRT_ColumnDef<ColorEntity>[]>(() => [
     {
@@ -61,7 +67,8 @@ const ColorPage = () => {
       accessorKey: 'color',
       header: 'Descripcion',
       minSize: 150,
-      editVariant: 'select',
+      // editVariant: 'select',
+      // editSelectOptions: selectData.colors,
       muiEditTextFieldProps: {      
         required: true,
         error: !!validationErrors.color,
@@ -80,7 +87,19 @@ const ColorPage = () => {
           )
         }
       },
-      editSelectOptions: selectData.colors,
+      Edit: (props) => <EditSelectTable
+        {...props}
+        width={280}
+        options={selectData.colors}
+        getOptionLabel={(option: any) => `${option.label}`}
+        setSelectState={setCheckState}
+        renderOption={({ key: someKey, ...props }, option) => (
+          <li key={someKey} {...props}>
+            <FontAwesomeIcon icon="fill-drip" color={`${option.value}`} className="pe-1.5" /> {String(Colors.getNameByHex(option.value.replace('#', '')!).name)}
+          </li>)
+        }
+        startIcon={{ icon: 'fill-drip', color: undefined }}
+      />,
       Cell: ({ renderedCellValue }) => <><FormatColorFill sx={{ color: String(renderedCellValue) }} /> {Colors.getNameByHex(String(renderedCellValue)).name}</> 
     },
     {
@@ -135,7 +154,11 @@ const ColorPage = () => {
       message: 'Please wait a few minutes',
       showLoading: true,
     });
-    mutation.mutateAsync(values)
+    const data: ColorEntity = {
+      ...values,
+      color: values.color.colorHex || values.color
+    };
+    mutation.mutateAsync(data)
       .then(() => {
         setIsOpen(false);
         setEdit(null);
@@ -163,7 +186,7 @@ const ColorPage = () => {
 
   React.useEffect(() => {
     if (colorData) {
-      setSelectData(oldData => ({ ...oldData, colors: colorData.map(obj => ({ label: obj.colorName, value: `#${obj.colorHex}` })) }));
+      setSelectData(oldData => ({ ...oldData, colors: colorData.map(obj => ({ label: obj.colorName, value: obj.colorHex })) }));
     }
   }, [colorData]);
 

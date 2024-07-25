@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { Paper, useMediaQuery, Theme } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuid } from 'uuid';
+import { DetailEntryEntity } from '@wms/entities';
 import { IOnSaveAndEditRows, IValidationErrors } from '@wms/interfaces';
 import { useAlertNotification, useProduct, useProductStatus } from '@wms/hooks';
 import { MaterialTable, TextFieldHF } from '@wms/components';
+import { paginateArray } from '@wms/helpers';
 import _ from 'lodash';
 interface IPropsHeader {
   setDataGeneral: any,
@@ -18,14 +20,15 @@ const DetailEntry = (props: IPropsHeader) => {
   const { swalToastSuccess } = useAlertNotification();
   const navigate = useNavigate();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
-  const [ref, setRef] = React.useState<MRT_TableInstance<any>>();
+  const [ref, setRef] = React.useState<MRT_TableInstance<DetailEntryEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10
   });
   const { dataGeneral, setDataGeneral, openImport } = props;
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const [rowData, setRowData] = React.useState<any[]>([]);
+  const [rowData, setRowData] = React.useState<DetailEntryEntity[]>([]);
+  const paginateData = React.useMemo(() => paginateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<object>>({});
   const methods = useForm({
     mode: 'onSubmit'
@@ -39,7 +42,7 @@ const DetailEntry = (props: IPropsHeader) => {
     data
   } = useProductListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
 
-  const columns = React.useMemo<MRT_ColumnDef<any>[]>(() => [
+  const columns = React.useMemo<MRT_ColumnDef<DetailEntryEntity>[]>(() => [
     {
       id: 'entradaDetalleId',
       accessorKey: 'entradaDetalleId',
@@ -152,10 +155,10 @@ const DetailEntry = (props: IPropsHeader) => {
       <Paper elevation={4}>
         <MaterialTable
           columns={columns}
-          data={openImport ? _.get(dataGeneral, 'dataImport', []) : rowData || []}
+          data={openImport ? _.get(dataGeneral, 'dataImport', []) : paginateData || []}
           enableRowActions
           isEditing
-          columnsVisible={{ entradaDetalleId: false }}
+          columnsVisible={{ detailEntryId: false }}
           setRef={setRef}
           pagination={pagination}
           rowCount={rowData.length}

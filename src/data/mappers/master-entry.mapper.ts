@@ -1,5 +1,6 @@
 import { MasterEntryEntity, DetailEntryEntity } from '@wms/entities';
 import { Validator } from '@wms/helpers';
+import moment from 'moment';
 
 export class MasterEntryMapper {
   constructor() {}
@@ -55,8 +56,15 @@ export class MasterEntryMapper {
             masterEntryId: value.maestroEntradaId,
             code: value.codigo,
             description: value.descripcion,
-            createdAt: value.fechaCrea,
+            createdAt: moment(value.fechaCrea).toDate(),
             createdBy: value.usuarioCrea,
+            warehouse: {
+              description: value.bodega,
+            },            
+            employee: {
+              firstName: value.nombreRecibe,
+              lastName: value.apellidoRecibe
+            },
             supplier: {
               firstName: value.nombreProveedor,
               lastName: value.apellidoProveedor,
