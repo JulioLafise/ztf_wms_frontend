@@ -21,8 +21,8 @@ export const manifestForPluginPWA: Partial<VitePWAOptions> = {
     navigateFallback: 'index.html',
   },
   manifest: {
-    name: 'ZTF - Warehouse Management System',
-    short_name: 'ZTF - WMS',
+    name: 'Warehouse Management System',
+    short_name: 'OLPC - WMS',
     description: 'Sistema para el control de inventario',
     theme_color: '#2f6c57',
     background_color: '#2f6c57',

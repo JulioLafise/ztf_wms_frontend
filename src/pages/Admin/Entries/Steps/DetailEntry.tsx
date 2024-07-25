@@ -12,7 +12,7 @@ import { paginateArray } from '@wms/helpers';
 import _ from 'lodash';
 interface IPropsHeader {
   setDataGeneral: any,
-  dataGeneral: object,
+  dataGeneral: any,
   openImport: boolean
 }
 
@@ -118,7 +118,7 @@ const DetailEntry = (props: IPropsHeader) => {
 
   const onDelete = async (values: { [key: string]: any }) => {
     setRowData(prevState => [
-      ...prevState.filter(ft => ft.entradaDetalleId != values.entradaDetalleId)
+      ...prevState.filter(ft => ft.detailEntryId != values.detailEntryId)
     ]);
     swalToastSuccess('Delete item', {
       message: 'Success',

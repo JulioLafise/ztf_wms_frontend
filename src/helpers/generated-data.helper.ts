@@ -1,6 +1,6 @@
+/* eslint-disable no-constant-condition */
 /* eslint-disable prefer-spread */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable no-constant-condition */
 
 export class GeneratedData {
 
@@ -24,7 +24,6 @@ export class GeneratedData {
   }
 
   static password(length: number = 12) {
-    // @ts-expect-error
     return this._validatePassword(Array.apply(null, { 'length': length })
       .map(() => {
         let result;

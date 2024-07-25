@@ -4,9 +4,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import {
   QueryClient,
   QueryClientProvider,
-} from '@tanstack/react-query'
+} from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
+// import { registerSW } from 'virtual:pwa-register';
 import router from '@wms/routes';
 import { useUI } from '@wms/hooks';
 import themePallete from '@wms/styles/themes/themes';
@@ -14,6 +15,7 @@ import { SpinnerDoom } from '@wms/components';
 import { MonitorProvider } from '@wms/utils';
 
 const queryClient = new QueryClient();
+// registerSW({ immediate: true });
 
 const App = () => {
   const { theme } = useUI();

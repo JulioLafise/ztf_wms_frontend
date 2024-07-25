@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React from 'react';
 import type {
   MRT_Cell,
@@ -72,10 +73,13 @@ const EditSelectTable = React.memo(<T extends MRT_RowData>(props: IProps<T>) => 
         sx={{ width: width }}
         isOptionEqualToValue={(option: any) => option.value === isSelect?.value}
         options={options as any || []}
+        // @ts-expect-error
         value={isSelect}
+        // @ts-expect-error
         getOptionLabel={getOptionLabel}
         renderOption={renderOption}
         noOptionsText="Options not available"
+        // @ts-expect-error
         onChange={(_e, value: TypeSelectOption | null) => {          
           const lastValue = value && typeof value === 'object' ? value.value : value;
           const obj: any = options.filter((ft: any) => ft.value === lastValue)[0];

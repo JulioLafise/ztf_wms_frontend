@@ -32,9 +32,9 @@ const SignInTemplate = () => {
     if (!isAuthenticated) {
       setPassword(_values.password);
       onSignIn(_values)
-        .then(resp => {        
+        .then((resp: any) => {        
           if (!resp.isChangePassword) {
-            toastSuccess(`Welcome, ${resp.username}`, { duration: 2500 });
+            toastSuccess(`Welcome, ${_values.username}`, { duration: 2500 });
           }
         })
         .catch(err => {

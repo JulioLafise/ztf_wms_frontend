@@ -297,10 +297,10 @@ const DeparturesStepper = () => {
       categoriaId: dataGeneral.dataHeader.category.categoryId,
       proveedorId: dataGeneral.dataHeader.supplier.supplierId,
       listaDetalle: dataGeneral.dataDetail,
-      departamentoId: dataGeneral.dataHeader.department.departmentId,
+      departamentoId: dataGeneral.dataHeader.departament.departamentId,
       bodegaId: dataGeneral.dataHeader.warehouse.warehouseId
     };
-    console.log(dataGeneral, dataEntry, 'prueba', dataDetail);
+    // console.log(dataGeneral, dataEntry, 'prueba', dataDetail);
     // mutation.mutateAsync(data).then(res => console.log(res));
   };
 
