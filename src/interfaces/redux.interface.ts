@@ -18,7 +18,7 @@ export interface IAuthProps {
   user: any | null,
   isChecking: boolean,
   isAuthenticated: boolean,
-  isChangePassword: boolean,
+  // isChangePassword: boolean,
   error: any
 }
 

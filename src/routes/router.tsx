@@ -25,6 +25,7 @@ const routeRoot = createBrowserRouter([
     element: <ProtectedRouter isPublic><SignInTemplateLazy /></ProtectedRouter>,
     errorElement: <Error />,
     children: [
+      // { index: true, element: <Outlet />, errorElement: <Error /> },
       { index: true, element: <Navigate to={'sign-in'} replace />, errorElement: <Error /> },
       { path: 'sign-in', element: <Outlet />, errorElement: <Error /> },
     ],

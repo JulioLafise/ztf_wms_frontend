@@ -26,8 +26,8 @@ const useMonitorActivity = (intervalNumber = INTERVAL_TIME) => {
   const { isAuthenticated } = useAuth();
 
   // ...Observable Events...
-  const eventStreams = events.map(ev => fromEvent(window, ev));
-  const allEvents$ = React.useRef<Observable<Event>>(merge(...eventStreams));
+  // const eventStreams = events.map(ev => fromEvent(window, ev));
+  const allEvents$ = React.useRef<Observable<Event>>(merge(...events.map(ev => fromEvent(window, ev))));
 
   // ...Events listener...
   React.useEffect(() => {
@@ -47,6 +47,7 @@ const useMonitorActivity = (intervalNumber = INTERVAL_TIME) => {
       }, intervalNumber);
       return () => clearInterval(interval);
     }
+    setSeconds(0);
     return () => {};
   }, [isAuthenticated, intervalNumber]);
 

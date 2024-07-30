@@ -47,16 +47,17 @@ export const getRefreshToken = createAsyncThunk(
     try {
       dispatch(onChecking(true));
       const refreshToken = localStorage.getItem('rftk') || '';
-      const { data } = await WMSAPI.refreshTokenPOST({ body: { refreshToken } });
-      LocalStorageConfig.setItem('token', data.detail.idToken);
-      LocalStorageConfig.setItem('sid', data.detail.user.username || '');
-      LocalStorageConfig.setItem('acstk', data.detail.accessToken);
-      LocalStorageConfig.setItem('expire', data.detail.expiresIn.toString());
-      if (!!data.detail.user.userImage && data.detail.user.userImage != '') {
-        const imageUrl = await getImageUrl(data.detail.user.userImage);
-        return { ...data.detail.user, userImage: imageUrl };
-      }
-      return data.detail.user;
+      const username = localStorage.getItem('sid') || '';
+      const { data } = await WMSAPI.refreshTokenPOST({ body: { refreshToken, isEcommerce: false } });
+      LocalStorageConfig.setItem('token', data.authenticationResult.idToken);
+      // LocalStorageConfig.setItem('sid', username || '');
+      LocalStorageConfig.setItem('acstk', data.authenticationResult.accessToken);
+      LocalStorageConfig.setItem('expire', String(data.authenticationResult.expiresIn));
+      // if (!!data.detail.user.userImage && data.detail.user.userImage != '') {
+      //   const imageUrl = await getImageUrl(data.detail.user.userImage);
+      //   return { ...data.detail.user, userImage: imageUrl };
+      // }
+      return { username, email: username };
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
     }

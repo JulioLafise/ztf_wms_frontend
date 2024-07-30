@@ -11,7 +11,7 @@ interface ISignInResp {
   accessToken: string
 }
 
-export const signInPOST = async (options: IBodyProps<SignInDTO>): Promise<IJsonBody<{ resultAuth: SingInEntity}>> => await httpClient.post({
+export const signInPOST = async (options: IBodyProps<SignInDTO>): Promise<IJsonBody<{ resultAuth: SingInEntity }>> => await httpClient.post({
   url: 'authcognitopubcontrollers/signin/',
   options: {
     data: options.body
@@ -25,8 +25,8 @@ export const confirmPUT = async (options: IBodyProps<ConfirmDTO>): Promise<IJson
   }
 });
 
-export const refreshTokenPOST = async (options: IBodyProps<{ refreshToken: string }>): Promise<IJsonBody<IJsonResponse<ISignInResp>>> => await httpClient.post({
-  url: 'security/auth/refresh-token-user/',
+export const refreshTokenPOST = async (options: IBodyProps<{ refreshToken: string, isEcommerce: boolean }>): Promise<IJsonBody<{ authenticationResult: SingInEntity }>> => await httpClient.post({
+  url: 'authcognitopubcontrollers/refresh-token/',
   options: {
     data: options.body,
   }

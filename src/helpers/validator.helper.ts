@@ -62,7 +62,7 @@ export class Validator {
       error = response.statusText;
     }
     if (response.statusCode === 401) {
-      error = 'Expired session';
+      error = response.message.message || 'Expired session';
     }
     if (response.statusCode === 404) {
       error = 'Datasource not found';

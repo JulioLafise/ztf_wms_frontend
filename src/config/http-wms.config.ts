@@ -19,12 +19,14 @@ export class HttpWMS {
   private static interceptorRequest(): ExtraInterceptorRequest {
     return {
       onFulfilled: (config) => {
-        config.headers = <AxiosRequestHeaders>{
+        config.headers = <any>{
           ...config.headers,
-          Authorization: `Bearer ${LocalStorageConfig.getItem<string>('token', 'string', '')}`
+          Authorization: `Bearer ${LocalStorageConfig.getItem<string>('token', 'string', '')}`,
+          RefreshToken: LocalStorageConfig.getItem<string>('rftk', 'string', '')
         };
         return config;
-      }
+      },
+      onRejected: (error) => Promise.reject(error)
     };
   }
 
@@ -36,29 +38,11 @@ export class HttpWMS {
         if (error.response.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
           try {            
-            const axiosHttp = axios.create({
-              baseURL: enviroment.apiUrl,
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              }
-            });
-            const { data, status } = await axiosHttp.post('/security/auth/refresh/', { ...LocalStorageConfig.getItems().auth });
-
-            const statusError = [ 400, 404, 401, 500 ];
-            if (statusError.includes(status)) throw new Error(data.detail);
             
-            const token = data.detail.idToken;
-
-            LocalStorageConfig.setItem('token', token);
-            LocalStorageConfig.setItem('acstk', data.detail.accessToken);
-            // Retry the original request with the new token
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return axios(originalRequest);
+            // return axios(originalRequest);
           } catch (error) {
             // Handle refresh token error
-            LocalStorageConfig.removeItems(['expire', 'token', 'sid', 'rftk', 'acstk']);
-            window.location.reload();
+
           }
         }
         return Promise.reject(error);

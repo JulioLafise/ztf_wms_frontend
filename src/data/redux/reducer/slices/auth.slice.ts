@@ -6,7 +6,6 @@ const initialState: IAuthProps = {
   user: null,
   isChecking: false,
   isAuthenticated: false,
-  isChangePassword: false,
   error: undefined
 };
 
@@ -25,14 +24,12 @@ const authSlice = createSlice({
       state.user = payload;
       state.isChecking = false;
       state.isAuthenticated = true;
-      // state.isChangePassword = payload.isChangePassword || false;
       state.error = undefined;
     });
     builder.addCase(authAsyncThunks.getSignIn.rejected, (state, { payload }) => {
       state.user = null;
       state.isChecking = false;
       state.isAuthenticated = false;
-      state.isChangePassword = false;
       state.error = payload;
     });
     // LOGOUT
@@ -40,14 +37,12 @@ const authSlice = createSlice({
       state.user = payload;
       state.isChecking = false;
       state.isAuthenticated = false;
-      state.isChangePassword = false;
       state.error = undefined;
     });
     builder.addCase(authAsyncThunks.getSignOut.rejected, (state, { payload }) => {
       state.user = null;
       state.isChecking = false;
       state.isAuthenticated = false;
-      state.isChangePassword = false;
       state.error = payload;
     });
     // REFRESH TOKEN
@@ -55,24 +50,19 @@ const authSlice = createSlice({
       state.user = payload;
       state.isChecking = false;
       state.isAuthenticated = true;
-      state.isChangePassword = payload.isChangePassword || false;
       state.error = undefined;
     });
     builder.addCase(authAsyncThunks.getRefreshToken.rejected, (state, { payload }) => {
       state.user = null;
       state.isChecking = false;
-      state.isAuthenticated = false;
-      state.isChangePassword = false;
-      state.error = payload;
+      state.isAuthenticated = false;      state.error = payload;
     });
     // REFRESH USER
     builder.addCase(authAsyncThunks.getRefreshUser.fulfilled, (state, { payload }) => {
       state.user = payload;
-      state.isChangePassword = payload.isChangePassword || false;
       state.error = undefined;
     });
     builder.addCase(authAsyncThunks.getRefreshUser.rejected, (state, { payload }) => {
-      state.isChangePassword = false;
       state.error = payload;
     });
   },

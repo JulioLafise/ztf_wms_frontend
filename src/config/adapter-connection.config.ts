@@ -40,7 +40,7 @@ class AdapterConnection {
       baseURL: this.baseUrl,
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       transformRequest: [(data, headers) => {
         if (headers['Content-Type'] && headers['Content-Type'].toString().startsWith('multipart/form-data')) {

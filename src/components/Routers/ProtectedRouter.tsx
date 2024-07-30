@@ -9,14 +9,14 @@ interface Props {
 }
 
 const ProtectedRouter = ({ children, isPublic }: Props) => {
-  const { isAuthenticated, isChecking, token, isChangePassword } = useAuth();
+  const { isAuthenticated, isChecking, token } = useAuth();
 
   return (
     <React.Fragment>
       {
         !isChecking
           ? isPublic
-            ? (isAuthenticated && !isChangePassword)
+            ? isAuthenticated
               ? <Navigate to="/" replace />
               : children
             : !isAuthenticated
