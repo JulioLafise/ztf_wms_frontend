@@ -15,3 +15,17 @@ export const inventoryListGET = async (options: IPaginationProps<PaginationDTO>)
     params: options.params
   }
 });
+
+export const availableStockListGET = async (options: IPaginationProps<PaginationDTO>): Promise<IJsonBody<IPaginationResp<InventoryEntity>>> => await httpClient.get({
+  url: 'inventario/stock-disponible',
+  options: {
+    params: options.params
+  }
+});
+
+export const customerStockListGET = async (options: IPaginationProps<PaginationDTO>): Promise<IJsonBody<IPaginationResp<InventoryEntity>>> => await httpClient.get({
+  url: 'inventario/stock-cliente',
+  options: {
+    params: options.params
+  }
+});

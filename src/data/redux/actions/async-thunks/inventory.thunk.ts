@@ -2,16 +2,51 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { filterErrorAxios } from '@wms/helpers';
 import { PaginationDTO } from '@wms/dtos';
 import { WMSAPI } from '@wms/apis';
-import { onRowCount, onGenerate } from '../../reducer/slices/brand.slice';
+import {
+  onAvailableStockGenerate,
+  onAvailableStockRowCount,
+  onCustomerStockGenerate,
+  onCustomerStockRowCount,
+  onInventoryGenerate,
+  onInventoryRowCount,
+} from '../../reducer/slices/inventory.slice';
 
 
 export const getInventoryList = createAsyncThunk(
   'catalogue/getInventoryList',
   async (paginationDto: PaginationDTO, { rejectWithValue, dispatch }) => {
     try {
-      dispatch(onGenerate());
+      dispatch(onInventoryGenerate());
       const { data } = await WMSAPI.inventoryListGET({ params: paginationDto });
-      dispatch(onRowCount(data.count));
+      dispatch(onInventoryRowCount(data.count));
+      return data.data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
+export const getAvailableStockList = createAsyncThunk(
+  'catalogue/getAvailableStockList',
+  async (paginationDto: PaginationDTO, { rejectWithValue, dispatch }) => {
+    try {
+      dispatch(onAvailableStockGenerate());
+      const { data } = await WMSAPI.availableStockListGET({ params: paginationDto });
+      dispatch(onAvailableStockRowCount(data.count));
+      return data.data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
+export const getCustomerStockList = createAsyncThunk(
+  'catalogue/getCustomerStockList',
+  async (paginationDto: PaginationDTO, { rejectWithValue, dispatch }) => {
+    try {
+      dispatch(onCustomerStockGenerate());
+      const { data } = await WMSAPI.customerStockListGET({ params: paginationDto });
+      dispatch(onCustomerStockRowCount(data.count));
       return data.data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));

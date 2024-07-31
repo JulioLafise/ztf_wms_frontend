@@ -15,7 +15,6 @@ const useAuth = () => {
       const [errors, signInDto] = await SignInDTO.create({ ...data, isEcommerce: false });
       if (errors) throw new Error(errors);
       const result = (await dispatch(authAsyncThunks.getSignIn(signInDto!))).payload;
-      console.log(result);
       Validator.httpValidation(result as any);
       return Promise.resolve(result);
     } catch (error) {      

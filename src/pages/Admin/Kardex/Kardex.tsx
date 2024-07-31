@@ -7,7 +7,7 @@ import { IValidationErrors, IOptionsQuery, IOnSaveAndEditRows } from '@wms/inter
 import { Validator } from '@wms/helpers';
 import { useAlertNotification, useUI, useInventory } from '@wms/hooks';
 import { MaterialTable, ButtonActions, EditCheckboxTable } from '@wms/components';
-import { InventoryEntity } from '@wms/entities';
+import { AvailableStockEntity } from '@wms/entities';
 
 interface ISchemaValidationTable {
   description?: string,
@@ -24,18 +24,18 @@ const KardexPage = () => {
   const { isMobile } = useUI();
   const [optionsQuery, setOptionsQuery] = React.useState<IOptionsQuery>({});
   const [isOpen, setIsOpen] = React.useState(false);
-  const [edit, setEdit] = React.useState<InventoryEntity | null>(null);
-  const [ref, setRef] = React.useState<MRT_TableInstance<InventoryEntity>>();
+  const [edit, setEdit] = React.useState<AvailableStockEntity | null>(null);
+  const [ref, setRef] = React.useState<MRT_TableInstance<AvailableStockEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { isGenerate, rowCount, useInventoryListQuery } = useInventory();
-  const { data, isLoading, isError, refetch } = useInventoryListQuery({ ...pagination, filter: globalFilter });
+  const { availableStock: { rowCount, isGenerate }, useAvailableStockListQuery } = useInventory();
+  const { data, isLoading, isError, refetch } = useAvailableStockListQuery({ ...pagination, filter: globalFilter });
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<ISchemaValidationTable>>({});
 
-  const columns = React.useMemo<MRT_ColumnDef<InventoryEntity>[]>(() => [
+  const columns = React.useMemo<MRT_ColumnDef<AvailableStockEntity>[]>(() => [
     {
       id: 'inventoryId',
       accessorKey: 'inventoryId',
@@ -44,15 +44,9 @@ const KardexPage = () => {
       minSize: 150,
     },
     {
-      id: 'code',
-      accessorKey: 'code',
-      header: 'Codigo',
-      minSize: 150,
-    },
-    {
-      id: 'description',
-      accessorKey: 'description',
-      header: 'Descripcion',
+      id: 'product',
+      accessorKey: 'product',
+      header: 'Producto',
       minSize: 150,
       Cell: ({ renderedCellValue }) => <div className="flex h-12 w-96"><p className="text-wrap break-all">{String(renderedCellValue).slice(0,105)}{String(renderedCellValue).length >= 104 ? '...' : ''}</p></div>
     },
@@ -63,23 +57,29 @@ const KardexPage = () => {
       minSize: 150,
     },
     {
-      id: 'brand',
-      accessorKey: 'brand',
-      header: 'Marca',
+      id: 'serieNumber',
+      accessorKey: 'serieNumber',
+      header: 'Numero Serie',
       minSize: 150,
     },
     {
-      id: 'model',
-      accessorKey: 'model',
-      header: 'Modelo',
+      id: 'batchCode',
+      accessorKey: 'batchCode',
+      header: 'Codigo Lote',
       minSize: 150,
     },
     {
-      id: 'quanty',
-      accessorKey: 'quanty',
-      header: 'Cantidad',
+      id: 'status',
+      accessorKey: 'status',
+      header: 'Estado',
       minSize: 150,
     },
+    // {
+    //   id: 'quanty',
+    //   accessorKey: 'quanty',
+    //   header: 'Cantidad',
+    //   minSize: 150,
+    // },
     // {
     //   id: 'isActive',
     //   accessorKey: 'isActive',
@@ -95,12 +95,12 @@ const KardexPage = () => {
     // },
   ], [validationErrors]);
 
-  const onSaveOrEdit: IOnSaveAndEditRows<InventoryEntity> = async (row, table, values, validation): Promise<void> => {
+  const onSaveOrEdit: IOnSaveAndEditRows<AvailableStockEntity> = async (row, table, values, validation): Promise<void> => {
     // if (!isMobile) {
     //   setOptionsQuery({
     //     typeMutation: row.original.brandId ? 'put' : 'post'
     //   });
-    //   const data: InventoryEntity = {
+    //   const data: AvailableStockEntity = {
     //     ...values,
     //     ...checkState,
     //     isActive: row.original.brandId ? row.original.isActive : true
@@ -157,7 +157,7 @@ const KardexPage = () => {
 
   return (
     <Paper elevation={4}>
-      <MaterialTable<InventoryEntity>
+      <MaterialTable<AvailableStockEntity>
         columns={columns}
         data={data || []}
         // enableRowActions

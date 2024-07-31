@@ -26,6 +26,7 @@ const MonitorProvider: React.FC<IMonitorProviderProps> = (props) => {
   const secondsAllowed = config.minutesInactive * 60;
 
   React.useEffect(() => {
+    // console.log(interval);
     if (!isActive) {
       const warnNotificationSeconds = secondsAllowed - seconds;
       if (warnNotificationSeconds === 900) {

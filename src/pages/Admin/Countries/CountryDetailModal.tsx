@@ -11,6 +11,7 @@ import {
 import LoadingButton from '@mui/lab/LoadingButton';
 import { SearchRounded, CancelOutlined, Public } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
+import { v4 as uuid } from 'uuid';
 import {
   SimpleModal,
   TextFieldHF,
@@ -68,7 +69,7 @@ const CountryDetailModal = (props: IProps) => {
             <List>
               {
                 data?.filter(ft => (ft.description?.toLocaleLowerCase().indexOf(departamentName) !== -1)).map(departament => (
-                  <React.Fragment>
+                  <React.Fragment key={uuid()}>
                     <ListItem>
                       <ListItemIcon><Public /></ListItemIcon>
                       <ListItemText primary={departament.description} />

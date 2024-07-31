@@ -17,3 +17,5 @@ export * from './master-purchase-order.mapper';
 export * from './color.mapper';
 export * from './entry-type.mapper';
 export * from './kit.mapper';
+export * from './available-stock.mapper';
+export * from './customer-stock.mapper';

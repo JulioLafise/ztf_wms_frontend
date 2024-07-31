@@ -2,6 +2,7 @@ import { RouteObject, Outlet } from 'react-router-dom';
 import { PanelRouter, Error } from '@wms/components';
 import {
   KardexPageLazy,
+  CustomerStockPageLazy,
   EntryPageLazy,
   EntriesStepperLazy,
   DeparturePageLazy,
@@ -22,6 +23,11 @@ export const inventoryRouter: RouteObject = {
     {
       path: 'kardex',
       element: <KardexPageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'customer-stock',
+      element: <CustomerStockPageLazy />,
       errorElement: <Error />
     },
     {

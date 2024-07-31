@@ -37,6 +37,14 @@ export const menu: IMenuList[] = [
         roles: ['dev']
       },
       {
+        menuId: 'customer-stock',
+        menuUrl: '/customer-stock',
+        menuName: 'Customer Stock',
+        icon: 'people-carry-box',
+        description: 'Listado del inventario entregado',
+        roles: ['dev']
+      },
+      {
         menuId: 'entries',
         menuUrl: '/entries',
         menuName: 'Entries',

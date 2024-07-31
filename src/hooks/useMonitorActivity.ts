@@ -1,19 +1,21 @@
 import React from 'react';
-import { fromEvent, merge, type Observable } from 'rxjs';
+import { interval as intervalRxjs, fromEvent, merge, type Observable } from 'rxjs';
 import moment from 'moment';
 import { useAuth } from './';
 
-type EventsListener = Array<keyof WindowEventMap>;
+type DocumentEventsListener = Array<keyof  DocumentEventMap>;
+type WindowEventsListener = Array<keyof  WindowEventMap>;
 
 // ... Add events here ...
-const events: EventsListener = [
+const events: DocumentEventsListener | WindowEventsListener = [
   'mousedown',
   'mousemove',
   'mouseenter',
   'wheel',
   'keydown',
   'touchstart',
-  'scroll'
+  'scroll',
+  'visibilitychange'
 ];
 
 const INTERVAL_TIME = 1000;
@@ -23,6 +25,7 @@ const useMonitorActivity = (intervalNumber = INTERVAL_TIME) => {
   const lastEvent = React.useRef<moment.Moment>(moment());
 
   const wasActiveRef = React.useRef(false);
+  // const wasWorker = React.useRef(new Worker(''));
   const { isAuthenticated } = useAuth();
 
   // ...Observable Events...
@@ -40,12 +43,26 @@ const useMonitorActivity = (intervalNumber = INTERVAL_TIME) => {
   }, [allEvents$]);
 
   // ...Intervals of comprobations...
+  // React.useEffect(() => {
+  //   if (isAuthenticated) {
+  //     const interval = setInterval(() => {
+  //       setSeconds(seconds => seconds + 1);
+  //     }, intervalNumber);
+  //     return () => clearInterval(interval);
+  //   }
+  //   setSeconds(0);
+  //   return () => {};
+  // }, [isAuthenticated, intervalNumber]);
+
+  // ...Intervals of comprobations...
   React.useEffect(() => {
     if (isAuthenticated) {
-      const interval = setInterval(() => {
+      const subscription = intervalRxjs(intervalNumber).subscribe(ev => {
         setSeconds(seconds => seconds + 1);
-      }, intervalNumber);
-      return () => clearInterval(interval);
+      });
+      return () => {
+        subscription.unsubscribe();
+      };
     }
     setSeconds(0);
     return () => {};
