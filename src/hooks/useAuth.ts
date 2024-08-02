@@ -33,8 +33,9 @@ const useAuth = () => {
 
   const onRefreshToken = async () => {
     try {
-      const result = await dispatch(authAsyncThunks.getRefreshToken(undefined));
-      return Promise.resolve(result.payload);
+      const result = (await dispatch(authAsyncThunks.getRefreshToken(undefined))).payload;
+      Validator.httpValidation(result as any);
+      return Promise.resolve(result);
     } catch (error) {
       return Promise.reject(error);
     }
