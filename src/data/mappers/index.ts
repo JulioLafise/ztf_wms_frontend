@@ -13,6 +13,7 @@ export * from './employee.mapper';
 export * from './product.mapper';
 export * from './inventory.mapper';
 export * from './master-entry.mapper';
+export * from './master-departure.mapper';
 export * from './master-purchase-order.mapper';
 export * from './color.mapper';
 export * from './entry-type.mapper';

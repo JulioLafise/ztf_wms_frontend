@@ -4,55 +4,62 @@ import { useNavigate } from 'react-router-dom';
 import { Paper, useMediaQuery, Theme } from '@mui/material';
 import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
 import { IOnSaveAndEditRows } from '@wms/interfaces';
-import { useAlertNotification } from '@wms/hooks';
+import { MasterDepartureEntity } from '@wms/entities';
+import { useUI, useMasterDeparture, useAlertNotification } from '@wms/hooks';
 import { MaterialTable, ButtonActions } from '@wms/components';
 import moment from 'moment';
 
 const DeparturePage = () => {
   // const { swalToastError, swalToastSuccess } = useAlertNotification();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
-  const [ref, setRef] = React.useState<MRT_TableInstance<any>>();
+  const { isMobile } = useUI();
+  const { isGenerate, rowCount, useMasterEntryListQuery } = useMasterDeparture();
+  const [ref, setRef] = React.useState<MRT_TableInstance<MasterDepartureEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
+  const { data, isError, isLoading } = useMasterEntryListQuery({ ...pagination, filter: globalFilter });
 
-  const columns = React.useMemo<MRT_ColumnDef<any>[]>(() => [
+  const columns = React.useMemo<MRT_ColumnDef<MasterDepartureEntity>[]>(() => [
     {
-      id: 'departureId',
-      accessorKey: 'departureId',
+      id: 'masterDepartureId',
+      accessorKey: 'masterDepartureId',
       header: 'ID',
       enableEditing: false,
       minSize: 150,
     },
     {
-      id: 'noSalida',
-      accessorKey: 'noSalida',
+      id: 'code',
+      accessorKey: 'code',
       header: 'No Salida',
       minSize: 150,
       enableEditing: false,
     },
+    // {
+    //   id: 'customer',
+    //   accessorKey: 'customer',
+    //   accessorFn: (row) => row.customer.customerUuid, 
+    //   header: 'Cliente',
+    //   enableEditing: false,
+    //   minSize: 150,
+    //   Cell: ({ row }) => <p>{row.original.customer.firstName}</p>
+    // },
     {
-      id: 'customer',
-      accessorKey: 'customer',
-      header: 'Cliente',
-      enableEditing: false,
-      minSize: 150,
-    },
-    {
-      id: 'purchaseOrder',
-      accessorKey: 'purchaseOrder',
+      id: 'purchaseOrderCode',
+      accessorKey: 'purchaseOrderCode',
       header: 'Orden de Pedido',
       minSize: 150,
     },
-    {
-      id: 'currencyType',
-      accessorKey: 'currencyType',
-      header: 'Tipo de Moneda',
-      minSize: 150,
-    },
+    // {
+    //   id: 'typeCurrency',
+    //   accessorKey: 'typeCurrency',
+    //   accessorFn: (row) => row.typeCurrency.typeCurrencyId, 
+    //   header: 'Tipo de Moneda',
+    //   minSize: 150,
+    //   Cell: ({ row }) => <p>{row.original.typeCurrency.description}</p>
+    // },
     {
       id: 'isActive',
       accessorKey: 'isActive',
@@ -71,8 +78,8 @@ const DeparturePage = () => {
     },
   ], []);
 
-  const onSaveOrEdit: IOnSaveAndEditRows<any> = async (row, table, values, validation): Promise<void> => {
-    navigate(`${row.original.customerVisitControlId}/edit`, { replace: false });
+  const onSaveOrEdit: IOnSaveAndEditRows<MasterDepartureEntity> = async (row, table, values, validation): Promise<void> => {
+    navigate(`${row.original.masterDepartureId}/edit`, { replace: false });
   };
 
   const onStateChange = async (values: { [key: string]: any }) => {
@@ -84,23 +91,23 @@ const DeparturePage = () => {
 
   return (
     <Paper elevation={4}>
-      <MaterialTable
+      <MaterialTable<MasterDepartureEntity>
         columns={columns}
-        data={[]}
+        data={data || []}
         enableRowActions
-        columnsVisible={{ departureId: false }}
+        columnsVisible={{ masterDepartureId: false }}
         setRef={setRef}
         pagination={pagination}
-        rowCount={0}
+        rowCount={rowCount}
         onPaginationChange={setPagination}
         globalFilter={globalFilter}
         onGlobalFilterChange={setGlobalFilter}
         onActionEdit={onSaveOrEdit}
         onActionSave={onSaveOrEdit}
         // onActionRefreshTable={() => refetch()}
-        isLoading={false}
-        isGenerate={true}
-        isError={false}     
+        isLoading={isLoading}
+        isGenerate={isGenerate}
+        isError={isError}     
         onActionStateChange={(row: any) => onStateChange(row.original)}  
       />
       <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} />

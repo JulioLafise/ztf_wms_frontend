@@ -24,7 +24,7 @@ const useAuth = () => {
 
   const onSignOut = async () => {
     try {
-      const result = await dispatch(authAsyncThunks.getSignOut(undefined));
+      const result = (await dispatch(authAsyncThunks.getSignOut(undefined))).payload;
       return Promise.resolve(null);
     } catch (error) {
       return Promise.reject(error);

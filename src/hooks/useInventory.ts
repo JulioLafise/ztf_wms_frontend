@@ -78,17 +78,17 @@ const useInventory = () => {
     inventory: {
       data: inventory.data,
       isGenerate: inventory.isGenerate,
-      rowCount: inventory.count
+      rowCount: inventory.rowCount
     },
     availableStock: {
       data: availableStock.data,
       isGenerate: availableStock.isGenerate,
-      rowCount: availableStock.count
+      rowCount: availableStock.rowCount
     },
     customerStock: {
       data: customerStock.data,
       isGenerate: customerStock.isGenerate,
-      rowCount: customerStock.count
+      rowCount: customerStock.rowCount
     },
     //METHODS
     useInventoryListQuery,

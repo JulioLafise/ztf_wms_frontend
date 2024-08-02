@@ -8,42 +8,27 @@ import { ICatalogueProps } from '@wms/interfaces';
 import { inventoryAsyncThunks } from '@wms/redux/actions';
 
 interface IInventoryProps {
-  inventory: {
-    data: InventoryEntity[],
-    count: number,
-    isGenerate: boolean,
-    error: any
-  },
-  availableStock: {
-    data: AvailableStockEntity[],
-    count: number,
-    isGenerate: boolean,
-    error: any
-  },
-  customerStock: {
-    data: CustomerStockEntity[],
-    count: number,
-    isGenerate: boolean,
-    error: any
-  },
+  inventory: ICatalogueProps<InventoryEntity>,
+  availableStock: ICatalogueProps<AvailableStockEntity>,
+  customerStock: ICatalogueProps<CustomerStockEntity>,
 }
 
 const initialState: IInventoryProps = {
   inventory: {
     data: [],
-    count: 0,
+    rowCount: 0,
     isGenerate: false,
     error: null
   },
   availableStock: {
     data: [],
-    count: 0,
+    rowCount: 0,
     isGenerate: false,
     error: null
   },
   customerStock: {
     data: [],
-    count: 0,
+    rowCount: 0,
     isGenerate: false,
     error: null
   },
@@ -64,13 +49,13 @@ const inventorySlice = createSlice({
       state.customerStock.isGenerate = false;
     },
     onInventoryRowCount : (state, { payload }) => {
-      state.inventory.count = payload as number;
+      state.inventory.rowCount = payload as number;
     },
     onAvailableStockRowCount : (state, { payload }) => {
-      state.availableStock.count = payload as number;
+      state.availableStock.rowCount = payload as number;
     },
     onCustomerStockRowCount : (state, { payload }) => {
-      state.customerStock.count = payload as number;
+      state.customerStock.rowCount = payload as number;
     },
   },
   extraReducers: (builder) => {

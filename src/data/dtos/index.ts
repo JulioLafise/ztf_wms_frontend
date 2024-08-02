@@ -14,6 +14,7 @@ export * from './product.dto';
 export * from './color.dto';
 export * from './entry-type.dto';
 export * from './master-entry.dto';
+export * from './master-departure.dto';
 export * from './master-purchase-order.dto';
 export * from './master-account.dto';
 export * from './kit.dto';

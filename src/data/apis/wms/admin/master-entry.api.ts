@@ -32,7 +32,7 @@ export const createMasterEntryPOST = async (options: IBodyProps<MasterEntryDTO>)
 });
 
 export const updateMasterEntryPUT = async (options: IBodyProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.put({
-  url: `maestroentrada/${options.body.categoriaId}/`,
+  url: `maestroentrada/${options.body.maestroEntradaId}/`,
   options: {
     data: options.body
   }
@@ -43,8 +43,8 @@ export const finishMasterEntryPUT = async (options: IParamsProps<MasterEntryDTO>
   options: {}
 });
 
-export const eliminateMasterEntryDELETE = async (options: IBodyProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.delete({
-  url: `maestroentrada/${options.body.maestroEntradaId}/`,
+export const eliminateMasterEntryDELETE = async (options: IParamsProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.delete({
+  url: `maestroentrada/${options.params.maestroEntradaId}/`,
   options: {
     data: options.body
   }

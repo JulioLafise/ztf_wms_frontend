@@ -12,7 +12,6 @@ export const getSignIn = createAsyncThunk(
     try {
       dispatch(onChecking(true));
       const { data } = await WMSAPI.signInPOST({ body: signIn });
-      console.log(data);
       LocalStorageConfig.setItem('token', data.resultAuth.idToken);
       LocalStorageConfig.setItem('sid', signIn.userName || '');
       LocalStorageConfig.setItem('acstk', data.resultAuth.accessToken);

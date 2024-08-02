@@ -2,6 +2,7 @@ import React from 'react';
 import type { MRT_ColumnDef, MRT_TableInstance } from 'material-react-table';
 import { Paper } from '@mui/material';
 import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
+import { v4 as uuid } from 'uuid';
 import { useInventory } from '@wms/hooks';
 import { MaterialTable } from '@wms/components';
 import { CustomerStockEntity } from '@wms/entities';
@@ -17,6 +18,17 @@ const CustomerStockPage = () => {
   const { customerStock: { rowCount, isGenerate }, useCustomerStockListQuery } = useInventory();
   const { data, isLoading, isError, refetch } = useCustomerStockListQuery({ ...pagination, filter: globalFilter });
 
+  const getStatusColor = (status: boolean) => {
+    switch (status) {
+      case true:
+        return 'bg-red-400';
+      case false:
+        return 'bg-green-400';
+      default:
+        return 'bg-red-400';
+    }
+  };
+
   const columns = React.useMemo<MRT_ColumnDef<CustomerStockEntity>[]>(() => [
     {
       id: 'inventoryId',
@@ -25,18 +37,39 @@ const CustomerStockPage = () => {
       enableEditing: false,
       minSize: 150,
     },
-    // {
-    //   id: 'customer',
-    //   accessorKey: 'customer',
-    //   accessorFn: (row) => row.customer.customerUuid, 
-    //   header: 'Cliente'
-    // },
+    {
+      id: 'isLock',
+      accessorKey: 'isLock',
+      header: 'Estado Equipo',
+      minSize: 150,
+      Cell: ({ renderedCellValue }) => <div className="flex items-center"><p className={`p-2 ${getStatusColor(Boolean(renderedCellValue))} rounded font-bold`}>{renderedCellValue ? 'DESACTIVADO' : 'ACTIVADO'}</p></div>
+    },
+    {
+      id: 'accountAngaza',
+      accessorKey: 'accountAngaza',
+      header: 'Cuenta Angaza',
+      minSize: 150,
+    },
+    {
+      id: 'customerUuid',
+      accessorKey: 'customerUuid',
+      header: 'Cliente',
+      Cell: ({ row }) => <div className="flex h-12 w-96 items-center"><p className="text-wrap break-all">
+        ({row.original.identificationCard}) {row.original.firstName} {row.original.lastName} / <b>Email</b>
+        : {row.original.email} / <b>Phone</b>: {row.original.cellphone}
+      </p></div>
+    },
+    {
+      id: 'address',
+      accessorKey: 'address',
+      header: 'Direccion',
+    },
     {
       id: 'product',
       accessorKey: 'product',
       header: 'Producto',
       minSize: 150,
-      Cell: ({ renderedCellValue }) => <div className="flex h-12 w-96"><p className="text-wrap break-all">{String(renderedCellValue).slice(0,105)}{String(renderedCellValue).length >= 104 ? '...' : ''}</p></div>
+      Cell: ({ renderedCellValue }) => <div className="flex h-12 w-96 items-center"><p className="text-wrap break-all">{String(renderedCellValue).slice(0,105)}{String(renderedCellValue).length >= 104 ? '...' : ''}</p></div>
     },
     {
       id: 'serieNumber',
