@@ -48,7 +48,11 @@ export class MasterDepartureMapper {
             masterDepartureId: value.maestroSalidaId,
             description: value.descripcion,
             code: value.codigo,
-            typeCurrency: value.tipoMoneda,
+            typeCurrency: {
+              typeCurrencyId: value.tipoMoneda.tipoMonedaId,
+              description: value.tipoMoneda.descripcion,
+              iconName: value.tipoMoneda.iconName
+            },
             purchaseOrderCode: value.codigoPedido,
             employee: {
               employeeId: value.empleadoEntrega.empleadoId,
@@ -60,9 +64,8 @@ export class MasterDepartureMapper {
               identificationCard: value.cedula
             },
             departureType: {
-              departureTypeId: value.tipoSalida.tipoSalidaId,
-              description: value.tipoSalida.descripcion,
-            },
+              description: value.tipoSalida,
+            },            
             createdAt: moment(value.fecha).toDate(),
             isEcommerce: value.isEcommerce,
             isFinish: value.isFinalizado,

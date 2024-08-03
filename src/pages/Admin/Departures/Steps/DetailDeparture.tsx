@@ -9,6 +9,7 @@ import { v4 as uuid } from 'uuid';
 import { IOnSaveAndEditRows, IValidationErrors } from '@wms/interfaces';
 import { useAlertNotification } from '@wms/hooks';
 import { MaterialTable, TextFieldHF } from '@wms/components';
+import { paginateArray } from '@wms/helpers';
 
 const DetailDeparture = () => {
   const { swalToastSuccess } = useAlertNotification();
@@ -22,6 +23,7 @@ const DetailDeparture = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [rowData, setRowData] = React.useState<any[]>([]);
   const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<object>>({});
+  const paginateData = React.useMemo(() => paginateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
   const methods = useForm({
     mode: 'onSubmit'
   });
@@ -126,7 +128,7 @@ const DetailDeparture = () => {
       <Paper elevation={4}>
         <MaterialTable
           columns={columns}
-          data={rowData || []}
+          data={paginateData || []}
           enableRowActions
           isEditing
           columnsVisible={{ salidaDetalleId: false }}

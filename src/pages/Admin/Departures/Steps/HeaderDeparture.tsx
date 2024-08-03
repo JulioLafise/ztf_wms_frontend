@@ -7,6 +7,8 @@ import {
   DateTimeHF,
   CheckBoxHF
 } from '@wms/components';
+import { useCustomer, useTypeCurrency } from '@wms/hooks';
+import { CustomerEntity, TypeCurrencyEntity } from '@wms/entities';
 
 
 const HeaderDeparture = () => {
@@ -15,6 +17,12 @@ const HeaderDeparture = () => {
     reValidateMode: 'onChange'
   });
   const { handleSubmit } = methods;
+
+  const { useCustomerListQuery } = useCustomer();
+  const { useTypeCurrencyListQuery } = useTypeCurrency();
+
+  const { data: dataCustomer, isLoading: isLoadingCustomer } = useCustomerListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
+  const { data: dataTypeCurrency, isLoading: isLoadingTypeCurrency } = useTypeCurrencyListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
 
   const onSubmit = (values: { [key: string]: any }) => { };
   return (
@@ -36,19 +44,21 @@ const HeaderDeparture = () => {
               />
             </Box>
             <Box component="div" className="flex flex-wrap pt-5">
-              <AutoCompleteHF
+              <AutoCompleteHF<CustomerEntity>
+                className="w-2/12"
                 name="customer"
                 label="Cliente"
-                optionsData={[]}
-                getOptionLabel={(option: any) => option.description}
-                className="w-2/12"
+                optionsData={dataCustomer || []}
+                getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+                loading={isLoadingCustomer}
               />
-              <AutoCompleteHF
+              <AutoCompleteHF<TypeCurrencyEntity>
+                className="w-2/12"
                 name="currentType"
                 label="Tipo Moneda"
-                optionsData={[]}
-                getOptionLabel={(option: any) => option.description}
-                className="w-2/12"
+                optionsData={dataTypeCurrency || []}
+                getOptionLabel={(option) => `(${option.iconName}) ${option.description}`}
+                loading={isLoadingTypeCurrency}
               />
               <AutoCompleteHF
                 name="purchaseOrder"

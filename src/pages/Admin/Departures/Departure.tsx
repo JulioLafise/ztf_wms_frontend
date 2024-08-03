@@ -20,7 +20,7 @@ const DeparturePage = () => {
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { data, isError, isLoading } = useMasterEntryListQuery({ ...pagination, filter: globalFilter });
+  const { data, isError, isLoading, refetch } = useMasterEntryListQuery({ ...pagination, filter: globalFilter });
 
   const columns = React.useMemo<MRT_ColumnDef<MasterDepartureEntity>[]>(() => [
     {
@@ -37,41 +37,56 @@ const DeparturePage = () => {
       minSize: 150,
       enableEditing: false,
     },
-    // {
-    //   id: 'customer',
-    //   accessorKey: 'customer',
-    //   accessorFn: (row) => row.customer.customerUuid, 
-    //   header: 'Cliente',
-    //   enableEditing: false,
-    //   minSize: 150,
-    //   Cell: ({ row }) => <p>{row.original.customer.firstName}</p>
-    // },
+    {
+      id: 'customerUuid',
+      accessorKey: 'customerUuid',
+      accessorFn: (row) => row.customer?.customerUuid, 
+      header: 'Cliente',
+      enableEditing: false,
+      minSize: 150,
+      Cell: ({ row }) => <p>{row.original.customer?.firstName}</p>
+    },
     {
       id: 'purchaseOrderCode',
       accessorKey: 'purchaseOrderCode',
       header: 'Orden de Pedido',
       minSize: 150,
     },
-    // {
-    //   id: 'typeCurrency',
-    //   accessorKey: 'typeCurrency',
-    //   accessorFn: (row) => row.typeCurrency.typeCurrencyId, 
-    //   header: 'Tipo de Moneda',
-    //   minSize: 150,
-    //   Cell: ({ row }) => <p>{row.original.typeCurrency.description}</p>
-    // },
     {
-      id: 'isActive',
-      accessorKey: 'isActive',
-      header: 'Active',
+      id: 'typeCurrencyId',
+      accessorKey: 'typeCurrencyId',
+      accessorFn: (row) => row.typeCurrency?.typeCurrencyId, 
+      header: 'Tipo de Moneda',
       minSize: 150,
-      editVariant: undefined,
-      Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
+      Cell: ({ row }) => <p>{row.original.typeCurrency?.description}</p>
+    },
+    {
+      id: 'departureTypeId',
+      accessorKey: 'departureTypeId',
+      accessorFn: (row) => row.departureType?.departureTypeId, 
+      header: 'Tipo de Salida',
+      minSize: 150,
+      Cell: ({ row }) => <p>{row.original.departureType?.description}</p>
+    },
+    {
+      id: 'createdAt',
+      accessorKey: 'createdAt',
+      header: 'Creado',
+      minSize: 150,
+      Cell: ({ row }) => <p>{moment(row.original.createdAt).format('YYYY-MM-DD')}</p>
     },
     {
       id: 'isFinish',
       accessorKey: 'isFinish',
       header: 'Finalizado',
+      minSize: 150,
+      editVariant: undefined,
+      Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
+    },
+    {
+      id: 'isActive',
+      accessorKey: 'isActive',
+      header: 'Active',
       minSize: 150,
       editVariant: undefined,
       Cell: ({ renderedCellValue }) => renderedCellValue ? <CheckBox color="primary" /> : <CheckBoxOutlineBlank />,
@@ -85,7 +100,7 @@ const DeparturePage = () => {
   const onStateChange = async (values: { [key: string]: any }) => {
     const data: any = {
       isActive: !values.isActive,
-      customerVisitControlId: values.customerVisitControlId
+      masterDepartureId: values.masterDepartureId
     };
   };
 
@@ -104,7 +119,7 @@ const DeparturePage = () => {
         onGlobalFilterChange={setGlobalFilter}
         onActionEdit={onSaveOrEdit}
         onActionSave={onSaveOrEdit}
-        // onActionRefreshTable={() => refetch()}
+        onActionRefreshTable={() => refetch()}
         isLoading={isLoading}
         isGenerate={isGenerate}
         isError={isError}     
