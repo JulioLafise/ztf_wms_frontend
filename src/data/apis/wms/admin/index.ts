@@ -3,3 +3,4 @@ export * from './master-departure.api';
 export * from './master-purchase-order.api';
 export * from './master-account.api';
 export * from './aws-tools.api';
+export * from './user.api';

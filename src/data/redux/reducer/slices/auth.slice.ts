@@ -34,7 +34,7 @@ const authSlice = createSlice({
     });
     // LOGOUT
     builder.addCase(authAsyncThunks.getSignOut.fulfilled, (state, { payload }) => {
-      state.user = payload;
+      state.user = null;
       state.isChecking = false;
       state.isAuthenticated = false;
       state.error = undefined;
@@ -55,14 +55,7 @@ const authSlice = createSlice({
     builder.addCase(authAsyncThunks.getRefreshToken.rejected, (state, { payload }) => {
       state.user = null;
       state.isChecking = false;
-      state.isAuthenticated = false;      state.error = payload;
-    });
-    // REFRESH USER
-    builder.addCase(authAsyncThunks.getRefreshUser.fulfilled, (state, { payload }) => {
-      state.user = payload;
-      state.error = undefined;
-    });
-    builder.addCase(authAsyncThunks.getRefreshUser.rejected, (state, { payload }) => {
+      state.isAuthenticated = false;      
       state.error = payload;
     });
   },

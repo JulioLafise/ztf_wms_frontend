@@ -20,3 +20,4 @@ export * from './entry-type.mapper';
 export * from './kit.mapper';
 export * from './available-stock.mapper';
 export * from './customer-stock.mapper';
+export * from './user.mapper';

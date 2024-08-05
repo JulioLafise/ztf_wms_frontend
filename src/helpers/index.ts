@@ -7,3 +7,4 @@ export * from './validator.helper';
 export * from './paginate-arrays.helper';
 export * from './get-uuid.helper';
 export * from './colors.helper';
+export * from './jwt.helper';

@@ -1,6 +1,7 @@
 import { PayloadAction, } from '@reduxjs/toolkit';
 import { AppDispatch } from '@wms/redux/store';
 import { ThemeUI, IMenuList } from './ui.interface';
+import { UserEntity } from '@wms/entities';
 
 export type IDispatch = AppDispatch;
 
@@ -15,7 +16,7 @@ export type IPromiseThunks<T> = Promise<PayloadAction<T, string,
 
 // SLICE AUTH
 export interface IAuthProps {
-  user: any | null,
+  user: UserEntity | null,
   isChecking: boolean,
   isAuthenticated: boolean,
   // isChangePassword: boolean,

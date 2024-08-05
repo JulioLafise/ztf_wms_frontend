@@ -1,14 +1,12 @@
 import { httpClient } from '../http-config';
 import { IJsonBody, IJsonResponse, IBodyProps } from '@wms/interfaces';
-import { SignInDTO, ConfirmDTO } from '@wms/dtos';
+import { SignInDTO, ConfirmDTO, UsersDTO } from '@wms/dtos';
 import { SingInEntity } from '@wms/entities';
 
-interface ISignInResp {
-  user: any,
-  expiresIn: number,
-  idToken: string,
-  refreshToken: string
-  accessToken: string
+interface UpdatePassword {
+  accessToken: string,
+  oldPassword: string,
+  newPassword: string
 }
 
 export const signInPOST = async (options: IBodyProps<SignInDTO>): Promise<IJsonBody<{ resultAuth: SingInEntity }>> => await httpClient.post({
@@ -32,7 +30,16 @@ export const refreshTokenPOST = async (options: IBodyProps<{ refreshToken: strin
   }
 });
 
-export const refreshUserGET = async (): Promise<IJsonBody<IJsonResponse<ISignInResp>>> => await httpClient.get({
-  url: 'security/auth/refresh_user/',
-  options: {}
+export const updateUserChangePasswordPUT = async (options: IBodyProps<UpdatePassword>): Promise<IJsonBody<{ data: string, status: number }>> => await httpClient.put({
+  url: 'cognitocontrollers/change-password',
+  options: {
+    data: options.body
+  }
+});
+
+export const updateUserForgotPasswordPUT = async (options: IBodyProps<UsersDTO>): Promise<IJsonBody<string>> => await httpClient.put({
+  url: 'authcognitopubcontrollers/forgot-password',
+  options: {
+    data: options.body
+  }
 });

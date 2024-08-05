@@ -19,3 +19,4 @@ export * from './master-purchase-order.dto';
 export * from './master-account.dto';
 export * from './kit.dto';
 export * from './auth.dto';
+export * from './user.dto';

@@ -17,12 +17,23 @@ export interface IJsonResponse<T>  {
 }
 
 
-// export interface IPaginationResp<T> {
-//   rowsNumber: number,
-//   pageNumber: number,
-//   rowsOfPage: number,
-//   rowsData: T[]
-// }
+export interface IPayloadJWT {
+  sub: string,
+  website: string,
+  'cognito:groups': string[],
+  email_verified: boolean,
+  iss: string,
+  'cognito:username': string,
+  origin_jti: string,
+  aud: string,
+  event_id: string,
+  token_use: string,
+  auth_time: number,
+  exp: number,
+  iat: number,
+  jti: string,
+  email: string
+}
 
 export interface IPaginationResp<T> {
   count: number,

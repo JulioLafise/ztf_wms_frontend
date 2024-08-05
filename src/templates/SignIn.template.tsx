@@ -6,6 +6,7 @@ import {
   useToastNotification,
   useUI,
 } from '@wms/hooks';
+import { Validator } from '@wms/helpers';
 
 const SignInTemplate = () => {
   const isMounted = React.useRef(false);
@@ -25,7 +26,7 @@ const SignInTemplate = () => {
     if (!isAuthenticated) {
       onSignIn(_values)
         .then(resp => {        
-          toastSuccess(`Welcome, ${_values.username}`, { duration: 2500 });
+          toastSuccess(`Welcome, ${_values.username.split('@')[0]}`, { duration: 2500 });
         })
         .catch(err => {
           toastError(err.message);
@@ -36,11 +37,11 @@ const SignInTemplate = () => {
     }
   };
 
-  React.useEffect(() => {    
+  React.useEffect(() => {
     if (!user) {
       if (!isMounted.current && token) onRefreshToken()
-        .then((resp: any) => {
-          toastSuccess(`Welcome, ${resp.username}`, { duration: 2500 });
+        .then((resp) => {
+          // toastSuccess(`Welcome`, { duration: 2500 });
           return;
         })
         .catch(err => {

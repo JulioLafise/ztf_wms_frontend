@@ -187,14 +187,14 @@ export const settings: IMenuList[] = [
     icon: 'gears',
     description: '',
     children: [
-      {
-        menuId: 'roles',
-        menuUrl: '/roles',
-        menuName: 'Roles',
-        icon: 'users-gear',
-        description: 'Managing role access permissions',
-        roles: ['dev']
-      },
+      // {
+      //   menuId: 'roles',
+      //   menuUrl: '/roles',
+      //   menuName: 'Roles',
+      //   icon: 'users-gear',
+      //   description: 'Managing role access permissions',
+      //   roles: ['dev']
+      // },
       {
         menuId: 'users',
         menuUrl: '/users',

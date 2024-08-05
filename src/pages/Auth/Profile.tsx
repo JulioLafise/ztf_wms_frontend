@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, Paper, Skeleton } from '@mui/material';
+import { Box, Divider, Paper, Skeleton, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { SaveAltRounded, PasswordRounded } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -27,17 +27,16 @@ interface IFormUser {
   username: string,
   email: string,
   userImage: Yup.Maybe<string>,
-  isAdmin: Yup.Maybe<boolean>
-  isActive: Yup.Maybe<boolean>,
   person: object | null,
-  rol: object | null,
+  rolGroup: string,
 }
 
 interface IFormPerson {
   firstName: string,
   lastName: string,
   identificationCard: string,
-  birthDate: Yup.Maybe<moment.Moment>,
+  address: string,
+  phone: string
 }
 
 interface IFormPassword{
@@ -57,7 +56,8 @@ const schemaValidationPerson: Yup.ObjectSchema<IFormPerson> = Yup.object().shape
     .min(4, 'LastName must not be less than 4 characters')
     .max(25, 'LastName must not be longer than 25 characters'),
   identificationCard: Yup.string().strict().required('IdentificationCard is required'),
-  birthDate: Yup.mixed<moment.Moment>(),
+  address: Yup.string().notRequired(),
+  phone: Yup.string().notRequired()
 });
 
 const schemaValidationPassword: Yup.ObjectSchema<IFormPassword> = Yup.object().shape({
@@ -77,17 +77,16 @@ const defaultValuesUser: IFormUser = {
   username: '',
   email: '',
   userImage: '',
-  isAdmin: false,
-  isActive: false,
   person: null,
-  rol: null,
+  rolGroup: '',
 };
 
 const defaultValuesPerson: IFormPerson = {
   firstName: '',
   lastName: '',
   identificationCard: '',
-  birthDate: moment()
+  address: '',
+  phone: ''
 };
 
 const defaultValuesPassword: IFormPassword = {
@@ -96,14 +95,13 @@ const defaultValuesPassword: IFormPassword = {
 };
 
 const ProfilePage = () => {
-  const { user, onRefreshUser } = useAuth();
+  const { user, isLoading, onChangePassword } = useAuth();
   const { s3Upload } = useAws();
   const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
   const [imageLoading, setImageLoading] = React.useState<{ image: string, isLoading: boolean }>();
 
-  const { useUserMutation, useChangePasswordUserMutation } = useUser();
+  const { useUserMutation } = useUser();
   const mutationUser = useUserMutation(undefined, { typeMutation: 'put' });
-  const mutationPassword = useChangePasswordUserMutation(undefined, { password: 'update' });
 
   const methodsUser = useForm({
     defaultValues: defaultValuesUser
@@ -155,7 +153,7 @@ const ProfilePage = () => {
       ...values,
       userId: user?.userId
     };
-    mutationPassword.mutateAsync(data)
+    onChangePassword(data)
       .then(() => {
         resetPassword(defaultValuesPassword);
         swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
@@ -188,7 +186,6 @@ const ProfilePage = () => {
         }).then(() => {
           mutationUser.mutateAsync(data)
             .then(() => {
-              onRefreshUser();
               setValue('userImage', fileName);
               setImageLoading({ image: files[0].content, isLoading: false });
               swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
@@ -201,13 +198,13 @@ const ProfilePage = () => {
   };
 
   React.useEffect(() => {
-    if (user && user.person) {
+    if (user) {
       setImageLoading({ image: '', isLoading: true });
       resetUser(user ? { ...user, userImage: user.userId } : defaultValuesUser);
-      const { birthDate, ...rest } = user.person;
-      resetPerson(rest);
-      setValuePerson('birthDate', moment(birthDate));
-      setImageLoading({ image: user.userImage || '', isLoading: false });
+      setValuePerson('firstName', user.firstName);
+      setValuePerson('lastName', user.lastName);
+      setValuePerson('identificationCard', user.identificationCard);
+      setImageLoading({ image: user.picture || '', isLoading: false });
     } else {
       resetUser(defaultValuesUser);
       resetPerson(defaultValuesPerson);     
@@ -242,34 +239,31 @@ const ProfilePage = () => {
                     />
                   )
               }
-              <SimpleFileDialog sizeBtn="medium" onLoadFiles={onSaveImage} isLoading={imageLoading?.isLoading || mutationUser.isPending} />
+              <SimpleFileDialog sizeBtn="medium" onLoadFiles={onSaveImage} isLoading={imageLoading?.isLoading || mutationUser.isPending} disabled />
             </Box>
             <Box component="section" className="flex flex-wrap sm:flex-wrap md:flex-nowrap justify-center gap-2 w-full sm:w-full md:w-2/3 lg:w-2/3">
               <Box component="article" className="flex flex-col w-full sm:w-full md:w-1/2 lg:w-1/2">
                 <Box component="div">
                   <FormProvider {...methodsUser}>
-                    <form noValidate>
+                    <form noValidate className="space-y-1.5">
                       <Divider className="text-lg font-bold">User Info</Divider>
                       <TextFieldHF label="Username" name="username" capitalized="lower" disabled />
                       <TextFieldHF label="Email" name="email" capitalized="lower" disabled />
-                      <AutoCompleteHF<any>
-                        label="Rol"
-                        name="rol"
-                        optionsData={[]}
-                        getOptionLabel={(option) => option.rolName || ''}
-                        loading={false}
-                        disabled
-                      />
-                      <Box component="section" className="flex items-start" >
-                        <CheckBoxHF label="Admin" name="isAdmin" disabled />
-                        <CheckBoxHF label="Active" name="isActive" disabled />
+                      <TextFieldHF label="Group" name="rolGroup" capitalized="upper" disabled />
+                      <Box component="section" className="flex items-center" >
+                        <Typography variant="body2" fontWeight="bold" className="pe-1">Status:</Typography>
+                        <Box component="div" className={`${user.isVerified ? 'bg-green-500' : 'bg-orange-500'} p-1.5 rounded-md`}>
+                          <Typography variant="body2" fontWeight="bold" className="text-white">
+                            {user.isVerified ? 'VERIFIED' : 'PENDING'}
+                          </Typography>
+                        </Box>
                       </Box>
                     </form>
                   </FormProvider>
                 </Box>
                 <Box component="article" className="flex flex-col">
                   <FormProvider {...methodsPassword}>
-                    <form noValidate onSubmit={handleSubmitPassword(onSubmitPassword)}>
+                    <form noValidate onSubmit={handleSubmitPassword(onSubmitPassword)} className="space-y-1">
                       <Divider className="text-md font-bold">Password</Divider>
                       <TextFieldHF label="Current Password" name="oldPassword" isPassword />
                       <TextFieldHF
@@ -285,7 +279,7 @@ const ProfilePage = () => {
                           startIcon={<SaveAltRounded />}
                           variant="contained"
                           type="submit"
-                          loading={mutationPassword.isPending}
+                          loading={isLoading}
                         >
                           Update Password
                         </LoadingButton>
@@ -305,7 +299,8 @@ const ProfilePage = () => {
                       name="identificationCard"
                       mask="identification"
                     />
-                    <DateTimeHF label="BirthDate" name="birthDate" />
+                    <TextFieldHF label="Phone" name="phone" mask="phone" />
+                    <TextFieldHF label="Address" name="address" rows={5} />
                     <Box component="section" className="flex flex-row-reverse gap-2 pt-3">
                       <LoadingButton
                         startIcon={<SaveAltRounded />}

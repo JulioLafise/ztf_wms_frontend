@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { ICatalogueProps } from '@wms/interfaces';
-import {  } from '@wms/redux/actions';
+import { userAsyncThunks } from '@wms/redux/actions';
+import { UserEntity } from '@wms/entities';
 
-const initialState: ICatalogueProps<any> = {
+const initialState: ICatalogueProps<UserEntity> = {
   data: [],
   rowCount: 0,
   isGenerate: false,
@@ -23,7 +24,16 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     // USERS LIST
-
+    builder.addCase(userAsyncThunks.getUsersList.fulfilled, (state, { payload }) => {
+      state.data = payload;
+      state.isGenerate = true;
+      state.error = undefined;
+    });
+    builder.addCase(userAsyncThunks.getUsersList.rejected, (state, { payload }) => {
+      state.data = [];
+      state.isGenerate = true;
+      state.error = payload;
+    });
   },
 });
 

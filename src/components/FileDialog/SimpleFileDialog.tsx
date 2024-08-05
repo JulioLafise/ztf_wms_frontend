@@ -20,7 +20,8 @@ interface IProps {
  sizeBtn?: 'small' | 'medium' | 'large',
  onContentFiles?: React.Dispatch<React.SetStateAction<FilesContent | undefined>>,
  onLoadFiles?: (files: FilesContent) => void,
- isLoading?: boolean
+ isLoading?: boolean,
+ disabled?: boolean,
 }
 
 const VisuallyHiddenInputFile = styled('input')({
@@ -43,7 +44,8 @@ const SimpleFileDialog = (props: IProps) => {
     sizeBtn = 'medium',
     onContentFiles,
     onLoadFiles,
-    isLoading
+    isLoading,
+    disabled
   } = props;
 
   const { swalToastError } = useAlertNotification();
@@ -91,7 +93,7 @@ const SimpleFileDialog = (props: IProps) => {
                 role={undefined}
                 tabIndex={-1}
                 onClick={onClick}
-                disabled={isLoading}
+                disabled={isLoading || disabled}
               >
                 {isLoading ? <CircularProgress /> : <FileUpload fontSize="inherit" />}
                 <VisuallyHiddenInputFile
@@ -114,6 +116,7 @@ const SimpleFileDialog = (props: IProps) => {
               size={sizeBtn}
               loading={isLoading}
               onClick={onClick}
+              disabled={disabled}
             >
               Upload File
               <VisuallyHiddenInputFile

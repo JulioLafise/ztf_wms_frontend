@@ -1,7 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { filterErrorAxios } from '@wms/helpers';
+import { filterErrorAxios, parseJwt } from '@wms/helpers';
 import { WMSAPI } from '@wms/apis';
-import { LocalStorageConfig, AWSTools, enviroment } from '@wms/config';
+import { IPayloadJWT } from '@wms/interfaces';
+import { LocalStorageConfig } from '@wms/config';
 import { SignInDTO } from '@wms/dtos';
 import { onChecking } from '../../reducer/slices/auth.slice';
 
@@ -12,16 +13,19 @@ export const getSignIn = createAsyncThunk(
     try {
       dispatch(onChecking(true));
       const { data } = await WMSAPI.signInPOST({ body: signIn });
+      const payload = parseJwt<IPayloadJWT>(data.resultAuth.idToken);
       LocalStorageConfig.setItem('token', data.resultAuth.idToken);
-      LocalStorageConfig.setItem('sid', signIn.userName || '');
+      LocalStorageConfig.setItem('sid', payload.sub || '');
       LocalStorageConfig.setItem('acstk', data.resultAuth.accessToken);
       LocalStorageConfig.setItem('rftk', data.resultAuth.refreshToken);
       LocalStorageConfig.setItem('expire', String(data.resultAuth.expiresIn));
-      // if (!!data.resultAuth.user.userImage && data.resultAuth.user.userImage != '') {
-      //   const imageUrl = await getImageUrl(data.resultAuth.user.userImage);
-      //   return { ...data.resultAuth.user, userImage: imageUrl };
-      // }
-      return { username: signIn.userName, email: signIn.userName };
+      return {
+        userId: payload.sub,
+        username: payload['cognito:username'],
+        email: payload.email,
+        rolGroup: payload.website,
+        isVerified: payload.email_verified
+      };
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
     }
@@ -47,48 +51,36 @@ export const getRefreshToken = createAsyncThunk(
     try {
       dispatch(onChecking(true));
       const refreshToken = localStorage.getItem('rftk') || '';
-      const username = localStorage.getItem('sid') || '';
       const { data } = await WMSAPI.refreshTokenPOST({ body: { refreshToken, isEcommerce: false } });
+      const payload = parseJwt<IPayloadJWT>(data.authenticationResult.idToken);
       LocalStorageConfig.setItem('token', data.authenticationResult.idToken);
-      // LocalStorageConfig.setItem('sid', username || '');
+      LocalStorageConfig.setItem('sid', payload.sub || '');
       LocalStorageConfig.setItem('acstk', data.authenticationResult.accessToken);
       LocalStorageConfig.setItem('expire', String(data.authenticationResult.expiresIn));
-      // if (!!data.detail.user.userImage && data.detail.user.userImage != '') {
-      //   const imageUrl = await getImageUrl(data.detail.user.userImage);
-      //   return { ...data.detail.user, userImage: imageUrl };
-      // }
-      return { username, email: username };
+      return {
+        userId: payload.sub,
+        username: payload['cognito:username'],
+        email: payload.email,
+        rolGroup: payload.website,
+        isVerified: payload.email_verified
+      };
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
     }
   }
 );
 
-export const getRefreshUser = createAsyncThunk(
-  'Auth/getRefreshUser',
-  async (args: any, { rejectWithValue, dispatch }) => {
+
+export const putChangePassword = createAsyncThunk(
+  'Auth/putChangePassword',
+  async (args: { oldPassword: string, newPassword: string }, { rejectWithValue, dispatch }) => {
     try {
-      const { data } = await WMSAPI.refreshUserGET();
-      if (data.detail.user.userImage && data.detail.user.userImage != '') {
-        const imageUrl = await getImageUrl(data.detail.user.userImage);
-        return { ...data.detail.user, userImage: imageUrl };
-      }
-      return data.detail.user;
+      const accessToken = LocalStorageConfig.getItem<string>('acstk', 'string', '');
+      const { data } = await WMSAPI.updateUserChangePasswordPUT({ body: { accessToken, ...args } });
+      if (data.status !== 200) return false;
+      return true;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
     }
   }
 );
-
-const getImageUrl = async (fileName?: string) => {
-  const s3 = new AWSTools({
-    accessKeyId: enviroment.accessKeyId,
-    secretAccessKey: enviroment.secretAccessKey,
-    region: enviroment.region,
-    bucket: 'imagen'
-  });
-  return await s3.getObjectUrl({
-    fileName: String(fileName),
-    folderName: 'alm-mis',
-  });
-};

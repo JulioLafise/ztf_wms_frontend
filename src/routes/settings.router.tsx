@@ -1,7 +1,8 @@
 import { RouteObject, Navigate, Outlet } from 'react-router-dom';
 import { Error, PanelRouter } from '@wms/components';
 import {
-  ProfilePageLazy
+  ProfilePageLazy,
+  UsersPageLazy
 } from '@wms/pages';
 
 export const settingsRouter: RouteObject = {
@@ -12,14 +13,14 @@ export const settingsRouter: RouteObject = {
       element: <PanelRouter />,
       errorElement: <Error />
     },
-    {
-      path: 'roles',
-      element: <Outlet />,
-      errorElement: <Error />
-    },
+    // {
+    //   path: 'roles',
+    //   element: <Outlet />,
+    //   errorElement: <Error />
+    // },
     {
       path: 'users',
-      element: <Outlet />,
+      element: <UsersPageLazy />,
       errorElement: <Error />
     },
     {

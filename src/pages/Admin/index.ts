@@ -14,3 +14,4 @@ export * from './Colors';
 export * from './EntryType';
 export * from './Kits';
 export * from './Kardex';
+export * from './Users';
