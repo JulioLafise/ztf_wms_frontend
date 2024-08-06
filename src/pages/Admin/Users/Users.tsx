@@ -24,7 +24,7 @@ const UnitMeasurePage = () => {
   const { isGenerate, rowCount, useUsersListQuery, useUserMutation } = useUser();
   const { data, isLoading, isError, refetch } = useUsersListQuery();
   const mutation = useUserMutation({ ...pagination, filter: globalFilter }, optionsQuery);
-  const paginateData = React.useMemo(() => paginateArray(data, pagination.pageSize, pagination.pageIndex), [data, pagination]);
+  const paginateData = React.useMemo(() => paginateArray(data || [], pagination.pageSize, pagination.pageIndex), [data, pagination]);
 
   const getStatusColor = (status: any) => {
     switch (status) {

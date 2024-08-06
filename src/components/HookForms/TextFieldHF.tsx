@@ -34,7 +34,7 @@ interface IProps {
 
 interface OptionRowsProps extends IProps { rows?: number | string, maxLength?: never }
 interface OptionMaxRowProps extends IProps { rows?: never, maxLength?: number }
-type TypeInputMask = 'phone' | 'ruc' | 'passport' | 'identification' | 'resident' | 'circulation' | 'integer' | 'decimal' | 'timer' | 'percent' | 'integer2'
+type TypeInputMask = 'phone' | 'phone2' | 'ruc' | 'passport' | 'identification' | 'resident' | 'circulation' | 'integer' | 'decimal' | 'timer' | 'percent' | 'integer2'
 
 const TextFieldHF: React.FC<OptionRowsProps | OptionMaxRowProps> = (props) => {
   const {
@@ -69,6 +69,8 @@ const TextFieldHF: React.FC<OptionRowsProps | OptionMaxRowProps> = (props) => {
     switch (_mask) {
       case 'phone':
         return Mask.TelephoneInputMask;
+      case 'phone2':
+        return Mask.TelephoneExtInputMask;
       case 'ruc':
         return Mask.RUCInputMask;
       case 'passport':

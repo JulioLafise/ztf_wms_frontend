@@ -31,7 +31,7 @@ export const createUserPOST = async (options: IBodyProps<UsersDTO>): Promise<IJs
 });
 
 export const updateUserPUT = async (options: IBodyProps<UsersDTO>): Promise<IJsonBody<UserEntity>> => await httpClient.put({
-  url: 'cognitocontrollers/attributes',
+  url: 'cognitocontrollers/logistic-attributes',
   options: {
     data: options.body
   }

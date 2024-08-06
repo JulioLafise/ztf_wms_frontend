@@ -115,7 +115,7 @@ const NavBarMobile = (props: INavBarMobileProps) => {
                   onClick={handleClick}
                   color="inherit"
                 >
-                  <BackgroundLetterAvatars alt={user?.person?.firstName} src={user?.userImage} />
+                  <BackgroundLetterAvatars alt={user?.firstName} src={user?.picture} />
                 </IconButton>
               </Box>
               {isMenuOpen && <MenuProfileMobile handleMenuClose={handleMenuClose} isMenuOpen={isMenuOpen} anchorEl={anchorEl} />}

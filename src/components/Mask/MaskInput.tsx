@@ -14,6 +14,18 @@ export const TelephoneInputMask = React.forwardRef<HTMLInputElement, InputMaskPr
   />
 );
 
+export const TelephoneExtInputMask = React.forwardRef<HTMLInputElement, InputMaskProps>((props, ref) =>
+  <InputMask
+    {...props}
+    ref={ref}
+    mask="+___________"
+    // pattern="[/\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/]"
+    replacement={{ _: /\d/ }}
+    // placeholder={'0000-0000'}
+    // showMask
+  />
+);
+
 export const IdentificationCardInputMask = React.forwardRef<HTMLInputElement, InputMaskProps>((props, ref) =>
   <InputMask
     {...props}

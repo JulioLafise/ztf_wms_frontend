@@ -13,6 +13,9 @@ const authSlice = createSlice({
   initialState,
   name: 'auth',
   reducers: {
+    onUser: (state, { payload }) => {
+      state.user = payload;
+    },
     onReset: () => initialState,
     onChecking: (state, { payload }) => {
       state.isChecking = payload as boolean;
@@ -62,6 +65,7 @@ const authSlice = createSlice({
 });
 
 export const {
+  onUser,
   onReset,
   onChecking,
 } = authSlice.actions;

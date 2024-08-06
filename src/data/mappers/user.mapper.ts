@@ -15,15 +15,15 @@ export class UserMapper {
         username: value.username,
         rolGroup: attr.website,
         address: attr.address,
-        firstName: attr.firstName,
-        lastName: attr.lastName,
-        identificationCard: attr.cedula,
-        phone: attr.phone,
+        firstName: attr.name,
+        lastName: attr.middle_name,
+        identificationCard: attr.given_name,
+        phone: attr.phone_number,
         picture: attr.picture,
         accountStatus: value.userStatus,
         createdAt: value.userCreateDate,
         isVerified: attr.email_verified,
-        isActive: value.enable
+        isActive: value.enabled || value.enable
       };
     } else throw new Error('An object was expected');
     return data;
@@ -42,15 +42,15 @@ export class UserMapper {
             username: value.username,
             rolGroup: attr.website,
             address: attr.address,
-            firstName: attr.firstName,
-            lastName: attr.lastName,
-            identificationCard: attr.cedula,
-            phone: attr.phone,
+            firstName: attr.name,
+            lastName: attr.middle_name,
+            identificationCard: attr.given_name,
+            phone: attr.phone_number,
             picture: attr.picture,
             accountStatus: value.userStatus,
             createdAt: value.userCreateDate,
             isVerified: attr.email_verified,
-            isActive: value.enable
+            isActive: value.enabled || value.enable
           }
         ];
       });

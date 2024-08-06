@@ -35,9 +35,7 @@ export const onEditWarehouse = createAsyncThunk(
   'catalogue/onEditWarehouse',
   async (warehouseDto: WarehouseDTO, { rejectWithValue, dispatch }) => {
     try {
-      console.log(warehouseDto);
       const { data } = await WMSAPI.updateWarehousePUT({ body: warehouseDto });
-      if (!data) return 'Empty';
       return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));

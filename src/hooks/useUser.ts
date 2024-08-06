@@ -1,7 +1,7 @@
 import { useAppSelector, useAppDispatch } from '@wms/redux/selector';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { IPagination, IOptionsQuery } from '@wms/interfaces';
-import { userAsyncThunks } from '@wms/redux/actions';
+import { userAsyncThunks, authSyncThunks } from '@wms/redux/actions';
 import { UserEntity } from '@wms/entities';
 import { UsersDTO } from '@wms/dtos';
 import { Validator } from '@wms/helpers';
@@ -29,7 +29,7 @@ const useUser = () => {
     staleTime: 20 * 60 * 60
   });
 
-  const useUserQuery = (args: { userId: number }) => useQuery<UserEntity>({
+  const useUserQuery = (args: { userId: string }) => useQuery<UserEntity>({
     queryKey: ['user', { ...args }],    
     queryFn: async () => {
       try {
@@ -37,7 +37,9 @@ const useUser = () => {
         if (errors) throw new Error(errors);
         const data = (await dispatch(userAsyncThunks.getUser(usersDto!))).payload;
         Validator.httpValidation(data as any);
-        return UserMapper.getItem(data);
+        const result = UserMapper.getItem(data);
+        dispatch(authSyncThunks.updateUser(result));
+        return result;
       } catch (error) {
         return Promise.reject(error);
       }
@@ -53,7 +55,13 @@ const useUser = () => {
         return {};
       }
       if (options?.typeMutation === 'put') {
-        return {};
+        const [errors, usersDto] = await UsersDTO.updated({ ...data });
+        if (errors) throw new Error(errors);
+        const resp = (await dispatch(userAsyncThunks.onEditUser(usersDto!))).payload;
+        Validator.httpValidation(resp as any);
+        const result = UserMapper.getItem(resp);
+        dispatch(authSyncThunks.updateUser(result));
+        return result;
       }
       return data;
     },

@@ -5,13 +5,9 @@ import { SaveAltRounded, PasswordRounded } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 import {
   TextFieldHF,
-  CheckBoxHF,
-  AutoCompleteHF,
-  DateTimeHF,
   SimpleFileDialog
 } from '@wms/components';
 import {
@@ -96,12 +92,13 @@ const defaultValuesPassword: IFormPassword = {
 
 const ProfilePage = () => {
   const { user, isLoading, onChangePassword } = useAuth();
-  const { s3Upload } = useAws();
+  const { uploadImageToS3Api, deleteImageFromS3Api } = useAws();
   const { swalToastError, swalToastWait, swalToastSuccess } = useAlertNotification();
-  const [imageLoading, setImageLoading] = React.useState<{ image: string, isLoading: boolean }>();
+  const [imageLoading, setImageLoading] = React.useState<{ image: string, isLoading: boolean }>({ image: undefined, isLoading: false });
 
-  const { useUserMutation } = useUser();
+  const { useUserQuery, useUserMutation } = useUser();
   const mutationUser = useUserMutation(undefined, { typeMutation: 'put' });
+  const { data: dataUser, refetch } = useUserQuery({ userId: user.userId });
 
   const methodsUser = useForm({
     defaultValues: defaultValuesUser
@@ -119,11 +116,11 @@ const ProfilePage = () => {
 
   const methodsPassword = useForm({
     defaultValues: defaultValuesPassword,
-    mode: 'onSubmit',
-    reValidateMode: 'onChange',
+    mode: 'onChange',
+    reValidateMode: 'onBlur',
     resolver: yupResolver(schemaValidationPassword)
   });
-  const { handleSubmit: handleSubmitPassword, reset: resetPassword, setValue: setValuePassword } = methodsPassword;
+  const { handleSubmit: handleSubmitPassword, reset: resetPassword, setValue: setValuePassword, setError, setFocus } = methodsPassword;
 
   const onSubmitPerson = (values: { [x: string]: any }) => {
     swalToastWait('Update Person Info', {
@@ -132,9 +129,17 @@ const ProfilePage = () => {
     });
     const data: any = {
       ...values,
-      birthDate: moment(values.birthDate).format('YYYY-MM-DD')
+      username: user.username,
+      picture: dataUser.picture
     };
-
+    mutationUser.mutateAsync(data)
+      .then(() => {
+        refetch();
+        swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+      })
+      .catch((err) => {
+        swalToastError(err.message, { showConfirmButton: false, timer: 4000 });
+      });
   };
 
   const onSubmitPassword = (values: { [x: string]: any }) => {
@@ -150,15 +155,21 @@ const ProfilePage = () => {
       showLoading: true,
     });
     const data: any = {
-      ...values,
-      userId: user?.userId
+      oldPassword: values.oldPassword,
+      newPassword: values.password
     };
     onChangePassword(data)
       .then(() => {
         resetPassword(defaultValuesPassword);
         swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
       })
-      .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 4000 }); });
+      .catch((err) => {
+        if (String(err.message).indexOf('Credenciales Incorrectas') > -1) {
+          setError('password', err.message);
+          setFocus('password');
+        }
+        swalToastError(err.message, { showConfirmButton: false, timer: 4000 });
+      });
   };
 
   const onGeneratedPassword = () => setValuePassword('password', GeneratedData.password());
@@ -171,46 +182,48 @@ const ProfilePage = () => {
           showLoading: true,
         });
         setImageLoading({ image: '', isLoading: true });
-        const fileName = `${user?.userId}.${files[0].files.name.split('.')[1]}`;
-        const data: any = {
-          userId: user?.userId,
-          userImage: fileName
-        };
-        setImageLoading({ image: files[0].content, isLoading: true });
-        s3Upload({
-          file: files[0].files,
-          fileName,
-          folderName: 'alm-mis',
-          contentType: files![0].files.type,
-          type: 'image'
-        }).then(() => {
-          mutationUser.mutateAsync(data)
-            .then(() => {
-              setValue('userImage', fileName);
-              setImageLoading({ image: files[0].content, isLoading: false });
-              swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
-            })
-            .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 4000 }); });
+        deleteImageFromS3Api({
+          type: 'url',
+          value: dataUser.picture
         })
-          .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 4000 }); });     
+          .then(() => {
+            uploadImageToS3Api([files[0].files])
+              .then(resp => {
+                const data: any = {
+                  ...dataUser,
+                  picture: resp[0]
+                };
+                mutationUser.mutateAsync(data)
+                  .then(() => {
+                    setValue('userImage', resp[0]);
+                    setImageLoading({ image: resp[0], isLoading: false });
+                    swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+                  })
+                  .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 4000 }); });
+              })
+              .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 4000 }); });
+          })
+          .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 4000 }); });
       }
     }
   };
 
   React.useEffect(() => {
-    if (user) {
+    if (user && dataUser) {
       setImageLoading({ image: '', isLoading: true });
       resetUser(user ? { ...user, userImage: user.userId } : defaultValuesUser);
-      setValuePerson('firstName', user.firstName);
-      setValuePerson('lastName', user.lastName);
-      setValuePerson('identificationCard', user.identificationCard);
-      setImageLoading({ image: user.picture || '', isLoading: false });
+      setValuePerson('firstName', dataUser.firstName);
+      setValuePerson('lastName', dataUser.lastName);
+      setValuePerson('identificationCard', dataUser.identificationCard);
+      setValuePerson('phone', dataUser.phone);
+      setValuePerson('address', dataUser.address);
+      setImageLoading({ image: dataUser.picture || '', isLoading: false });
     } else {
       resetUser(defaultValuesUser);
       resetPerson(defaultValuesPerson);     
     }
     resetPassword(defaultValuesPassword);
-  }, [user]);
+  }, [user, dataUser]);
 
   return (
     <Paper elevation={4}>
@@ -232,14 +245,14 @@ const ProfilePage = () => {
                   : (
                     <img
                       alt={formValuesUser.userImage || uuid()}
-                      src={imageLoading && imageLoading.image || '/img/wallpaper_01.jpg'}
+                      src={imageLoading && imageLoading.image || '/img/image_not_found.png'}
                       width={250}
                       height={250}
                       className="rounded-full shadow-md"
                     />
                   )
               }
-              <SimpleFileDialog sizeBtn="medium" onLoadFiles={onSaveImage} isLoading={imageLoading?.isLoading || mutationUser.isPending} disabled />
+              <SimpleFileDialog sizeBtn="medium" onLoadFiles={onSaveImage} isLoading={imageLoading?.isLoading} disabled={mutationUser.isPending || isLoading} />
             </Box>
             <Box component="section" className="flex flex-wrap sm:flex-wrap md:flex-nowrap justify-center gap-2 w-full sm:w-full md:w-2/3 lg:w-2/3">
               <Box component="article" className="flex flex-col w-full sm:w-full md:w-1/2 lg:w-1/2">
@@ -279,6 +292,7 @@ const ProfilePage = () => {
                           startIcon={<SaveAltRounded />}
                           variant="contained"
                           type="submit"
+                          disabled={mutationUser.isPending || imageLoading.isLoading}
                           loading={isLoading}
                         >
                           Update Password
@@ -299,14 +313,15 @@ const ProfilePage = () => {
                       name="identificationCard"
                       mask="identification"
                     />
-                    <TextFieldHF label="Phone" name="phone" mask="phone" />
+                    <TextFieldHF label="Phone" name="phone" mask="phone2" />
                     <TextFieldHF label="Address" name="address" rows={5} />
                     <Box component="section" className="flex flex-row-reverse gap-2 pt-3">
                       <LoadingButton
                         startIcon={<SaveAltRounded />}
                         variant="contained"
                         type="submit"
-                        loading={false}
+                        disabled={imageLoading.isLoading || isLoading}
+                        loading={mutationUser.isPending}
                       >
                         Update Info
                       </LoadingButton>

@@ -37,7 +37,7 @@ const MenuOthers = (props: IMenuOthers) => {
             <ListItemIcon>
               {
                 others.menuId === 'account'
-                  ? <BackgroundLetterAvatars sx={{ width: 24, height: 24, fontSize: 12 }} alt={user?.person?.firstName} src={user?.userImage} />
+                  ? <BackgroundLetterAvatars sx={{ width: 24, height: 24, fontSize: 12 }} alt={user?.firstName} src={user?.picture} />
                   : <FontAwesomeIcon iconLabel={others.icon} size="lg" />
               }              
             </ListItemIcon>

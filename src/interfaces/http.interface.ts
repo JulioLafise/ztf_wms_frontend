@@ -20,6 +20,13 @@ export interface IJsonResponse<T>  {
 export interface IPayloadJWT {
   sub: string,
   website: string,
+  address: { formatted: string },
+  given_name: string,
+  name: string,
+  middle_name: string,
+  phone_number: string,
+  phone_number_verified: boolean,
+  picture: string,
   'cognito:groups': string[],
   email_verified: boolean,
   iss: string,

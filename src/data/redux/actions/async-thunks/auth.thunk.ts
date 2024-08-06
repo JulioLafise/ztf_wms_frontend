@@ -23,6 +23,12 @@ export const getSignIn = createAsyncThunk(
         userId: payload.sub,
         username: payload['cognito:username'],
         email: payload.email,
+        address: payload.address.formatted,
+        picture: payload.picture,
+        identificationCard: payload.given_name,
+        firstName: payload.name,
+        lastName: payload.middle_name,
+        phone: payload.phone_number,
         rolGroup: payload.website,
         isVerified: payload.email_verified
       };
@@ -61,6 +67,12 @@ export const getRefreshToken = createAsyncThunk(
         userId: payload.sub,
         username: payload['cognito:username'],
         email: payload.email,
+        address: payload.address.formatted,
+        picture: payload.picture,
+        identificationCard: payload.given_name,
+        firstName: payload.name,
+        lastName: payload.middle_name,
+        phone: payload.phone_number,
         rolGroup: payload.website,
         isVerified: payload.email_verified
       };
