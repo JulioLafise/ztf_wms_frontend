@@ -15,3 +15,5 @@ export * from './EntryType';
 export * from './Kits';
 export * from './Kardex';
 export * from './Users';
+export * from './Employees';
+export * from './Suppliers';

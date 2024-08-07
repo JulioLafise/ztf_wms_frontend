@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 
 const schemaPOST: Yup.ObjectSchema<EmployeeDTO> = Yup.object().shape({
   empleadoId: Yup.number(),
-  codigo: Yup.string().required(),
+  codigo: Yup.string().notRequired(),
   nombre: Yup.string().required(),
   apellido: Yup.string().required(),
   listaPais: Yup.array<Country>().required(),

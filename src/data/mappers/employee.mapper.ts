@@ -13,7 +13,7 @@ export class EmployeeMapper {
         code: value.codigo,
         firstName: value.nombre,
         lastName: value.apellido,
-        countries: this.getCountriesList(value.listaPais),
+        countries: this.getCountriesList(value.listPais || value.listaPais),
         isActive: value.isActivo
       };
     } else throw new Error('An object was expected');
@@ -31,7 +31,7 @@ export class EmployeeMapper {
             code: value.codigo,
             firstName: value.nombre,
             lastName: value.apellido,
-            countries: this.getCountriesList(value.listaPais),
+            countries: this.getCountriesList(value.listPais || value.listaPais),
             isActive: value.isActivo
           }
         ];
@@ -49,12 +49,12 @@ export class EmployeeMapper {
           ...data,
           {
             countryId: item.paisId,
-            description: item.descripcion,
+            description: item.pais,
             isActive: item.isActivo
           }
         ];
       });
-    } else throw new Error('An array was expected');
+    } 
     return data;
   }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Autocomplete,
   AutocompleteOwnerState,
+  AutocompleteRenderGetTagProps,
   AutocompleteRenderOptionState,
   Box,
   CircularProgress,
@@ -28,8 +29,11 @@ interface Props<T> {
   size?: 'small' | 'medium',
   variant?: 'filled' | 'outlined' | 'standard',
   readOnly?: boolean,
+  multiple?: boolean,
+  limitTags?: number,
   className?: string,
   autoFocus?: boolean,
+  filterSelectedOptions?: boolean,
   loading?: boolean,
   loadingText?: string,
   disabled?: boolean,
@@ -37,7 +41,8 @@ interface Props<T> {
   disablePortal?: boolean,
   required?: boolean,
   margin?: 'none' | 'dense' | 'normal',
-  colorOption?: keyof T
+  colorOption?: keyof T,
+  renderTags?: (value: T[], getTagProps: AutocompleteRenderGetTagProps, ownerState: AutocompleteOwnerState<T, boolean, boolean, false, 'div'>) => React.ReactNode
 }
 
 const AutoCompleteHF = <T,>(props: Props<T>) => {
@@ -51,6 +56,11 @@ const AutoCompleteHF = <T,>(props: Props<T>) => {
     size,
     variant = 'outlined',
     readOnly = false,
+    autoFocus,
+    filterSelectedOptions,
+    limitTags,
+    renderTags,
+    multiple,
     optionsData,
     isOptionEqualToValue,
     getOptionLabel,
@@ -62,7 +72,7 @@ const AutoCompleteHF = <T,>(props: Props<T>) => {
     disablePortal,
     required,
     margin = 'none',
-    colorOption
+    colorOption,
   } = props;
   const { control, formState: { errors } } = useFormContext();
   return (
@@ -82,12 +92,17 @@ const AutoCompleteHF = <T,>(props: Props<T>) => {
               renderOption={renderOption}
               disablePortal={disablePortal}
               fullWidth
+              filterSelectedOptions={filterSelectedOptions}
               size={size}
               onChange={(_event, data) => onChange(data)}
               value={value}
               loading={loading}
               loadingText={loadingText}
               disableClearable={disableClearable}
+              autoFocus={autoFocus}
+              limitTags={limitTags}
+              renderTags={renderTags}
+              multiple={multiple}           
               noOptionsText="Options not available"
               renderInput={(params) => (
                 <TextField
@@ -112,7 +127,7 @@ const AutoCompleteHF = <T,>(props: Props<T>) => {
                         />
                       </InputAdornment>
                     ) : (
-                      null
+                      params.InputProps.startAdornment
                     ),
                     endAdornment: (
                       <React.Fragment>

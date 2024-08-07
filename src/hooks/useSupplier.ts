@@ -14,7 +14,7 @@ const useSupplier = () => {
 
   const { data, isGenerate, rowCount } = useAppSelector(state => state.supplierReducer);
 
-  const useSupplierQuery = (pagination: IPagination) => useQuery<SupplierEntity[]>({
+  const useSupplierListQuery = (pagination: IPagination) => useQuery<SupplierEntity[]>({
     queryKey: ['supplier-list', { ...pagination }],    
     queryFn: async () => {
       try {
@@ -71,7 +71,7 @@ const useSupplier = () => {
     isGenerate,
     rowCount,
     //METHODS
-    useSupplierQuery,
+    useSupplierListQuery,
     useSupplierMutation
   };
 };

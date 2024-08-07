@@ -53,7 +53,7 @@ const HeaderDeparture = (props: IPropsHeader) => {
   } = useEmployee();
 
   const {
-    useSupplierQuery
+    useSupplierListQuery
   } = useSupplier();
 
   const {
@@ -74,7 +74,7 @@ const HeaderDeparture = (props: IPropsHeader) => {
 
   const {
     data: dataSupplier, isLoading: isLoadingSupplier
-  } = useSupplierQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
+  } = useSupplierListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
 
   const {
     data: dataTypeCurrency, isLoading: isLoadingTypeCurrency

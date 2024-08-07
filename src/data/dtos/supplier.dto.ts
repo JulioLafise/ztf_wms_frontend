@@ -57,7 +57,7 @@ export class SupplierDTO {
       dto.celular = data.cellphone;
       dto.email = data.email;
       dto.direccion = data.address;
-      dto.departamentoId = data.brand ? data.departament.departamentId : data.departamentId;
+      dto.departamentoId = data.departament ? data.departament.departamentId : data.departamentId;
       dto.isActivo = data.isActive;
 
       await schemaPOST.validate(dto, { abortEarly: false });
@@ -85,7 +85,7 @@ export class SupplierDTO {
       dto.celular = data.cellphone;
       dto.email = data.email;
       dto.direccion = data.address;
-      dto.departamentoId = data.brand ? data.departament.departamentId : data.departamentId;
+      dto.departamentoId = data.departament ? data.departament.departamentId : data.departamentId;
       dto.isActivo = data.isActive;
 
       await schemaPATCH.validate(dto, { abortEarly: false });

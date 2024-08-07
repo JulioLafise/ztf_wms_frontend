@@ -12,7 +12,9 @@ import {
   CategoryPageLazy,
   CountryPageLazy,
   ColorPageLazy,
-  EntryTypePageLazy
+  EntryTypePageLazy,
+  EmployeePageLazy,
+  SupplierPageLazy
 } from '@wms/pages';
 
 export const catalogueRouter: RouteObject = {
@@ -86,6 +88,16 @@ export const catalogueRouter: RouteObject = {
     {
       path: 'entry-type',
       element: <EntryTypePageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'employees',
+      element: <EmployeePageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'suppliers',
+      element: <SupplierPageLazy />,
       errorElement: <Error />
     },
   ]

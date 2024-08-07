@@ -10,6 +10,6 @@ export class SupplierEntity {
     public email?: string,
     public address?: string,
     public departament?: DepartamentEntity,
-    public isActive?: string,
+    public isActive?: boolean,
   ) {}
 }
