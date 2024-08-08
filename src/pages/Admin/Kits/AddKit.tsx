@@ -273,9 +273,6 @@ const AddKitPage = () => {
     }
   }, [featureData]);
 
-  React.useEffect(() => {
-    console.log(rowData);
-  }, [rowData]);
 
   return (
     <Paper elevation={4}>

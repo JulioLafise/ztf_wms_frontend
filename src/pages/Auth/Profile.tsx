@@ -237,8 +237,8 @@ const ProfilePage = () => {
                     <Skeleton
                       animation="wave"
                       variant="circular"
-                      // width="55%"
-                      // height="250px"
+                      width="55%"
+                      height="250px"
                       sx={{ bgcolor: 'grey.300' }}
                     />
                   )
@@ -246,8 +246,8 @@ const ProfilePage = () => {
                     <img
                       alt={formValuesUser.userImage || uuid()}
                       src={imageLoading && imageLoading.image || '/img/image_not_found.png'}
-                      // width={250}
-                      // height={250}
+                      width={250}
+                      height={250}
                       className="rounded-full shadow-md"
                     />
                   )

@@ -1,6 +1,12 @@
 import React from 'react';
-import { Box, Divider, Paper, Typography } from '@mui/material';
-import { FactCheck } from '@mui/icons-material';
+import {
+  Box,
+  Divider,
+  Paper,
+  Tooltip,
+  Typography
+} from '@mui/material';
+import { CheckCircle, CheckCircleOutline, FactCheck } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from'yup';
@@ -34,12 +40,15 @@ import {
 interface IPropsHeader {
   setDataGeneral: React.Dispatch<React.SetStateAction<ImportExcelProps>>,
   dataGeneral: ImportExcelProps,
+  activeStep: number,
+  setError: React.Dispatch<React.SetStateAction<boolean>>,
+  clickCounter: number
 }
 
 type ImportExcelProps = {
   dataHeader: MasterEntryEntity,
   dataDetail: DetailEntryEntity[],
-  dataImport: any[]
+  dataImport: any[],
 };
 
 interface IForm {
@@ -58,8 +67,8 @@ interface IForm {
 }
 
 const schemaValidation: Yup.ObjectSchema<IForm> = Yup.object().shape({
-  code: Yup.string().required('Code is required'),
-  description: Yup.string().required('Description is required'),
+  code: Yup.string().notRequired(),
+  description: Yup.string().notRequired(),
   delivery: Yup.string().required('Delivery is required'),
   employee: Yup.mixed<EmployeeEntity>().nullable().required('Employee is required'),
   supplier: Yup.mixed<SupplierEntity>().nullable().required('Supplier is required'),
@@ -73,7 +82,7 @@ const schemaValidation: Yup.ObjectSchema<IForm> = Yup.object().shape({
 });
 
 const defaultValues: IForm = {
-  code: '',
+  code: '000000',
   description: '',
   delivery: '',
   category: null,
@@ -89,7 +98,10 @@ const defaultValues: IForm = {
 const HeaderDeparture = (props: IPropsHeader) => {
   const {
     setDataGeneral,
-    dataGeneral
+    dataGeneral,
+    activeStep,
+    setError,
+    clickCounter
   } = props;
 
   const methods = useForm({
@@ -101,11 +113,14 @@ const HeaderDeparture = (props: IPropsHeader) => {
   const {
     reset,
     handleSubmit,
-    watch
+    watch,
+    formState
   } = methods;
   const formValues = watch();
+  const { errors } = formState;
 
   const [countryId, setCountryId] = React.useState(0);
+  const submitRef = React.useRef<HTMLInputElement>(null);
 
   const { useCountryListQuery, useDepartamentQuery } = useCountry();
   const { useWarehouseListQuery } = useWarehouse();
@@ -126,6 +141,11 @@ const HeaderDeparture = (props: IPropsHeader) => {
 
   const onSubmit = (values: { [key: string]: any }) => {
     console.log(values);
+    setDataGeneral(prevState => ({
+      ...prevState,
+      dataHeader: values
+    }));
+    setError(false);
   };
 
   React.useEffect(() => {
@@ -133,6 +153,14 @@ const HeaderDeparture = (props: IPropsHeader) => {
       setCountryId(formValues.country.countryId);
     }
   }, [formValues.country]);
+
+  React.useEffect(() => { (activeStep === 0 && clickCounter !== 0) && submitRef.current.click(); }, [clickCounter]);
+
+  React.useEffect(() => { Object.entries(errors).length && setError(true); }, [errors]);
+
+  React.useEffect(() => {
+    reset(dataGeneral.dataHeader || defaultValues);
+  }, []);
 
   return (
     <Paper elevation={4}>
@@ -142,6 +170,13 @@ const HeaderDeparture = (props: IPropsHeader) => {
             <Box component="section" className="flex items-center gap-2">
               <FactCheck color="primary" />
               <Typography variant="h6" fontWeight="bold">Entry Info</Typography>
+              <Box sx={{ flexGrow: 1}} />
+              <Typography variant="body2" fontWeight="bold">Status: </Typography>
+              {
+                formValues.isActive
+                  ? (<Tooltip title="Activo"><CheckCircle color="success" fontSize="medium" /></Tooltip>)
+                  : (<Tooltip title="Inactivo"><CheckCircleOutline color="error" fontSize="medium" /></Tooltip>)
+              }
             </Box>
             <Divider variant="inset" />
             <Box component="div" className="w-full flex flex-row-reverse">
@@ -151,7 +186,7 @@ const HeaderDeparture = (props: IPropsHeader) => {
                 className="w-full md:w-4/12 lg:w-2/12"
               />
               <TextFieldHF
-                name="noEntry"
+                name="code"
                 label="No Entrada"
                 className="w-full md:w-4/12 lg:w-2/12"
                 readOnly
@@ -175,7 +210,7 @@ const HeaderDeparture = (props: IPropsHeader) => {
                 className="w-full md:w-4/12 lg:w-2/12"
               />
               <AutoCompleteHF
-                name="department"
+                name="departament"
                 label="Departamento"
                 optionsData={dataDepartment || []}
                 getOptionLabel={(option) => `${option.description}`}
@@ -199,7 +234,7 @@ const HeaderDeparture = (props: IPropsHeader) => {
                 className="w-full md:w-4/12 lg:w-2/12"
               />
               <AutoCompleteHF
-                name="currency"
+                name="typeCurrency"
                 label="Moneda"
                 optionsData={dataTypeCurrency || []}
                 loading={isLoadingTypeCurrency}
@@ -207,7 +242,7 @@ const HeaderDeparture = (props: IPropsHeader) => {
                 className="w-full md:w-4/12 lg:w-2/12"
               />
               <AutoCompleteHF
-                name="proveedor"
+                name="supplier"
                 label="Proveedor"
                 optionsData={dataSupplier || []}
                 loading={isLoadingSupplier}
@@ -235,6 +270,7 @@ const HeaderDeparture = (props: IPropsHeader) => {
               />
             </Box>
             <Box component="div" className="w-full flex flex-row-reverse">
+              <input ref={submitRef} id="submitHidden" hidden type="submit" />
             </Box>
           </form>
         </FormProvider>

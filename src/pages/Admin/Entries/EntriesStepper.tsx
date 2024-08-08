@@ -9,7 +9,6 @@ import {
   Cancel
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { FormProvider, useForm } from 'react-hook-form';
 import { ReactSpreadsheetImport } from 'react-spreadsheet-import';
 import { Data, Field } from 'react-spreadsheet-import/types/types';
 import { Meta } from 'react-spreadsheet-import/types/steps/ValidationStep/types';
@@ -35,16 +34,17 @@ type ImportExcelProps = {
 
 const DeparturesStepper = () => {
   const { isSideBarOpen, isMobile } = useUI();
-  const methods = useForm({
-    mode: 'onSubmit',
-    reValidateMode: 'onChange'
-  });
-  const { handleSubmit } = methods;
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = React.useState(0);
   const [openImport, setOpenImport] = React.useState(false);
   const previousStep = () => setActiveStep(prevState => prevState - 1);
   const nextStep = () => setActiveStep(prevState => prevState + 1);
+  const onClick = (isError: boolean) => () => { 
+    onClickCounter();
+    !isError && nextStep(); 
+  };
+  const [clickCounter, setClickCounter] = React.useState(0);
+  const [errors, setErrors] = React.useState<boolean>(false);
   const [dataGeneral, setDataGeneral] = React.useState<ImportExcelProps>({
     dataHeader: {},
     dataDetail: [],
@@ -162,6 +162,8 @@ const DeparturesStepper = () => {
     },
   ], []);
 
+  const onClickCounter = () => setClickCounter(prevState => prevState + 1);
+
   const ComponentStep = (step: number) => {
     switch (step) {
       case 1:
@@ -169,7 +171,7 @@ const DeparturesStepper = () => {
       case 2:
         return (<Report />);
       default:
-        return (<HeaderEntry dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} />);
+        return (<HeaderEntry dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} activeStep={activeStep} setError={setErrors} clickCounter={clickCounter} />);
     }
   };
 
@@ -248,7 +250,7 @@ const DeparturesStepper = () => {
             ? (
               <ButtonActions
                 title="Next"
-                onClick={nextStep}
+                onClick={onClick(errors)}
                 ComponentIcon={<ArrowForward />}
                 ubication={isMobile ? {} : { bottom: 55, right: 99 }}
               />
