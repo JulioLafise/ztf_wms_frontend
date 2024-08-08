@@ -81,12 +81,12 @@ const EmployeeModal = (props: IProps) => {
     <SimpleModal isOpen={isOpen} onClose={() => !isLoading && setIsOpen(false)} title={`${!edit ? 'New' : 'Edit'}`} >
       <FormProvider {...methods}>
         <form noValidate className="flex flex-col flex-wrap" onSubmit={handleSubmit(onSubmit)}>
-          <Box component="div" className="overflow-auto pt-0.5 ">
+          <Box component="div" className="overflow-auto container-scroll pt-0.5 h-[50vh]">
             <TextFieldHF label="Codigo" name="code" disabled />
             <TextFieldHF label="Nombres" name="firstName" />
             <TextFieldHF label="Apellidos" name="lastName" />
             <TextFieldHF label="Email" name="email" />
-            <TextFieldHF label="Telefono" name="cellphone" mask="phone" />
+            <TextFieldHF label="Telefono" name="cellphone" length={8} />
             <TextFieldHF label="Direccion" name="address" rows={5}/>
             <AutoCompleteHF<CountryEntity>
               name="country"

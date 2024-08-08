@@ -71,9 +71,11 @@ const PanelRouter = () => {
 
   return (
     <Box component="div" className="">
-      <Box component="div" className="flex flex-wrap justify-center gap-3 pt-4">
-        {getMenuOption(menu.main)}
-        {getMenuOption(menu.secondary)}
+      <Box component="div" className="flex flex-nowrap justify-center pt-4">
+        <Box component="div" className="flex flex-wrap justify-center md:justify-start gap-3 w-full md:w-3/4">
+          {getMenuOption(menu.main)}
+          {getMenuOption(menu.secondary)}
+        </Box>
       </Box>
     </Box>
   );

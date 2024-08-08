@@ -230,15 +230,15 @@ const ProfilePage = () => {
       <Box component="div" className="p-7">
         <Box component="div" className="flex flex-col flex-wrap">
           <Box component="div" className="flex flex-wrap justify-center">
-            <Box component="section" className="flex flex-col justify-center items-center pb-2 gap-2 w-full sm:w-full md:w-1/3 lg:w-1/3">
+            <Box component="section" className="flex flex-col justify-center items-center pb-2 gap-2 w-full sm:w-full md:w-1/3 lg:w-1/3 aspect-square">
               {
                 imageLoading?.isLoading
                   ? (
                     <Skeleton
                       animation="wave"
                       variant="circular"
-                      width="55%"
-                      height="250px"
+                      // width="55%"
+                      // height="250px"
                       sx={{ bgcolor: 'grey.300' }}
                     />
                   )
@@ -246,8 +246,8 @@ const ProfilePage = () => {
                     <img
                       alt={formValuesUser.userImage || uuid()}
                       src={imageLoading && imageLoading.image || '/img/image_not_found.png'}
-                      width={250}
-                      height={250}
+                      // width={250}
+                      // height={250}
                       className="rounded-full shadow-md"
                     />
                   )

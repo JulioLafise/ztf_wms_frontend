@@ -24,6 +24,7 @@ interface IProps {
   size?: 'small' | 'medium',
   variant?: 'filled' | 'outlined' | 'standard',
   rows?: number | string,
+  length?: number,
   maxLength?: number,
   type?: 'email' | 'password' | 'file' | 'text' | 'tel',
   isPassword?: boolean,
@@ -45,6 +46,7 @@ const TextFieldHF: React.FC<OptionRowsProps | OptionMaxRowProps> = (props) => {
     margin = 'none',
     disabled,
     variant = 'outlined',
+    length,
     maxLength,
     rows,
     type = 'text',
@@ -64,6 +66,7 @@ const TextFieldHF: React.FC<OptionRowsProps | OptionMaxRowProps> = (props) => {
   const capitalizedFn = (values: string) => (
     capitalized === 'upper' ? values.toUpperCase() : capitalized === 'lower' ? values.toLowerCase() : values
   );
+  const lengthFn = (values: string) => (length ? values.slice(0, length) : values);
 
   const getInputMask = (_mask?: TypeInputMask) => {
     switch (_mask) {
@@ -108,7 +111,7 @@ const TextFieldHF: React.FC<OptionRowsProps | OptionMaxRowProps> = (props) => {
             label={label}
             placeholder={placeholder}
             onChange={onChange}
-            value={capitalizedFn(value)}
+            value={lengthFn(capitalizedFn(value))}
             margin={margin}
             disabled={disabled}
             variant={variant}

@@ -12,13 +12,14 @@ const SideForm = ({ children }: IProps) => {
     <Box component="div" className="flex">
       <Box component="div" className="hidden md:flex w-2/3 shadow-2xl" sx={{
         height: '100vh',
-        backgroundImage: 'url(/img/bg_01.jpg)',
+        backgroundImage: 'url(/img/nasa_earth_space.jpg)',
+        // backgroundImage: 'url(/img/bg_01.jpg)',
         // backgroundImage: 'url(/img/svg/endless_constellation.svg)',
-        backgroundSize: 'containt',
+        backgroundSize: 'cover',
         backgroundPosition: 'center center',
         backgroundRepeat: 'no-repeat'
       }}>
-        <Box component="section" className="flex flex-col bg-opacity-60 bg-white justify-center items-start w-full">
+        <Box component="section" className="flex flex-col bg-opacity-0 bg-white justify-center items-start w-full">
           <Box component="section" className="flex flex-col items-center justify-center gap-3 w-full">
             <Box>
               <Box component="article" className="flex items-center rounded-lg p-2" >

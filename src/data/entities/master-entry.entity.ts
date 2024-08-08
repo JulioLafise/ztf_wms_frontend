@@ -6,6 +6,7 @@ import {
   SupplierEntity,
   TypeCurrencyEntity,
   WarehouseEntity,
+  EntryTypeEntity
 } from './';
 
 export class MasterEntryEntity {
@@ -21,6 +22,7 @@ export class MasterEntryEntity {
     public details?: DetailEntryEntity[],
     public departament?: DepartamentEntity,
     public warehouse?: WarehouseEntity,
+    public entryType?: EntryTypeEntity,
     public isFinish?: boolean,
     public isActive?: boolean,
     public createdAt?: Date,

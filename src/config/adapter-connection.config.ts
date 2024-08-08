@@ -41,6 +41,7 @@ class AdapterConnection {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       },
       transformRequest: [(data, headers) => {
         if (headers['Content-Type'] && headers['Content-Type'].toString().startsWith('multipart/form-data')) {

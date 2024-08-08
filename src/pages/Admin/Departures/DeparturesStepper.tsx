@@ -14,7 +14,7 @@ const DeparturesStepper = () => {
   const [activeStep, setActiveStep] = React.useState(0);
   const previousStep = () => setActiveStep(prevState => prevState - 1);
   const nextStep = () => setActiveStep(prevState => prevState + 1);
-  const steps = React.useMemo(() => [
+  const steps = React.useMemo<{ label: string }[]>(() => [
     { label: 'Departure' },
     { label: 'Detail Departure' },
     { label: 'Summary Departure' },
