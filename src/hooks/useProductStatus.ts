@@ -14,7 +14,7 @@ const useProductStatus = () => {
 
   const { data, isGenerate, rowCount } = useAppSelector(state => state.productStatusReducer);
 
-  const useProductStatusQuery = (pagination: IPagination) => useQuery<ProductStatusEntity[]>({
+  const useProductStatusListQuery = (pagination: IPagination) => useQuery<ProductStatusEntity[]>({
     queryKey: ['product-status-list', { ...pagination }],    
     queryFn: async () => {
       try {
@@ -71,7 +71,7 @@ const useProductStatus = () => {
     isGenerate,
     rowCount,
     //METHODS
-    useProductStatusQuery,
+    useProductStatusListQuery,
     useProductStatusMutation
   };
 };

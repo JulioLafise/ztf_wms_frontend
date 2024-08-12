@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 
 interface Props {
+  id?: string,
   title: string,
   onClick?: React.MouseEventHandler<HTMLButtonElement>,
   ComponentIcon?: ReactElement<IconProps>,
@@ -34,6 +35,7 @@ type ILocation = {
 
 const ButtonActions = (props: Props) => {
   const {
+    id,
     title,
     onClick,
     ComponentIcon,
@@ -74,6 +76,7 @@ const ButtonActions = (props: Props) => {
                 unmountOnExit
               >
                 <Fab
+                  id={id}
                   aria-label={title}
                   variant={variant}
                   size={size}
@@ -110,6 +113,7 @@ const ButtonActions = (props: Props) => {
             unmountOnExit
           >
             <Fab
+              id={id}
               aria-label={title}
               variant={variant}
               size={size}

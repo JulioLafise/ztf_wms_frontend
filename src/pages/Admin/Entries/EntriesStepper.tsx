@@ -6,15 +6,22 @@ import {
   ExitToApp,
   Task,
   Download,
-  Cancel
+  Cancel,
+  Save
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ReactSpreadsheetImport } from 'react-spreadsheet-import';
 import { Data, Field } from 'react-spreadsheet-import/types/types';
 import { Meta } from 'react-spreadsheet-import/types/steps/ValidationStep/types';
 import _ from 'lodash';
+import { Validator } from '@wms/helpers';
 import { Stepper, ButtonActions } from '@wms/components';
-import { useUI, useProduct, useMasterEntry } from '@wms/hooks';
+import {
+  useUI,
+  useProduct,
+  useMasterEntry,
+  useAlertNotification
+} from '@wms/hooks';
 import { MasterEntryEntity, DetailEntryEntity } from '@wms/entities';
 import HeaderEntry from './Steps/HeaderEntry';
 import DetailEntry from './Steps/DetailEntry';
@@ -32,30 +39,26 @@ type ImportExcelProps = {
   dataImport: any[]
 };
 
-const DeparturesStepper = () => {
+const EntriesStepper = () => {
   const { isSideBarOpen, isMobile } = useUI();
+  const params = useParams();
   const navigate = useNavigate();
+  const { swalToastSuccess, swalToastError, swalToastWait } = useAlertNotification();
   const [activeStep, setActiveStep] = React.useState(0);
   const [openImport, setOpenImport] = React.useState(false);
   const previousStep = () => setActiveStep(prevState => prevState - 1);
   const nextStep = () => setActiveStep(prevState => prevState + 1);
-  const onClick = (isError: boolean) => () => { 
-    onClickCounter();
-    !isError && nextStep(); 
-  };
   const [clickCounter, setClickCounter] = React.useState(0);
-  const [errors, setErrors] = React.useState<boolean>(false);
+  const onClick = () => setClickCounter(prevState => prevState + 1);
   const [dataGeneral, setDataGeneral] = React.useState<ImportExcelProps>({
     dataHeader: {},
     dataDetail: [],
     dataImport: []
   });
 
-  const {
-    useMasterEntryMutation
-  } = useMasterEntry();
-
-  const mutation = useMasterEntryMutation({ pageIndex: 0, pageSize: 1000, filter: '' }, { typeMutation: 'post' });
+  const { useMasterEntryMutation, useMasterEntryQuery } = useMasterEntry();
+  const { data, refetch, isRefetching } = useMasterEntryQuery({ masterEntryId: Number(params.entryId) || 0 });
+  const mutation = useMasterEntryMutation({ pageIndex: 0, pageSize: 1000, filter: '' }, { typeMutation: !params.entryId ? 'post' : 'put' });
 
   const steps = React.useMemo<{ label: string }[]>(() => [
     { label: 'Entry' },
@@ -162,8 +165,6 @@ const DeparturesStepper = () => {
     },
   ], []);
 
-  const onClickCounter = () => setClickCounter(prevState => prevState + 1);
-
   const ComponentStep = (step: number) => {
     switch (step) {
       case 1:
@@ -171,7 +172,7 @@ const DeparturesStepper = () => {
       case 2:
         return (<Report />);
       default:
-        return (<HeaderEntry dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} activeStep={activeStep} setError={setErrors} clickCounter={clickCounter} />);
+        return (<HeaderEntry dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} setActiveStep={setActiveStep} clickCounter={clickCounter} />);
     }
   };
 
@@ -194,13 +195,43 @@ const DeparturesStepper = () => {
   };
 
   const onSaveOrEdit = () => {
-
+    const title = !params.entryId ? 'Saving Entry!' : 'Updating Entry!';
+    swalToastWait(title, {
+      message: 'Please wait a few minutes',
+      showLoading: true,
+    });
+    const values: MasterEntryEntity = {
+      ...dataGeneral.dataHeader,
+      details: dataGeneral.dataDetail
+    };
+    mutation.mutateAsync(values)
+      .then(result => {
+        swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+        navigate(`/app/inventory/entries/${result.masterEntryId}/edit`, { replace: true });
+        setActiveStep(2);
+      })
+      .catch(err => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
   };
+
+  React.useEffect(() => {
+    if (!Validator.isObjectEmpty(params)) {
+      if (data) {
+        const { details, ...header } = data;
+        setDataGeneral({
+          dataHeader: header,
+          dataDetail: details || [],
+          dataImport: []
+        });
+      }
+    }
+  }, [data, isRefetching]);
+
+  React.useEffect(() => { refetch(); }, []);
 
   return (
     <React.Fragment>
       <Stepper
-        activeStep={activeStep}
+        activeStep={activeStep === 2 ? activeStep + 1 : activeStep}
         steps={steps}
       />
       <Paper elevation={0} sx={{ mt: 2 }}>
@@ -246,19 +277,19 @@ const DeparturesStepper = () => {
           )
         }
         {
-          activeStep != steps.length
+          (activeStep === 2 ? activeStep + 1 : activeStep) != steps.length
             ? (
               <ButtonActions
-                title="Next"
-                onClick={onClick(errors)}
-                ComponentIcon={<ArrowForward />}
+                title={activeStep === 1 ? 'Save' : 'Next'}
+                onClick={activeStep === 0 ? onClick : activeStep === 1 ? onSaveOrEdit : nextStep}
+                ComponentIcon={activeStep === 1 ? <Save /> : <ArrowForward />}
                 ubication={isMobile ? {} : { bottom: 55, right: 99 }}
               />
             )
             : (
-              <ButtonActions
+              <ButtonActions                
                 title="Finish"
-                onClick={onSaveOrEdit}
+                onClick={() => navigate('/app/inventory/entries', { replace: true })}
                 ComponentIcon={<Task />}
                 ubication={isMobile ? {} : { bottom: 55, right: 99 }}
               />
@@ -269,4 +300,4 @@ const DeparturesStepper = () => {
   );
 };
 
-export default DeparturesStepper;
+export default EntriesStepper;

@@ -10,6 +10,7 @@ import { CheckCircle, CheckCircleOutline, FactCheck } from '@mui/icons-material'
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from'yup';
+import moment from 'moment';
 import {
   TextFieldHF,
   AutoCompleteHF,
@@ -36,12 +37,13 @@ import {
   useCategory,
   useEntryType
 } from '@wms/hooks';
+import { useDidUpdateEffect, Validator } from '@wms/helpers';
 
 interface IPropsHeader {
   setDataGeneral: React.Dispatch<React.SetStateAction<ImportExcelProps>>,
   dataGeneral: ImportExcelProps,
-  activeStep: number,
-  setError: React.Dispatch<React.SetStateAction<boolean>>,
+  // activeStep: number,
+  setActiveStep: React.Dispatch<React.SetStateAction<number>>,
   clickCounter: number
 }
 
@@ -63,6 +65,7 @@ interface IForm {
   departament?: DepartamentEntity | null,
   entryType?: EntryTypeEntity | null,
   warehouse?: WarehouseEntity | null,
+  createdAt?: moment.Moment,
   isActive: Yup.Maybe<boolean>
 }
 
@@ -78,7 +81,8 @@ const schemaValidation: Yup.ObjectSchema<IForm> = Yup.object().shape({
   departament: Yup.mixed<DepartamentEntity>().nullable().required('Departament is required'),
   entryType: Yup.mixed<EntryTypeEntity>().nullable().required('Entry Type is required'),
   warehouse: Yup.mixed<WarehouseEntity>().nullable().required('Warehouse is required'),
-  isActive: Yup.boolean()
+  createdAt: Yup.mixed<moment.Moment>().required('Date is required'),
+  isActive: Yup.boolean().default(true)
 });
 
 const defaultValues: IForm = {
@@ -95,13 +99,12 @@ const defaultValues: IForm = {
   isActive: true
 };
 
-const HeaderDeparture = (props: IPropsHeader) => {
+const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
   const {
     setDataGeneral,
     dataGeneral,
-    activeStep,
-    setError,
-    clickCounter
+    setActiveStep,
+    clickCounter,
   } = props;
 
   const methods = useForm({
@@ -114,10 +117,9 @@ const HeaderDeparture = (props: IPropsHeader) => {
     reset,
     handleSubmit,
     watch,
-    formState
+    setValue
   } = methods;
   const formValues = watch();
-  const { errors } = formState;
 
   const [countryId, setCountryId] = React.useState(0);
   const submitRef = React.useRef<HTMLInputElement>(null);
@@ -140,27 +142,31 @@ const HeaderDeparture = (props: IPropsHeader) => {
   const { data: dataEntryType, isLoading: isLoadingEntryType  } = useEntryTypeListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
 
   const onSubmit = (values: { [key: string]: any }) => {
-    console.log(values);
     setDataGeneral(prevState => ({
       ...prevState,
       dataHeader: values
     }));
-    setError(false);
+    setActiveStep(prevState => prevState + 1);
   };
+
+  const onClickForm = () => submitRef.current.click();
 
   React.useEffect(() => {
     if (formValues.country) {
       setCountryId(formValues.country.countryId);
     }
+    Validator.isObjectEmpty(dataGeneral.dataHeader) && setValue('departament', null);
   }, [formValues.country]);
 
-  React.useEffect(() => { (activeStep === 0 && clickCounter !== 0) && submitRef.current.click(); }, [clickCounter]);
-
-  React.useEffect(() => { Object.entries(errors).length && setError(true); }, [errors]);
+  useDidUpdateEffect(() => onClickForm(), [clickCounter]);
 
   React.useEffect(() => {
-    reset(dataGeneral.dataHeader || defaultValues);
-  }, []);
+    reset(Validator.isObjectEmpty(dataGeneral.dataHeader) ? defaultValues : {
+      ...dataGeneral.dataHeader,
+      country: dataCountry?.length && dataCountry.filter(ft => ft.countryId === dataGeneral.dataHeader.departament.countryId)[0],
+      createdAt: moment(dataGeneral.dataHeader.createdAt)
+    });
+  }, [dataGeneral.dataHeader]);
 
   return (
     <Paper elevation={4}>
@@ -181,7 +187,7 @@ const HeaderDeparture = (props: IPropsHeader) => {
             <Divider variant="inset" />
             <Box component="div" className="w-full flex flex-row-reverse">
               <DateTimeHF
-                name="createDate"
+                name="createdAt"
                 label="Fecha"
                 className="w-full md:w-4/12 lg:w-2/12"
               />
@@ -280,3 +286,4 @@ const HeaderDeparture = (props: IPropsHeader) => {
 };
 
 export default HeaderDeparture;
+

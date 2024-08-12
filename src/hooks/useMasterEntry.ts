@@ -81,6 +81,25 @@ const useMasterEntry = () => {
     }
   });
 
+  const useMasterEntryFinishMutation = (pagination?: IPagination) => useMutation<MasterEntryEntity, Error, MasterEntryEntity>({
+    mutationFn: async (data) => { 
+      const [errors, productDto] = await MasterEntryDTO.get({ ...data });
+      if (errors) throw new Error(errors);
+      const dataNew = (await dispatch(masterEntryAsyncThunks.onFinishMasterEntry(productDto!))).payload;
+      Validator.httpValidation(dataNew as any);
+      if (dataNew) {
+        return {...data, isFinish: !data.isFinish };
+      }
+      return data;
+    },
+    onSuccess: (data) => {
+      pagination && queryClient.invalidateQueries({
+        queryKey: ['master-entry-list', { ...pagination }]
+      });
+      return data;
+    }
+  });
+
 
   return {
     //VAR
@@ -90,7 +109,8 @@ const useMasterEntry = () => {
     //METHODS
     useMasterEntryQuery,
     useMasterEntryListQuery,
-    useMasterEntryMutation
+    useMasterEntryMutation,
+    useMasterEntryFinishMutation
   };
 };
 

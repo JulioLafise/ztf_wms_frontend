@@ -14,7 +14,16 @@ export class MasterEntryMapper {
         code: value.codigo,
         description: value.descripcion,
         createdAt: value.fechaCrea,
-        createdBy: value.usuarioCrea,        
+        createdBy: value.usuarioCrea,
+        warehouse: {
+          warehouseId: value.bodega.bodegaId,
+          description: value.bodega.bodega
+        },
+        delivery: value.personaEntrega,
+        entryType: {
+          entryTypeId: value.tipoEntrada.tipoEntradaId,
+          description: value.tipoEntrada.descripcion
+        },        
         employee: {
           employeeId: value.empleadoRecibe.empleadoRecibeId,
           firstName: value.empleadoRecibe.nombre,
@@ -36,7 +45,8 @@ export class MasterEntryMapper {
         departament: {
           departamentId: value.departamento.departamentoId,
           description: value.departamento.departamento,
-          countryId: value.departamento.paisId
+          countryId: value.departamento.paisId,
+
         },
         details: this.getDetailEntryList(value.listEntradaDetalle),
         isFinish: value.isFinalizado,
@@ -58,6 +68,9 @@ export class MasterEntryMapper {
             description: value.descripcion,
             createdAt: moment(value.fechaCrea).toDate(),
             createdBy: value.usuarioCrea,
+            entryType: {
+              description: value.tipoEntrada
+            },
             warehouse: {
               description: value.bodega,
             },            
