@@ -11,7 +11,7 @@ const store = configureStore({
         extraArgument: {},
       },
       serializableCheck: false,
-    }).concat([logger]),
+    }).concat([]),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
