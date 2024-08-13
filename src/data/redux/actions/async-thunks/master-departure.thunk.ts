@@ -84,7 +84,7 @@ export const onDeleteMasterDepartureDetail = createAsyncThunk(
   'catalogue/onDeleteMasterDepartureDetail',
   async (masterDepartureDto: MasterDepartureDTO, { rejectWithValue, dispatch }) => {
     try {
-      const { data } = await WMSAPI.eliminateMasterDepartureDELETE({ params: masterDepartureDto });
+      const { data } = await WMSAPI.eliminateMasterDepartureDetailDELETE({ params: masterDepartureDto });
       return data;
     } catch (rejectedValueOrSerializedError) {
       return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));

@@ -46,7 +46,7 @@ export const eliminateMasterDepartureDELETE = async (options: IParamsProps<Maste
   options: {}
 });
 
-export const eliminateMasterEntryDetailDELETE = async (options: IParamsProps<MasterDepartureDTO>): Promise<IJsonBody<MasterDepartureEntity | string>> => await httpClient.delete({
+export const eliminateMasterDepartureDetailDELETE = async (options: IParamsProps<MasterDepartureDTO>): Promise<IJsonBody<MasterDepartureEntity | string>> => await httpClient.delete({
   url: `maestrosalida/${options.params.maestroSalidaId}/delete-detalle`,
   options: {
     data: options.body
