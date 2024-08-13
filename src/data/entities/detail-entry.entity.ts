@@ -11,5 +11,6 @@ export class DetailEntryEntity {
     public masterEntryId?: number,
     public product?: ProductEntity,
     public productStatus?: ProductStatusEntity,
+    public isNew?: boolean
   ) {}
 }

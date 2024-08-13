@@ -1,43 +1,158 @@
 import React from 'react';
-import { Box, Paper } from '@mui/material';
+import {
+  Box,
+  Divider,
+  Paper,
+  Tooltip,
+  Typography
+} from '@mui/material';
+import { CheckCircle, CheckCircleOutline, FactCheck } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import moment from 'moment';
 import {
   TextFieldHF,
   AutoCompleteHF,
   DateTimeHF,
-  CheckBoxHF
 } from '@wms/components';
-import { useCustomer, useTypeCurrency } from '@wms/hooks';
-import { CustomerEntity, TypeCurrencyEntity } from '@wms/entities';
+import {
+  useCustomer,
+  useTypeCurrency,
+  useMasterPurchaseOrder,
+  useEmployee
+} from '@wms/hooks';
+import {
+  CustomerEntity,
+  TypeCurrencyEntity,
+  MasterDepartureEntity,
+  DetailDepartureEntity,
+  MasterPurchaseOrderEntity,
+  EmployeeEntity
+} from '@wms/entities';
+import { useDidUpdateEffect, Validator } from '@wms/helpers';
 
+interface IPropsHeader {
+  setDataGeneral: React.Dispatch<React.SetStateAction<ImportExcelProps>>,
+  dataGeneral: ImportExcelProps,
+  // activeStep: number,
+  setActiveStep: React.Dispatch<React.SetStateAction<number>>,
+  clickCounter: number
+}
 
-const HeaderDeparture = () => {
+type ImportExcelProps = {
+  dataHeader: MasterDepartureEntity,
+  dataDetail: DetailDepartureEntity[],
+  dataImport: any[],
+};
+
+interface IForm {
+  code: string,
+  description?: string,
+  customer?: CustomerEntity | null,
+  typeCurrency?: TypeCurrencyEntity | null,
+  createdAt?: moment.Moment,
+  isActive: Yup.Maybe<boolean>
+}
+
+const schemaValidation: Yup.ObjectSchema<IForm> = Yup.object().shape({
+  code: Yup.string().notRequired(),
+  description: Yup.string().notRequired(),
+  customer: Yup.mixed<CustomerEntity>().nullable().required('Customer is required'),
+  typeCurrency: Yup.mixed<TypeCurrencyEntity>().nullable().required('Type Currency is required'),
+  createdAt: Yup.mixed<moment.Moment>().required('Date is required'),
+  isActive: Yup.boolean().default(true)
+});
+
+const defaultValues: IForm = {
+  code: '000000',
+  description: '',
+  customer: null,
+  typeCurrency: null,
+  createdAt: moment(),
+  isActive: true
+};
+
+const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
+  const {
+    setDataGeneral,
+    dataGeneral,
+    setActiveStep,
+    clickCounter,
+  } = props;
+
   const methods = useForm({
+    defaultValues,
+    resolver: yupResolver(schemaValidation),
     mode: 'onSubmit',
     reValidateMode: 'onChange'
   });
-  const { handleSubmit } = methods;
+  const {
+    reset,
+    handleSubmit,
+    watch,
+    setValue
+  } = methods;
+  const formValues = watch();
+
+  const submitRef = React.useRef<HTMLInputElement>(null);
 
   const { useCustomerListQuery } = useCustomer();
   const { useTypeCurrencyListQuery } = useTypeCurrency();
+  const { useMasterPurchaseOrderListQuery } = useMasterPurchaseOrder();
+  const { useEmployeeListQuery } = useEmployee();
 
   const { data: dataCustomer, isLoading: isLoadingCustomer } = useCustomerListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
+  const { data: dataEmployee, isLoading: isLoadingEmployee } = useEmployeeListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
   const { data: dataTypeCurrency, isLoading: isLoadingTypeCurrency } = useTypeCurrencyListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
+  const { data: dataPurchaseOrder, isLoading: isLoadingPurchaseOrder } = useMasterPurchaseOrderListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
 
-  const onSubmit = (values: { [key: string]: any }) => { };
+  const onSubmit = (values: { [key: string]: any }) => {
+    setDataGeneral(prevState => ({
+      ...prevState,
+      dataHeader: values
+    }));
+    setActiveStep(prevState => prevState + 1);
+  };
+
+  const onClickForm = () => submitRef.current.click();
+
+  useDidUpdateEffect(() => onClickForm(), [clickCounter]);
+
+  React.useEffect(() => {
+    reset(Validator.isObjectEmpty(dataGeneral.dataHeader) ? defaultValues : {
+      ...dataGeneral.dataHeader,
+      // country: dataCountry?.length && dataCountry.filter(ft => ft.countryId === dataGeneral.dataHeader.departament.countryId)[0],
+      createdAt: moment(dataGeneral.dataHeader.createdAt)
+    });
+  }, [dataGeneral.dataHeader]);
+
   return (
     <Paper elevation={4}>
       <Box sx={{ p: 2 }}>
         <FormProvider {...methods}>
-          <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-nowrap flex-col">
+          <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-nowrap flex-col space-y-5">
+            <Box component="section" className="flex items-center gap-2">
+              <FactCheck color="primary" />
+              <Typography variant="h6" fontWeight="bold">Departure Info</Typography>
+              <Box sx={{ flexGrow: 1 }} />
+              <Typography variant="body2" fontWeight="bold">Status: </Typography>
+              {
+                formValues.isActive
+                  ? (<Tooltip title="Activo"><CheckCircle color="success" fontSize="medium" /></Tooltip>)
+                  : (<Tooltip title="Inactivo"><CheckCircleOutline color="error" fontSize="medium" /></Tooltip>)
+              }
+            </Box>
+            <Divider variant="inset" />
             <Box component="div" className="w-full flex flex-row-reverse">
               <DateTimeHF
-                name="createDate"
+                name="createdAt"
                 label="Fecha"
                 className="w-2/12"
+                disabled
               />
               <TextFieldHF
-                name="noDeparture"
+                name="code"
                 label="No Salida"
                 className="w-2/12"
                 readOnly
@@ -52,30 +167,39 @@ const HeaderDeparture = () => {
                 getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                 loading={isLoadingCustomer}
               />
+              <AutoCompleteHF<EmployeeEntity>
+                name="employee"
+                label="Empleado"
+                optionsData={dataEmployee || []}
+                loading={isLoadingEmployee}
+                getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+                className="w-full md:w-4/12 lg:w-2/12"
+              />
               <AutoCompleteHF<TypeCurrencyEntity>
                 className="w-2/12"
-                name="currentType"
+                name="typeCurrency"
                 label="Tipo Moneda"
                 optionsData={dataTypeCurrency || []}
                 getOptionLabel={(option) => `(${option.iconName}) ${option.description}`}
                 loading={isLoadingTypeCurrency}
               />
-              <AutoCompleteHF
+              <AutoCompleteHF<MasterPurchaseOrderEntity>
+                className="w-2/12"
                 name="purchaseOrder"
                 label="Orden de Pedido"
-                optionsData={[]}
-                getOptionLabel={(option: any) => option.description}
-                className="w-2/12"
+                optionsData={dataPurchaseOrder || []}
+                getOptionLabel={option => option.code}
+                loading={isLoadingPurchaseOrder}
               />
               <TextFieldHF
                 name="description"
                 label="Descripcion"
                 className="w-full"
-                rows={2}
+                rows={3}
               />
             </Box>
             <Box component="div" className="w-full flex flex-row-reverse">
-              {/* <CheckBoxHF name="isFinalizado" label="Finalizado" /> */}
+              <input ref={submitRef} id="submitHidden" hidden type="submit" />
             </Box>
           </form>
         </FormProvider>

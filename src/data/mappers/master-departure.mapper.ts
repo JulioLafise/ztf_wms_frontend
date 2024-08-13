@@ -13,7 +13,11 @@ export class MasterDepartureMapper {
         masterDepartureId: value.maestroSalidaId,
         description: value.descripcion,
         code: value.codigo,
-        typeCurrency: value.tipoMoneda,
+        typeCurrency: {
+          iconName: value.tipoMoneda.iconName,
+          description: value.tipoMoneda.descripcion,
+          typeCurrencyId: value.tipoMoneda.tipoMonedaId
+        },
         purchaseOrderCode: value.codigoPedido,
         employee: {
           employeeId: value.empleadoEntrega.empleadoId,
@@ -91,17 +95,19 @@ export class MasterDepartureMapper {
             quanty: item.cantidad,
             price: item.precio,
             serie: item.numeroSerie,
+            inventoryId: item.inventarioId,
             product: {
+              productId: item.productoId,
               description: item.producto
             },
             productStatus: {
               productStatusId: item.estadoProducto.estadoProductoId,
-              description: item.estadoProducto.descripcion
+              description: item.estadoProducto.estadoProducto
             }
           }
         ];
       });
-    } else throw new Error('An array was expected');
+    } 
     return data;
   }
 

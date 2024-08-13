@@ -34,6 +34,7 @@ const useCountry = () => {
     queryKey: ['country', { ...args }],    
     queryFn: async () => {
       try {
+        if (args.countryId === undefined) return null;
         const data = (await dispatch(countryAsyncThunks.getCountry(args))).payload;
         Validator.httpValidation(data as any);
         return CountryMapper.getItem(data);
@@ -49,6 +50,7 @@ const useCountry = () => {
     queryKey: ['departament-list', { ...args }],    
     queryFn: async () => {
       try {
+        if (args.countryId === undefined) return null;
         const data = (await dispatch(countryAsyncThunks.getCountry(args))).payload;
         Validator.httpValidation(data as any);
         return CountryMapper.getDepartamentList(data);

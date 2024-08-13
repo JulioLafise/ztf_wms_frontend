@@ -96,6 +96,7 @@ const defaultValues: IForm = {
   typeCurrency: null,
   entryType: null,
   warehouse: null,
+  createdAt: moment(),
   isActive: true
 };
 
@@ -166,7 +167,7 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
       country: dataCountry?.length && dataCountry.filter(ft => ft.countryId === dataGeneral.dataHeader.departament.countryId)[0],
       createdAt: moment(dataGeneral.dataHeader.createdAt)
     });
-  }, [dataGeneral.dataHeader]);
+  }, [dataGeneral.dataHeader, dataCountry]);
 
   return (
     <Paper elevation={4}>
@@ -190,6 +191,7 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
                 name="createdAt"
                 label="Fecha"
                 className="w-full md:w-4/12 lg:w-2/12"
+                disabled
               />
               <TextFieldHF
                 name="code"
@@ -199,7 +201,7 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
               />
             </Box>
             <Box component="div" className=" w-full flex flex-wrap">
-              <AutoCompleteHF<CountryEntity>
+              <AutoCompleteHF<EntryTypeEntity>
                 name="entryType"
                 label="Tipo Entrada"
                 optionsData={dataEntryType || []}
@@ -215,7 +217,7 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
                 loading={isLoadingCountry}
                 className="w-full md:w-4/12 lg:w-2/12"
               />
-              <AutoCompleteHF
+              <AutoCompleteHF<DepartamentEntity>
                 name="departament"
                 label="Departamento"
                 optionsData={dataDepartment || []}
@@ -231,7 +233,7 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
                 getOptionLabel={(option) => `${option.description}`}
                 className="w-full md:w-4/12 lg:w-2/12"
               />
-              <AutoCompleteHF
+              <AutoCompleteHF<CategoryEntity>
                 name="category"
                 label="Categoria"
                 optionsData={dataCategory || []}
@@ -239,15 +241,15 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
                 getOptionLabel={(option: any) => option.description}
                 className="w-full md:w-4/12 lg:w-2/12"
               />
-              <AutoCompleteHF
+              <AutoCompleteHF<TypeCurrencyEntity>
                 name="typeCurrency"
                 label="Moneda"
                 optionsData={dataTypeCurrency || []}
                 loading={isLoadingTypeCurrency}
-                getOptionLabel={(option) => `${option.description}`}
+                getOptionLabel={(option) => `(${option.iconName}) ${option.description}`}
                 className="w-full md:w-4/12 lg:w-2/12"
               />
-              <AutoCompleteHF
+              <AutoCompleteHF<SupplierEntity>
                 name="supplier"
                 label="Proveedor"
                 optionsData={dataSupplier || []}
@@ -255,7 +257,7 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
                 getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                 className="w-full md:w-4/12 lg:w-2/12"
               />
-              <AutoCompleteHF
+              <AutoCompleteHF<EmployeeEntity>
                 name="employee"
                 label="Empleado"
                 optionsData={dataEmployee || []}

@@ -14,7 +14,7 @@ const useMasterDeparture = () => {
 
   const { data, isGenerate, rowCount } = useAppSelector(state => state.masterDepartureReducer);
 
-  const useMasterEntryListQuery = (pagination: IPagination) => useQuery<MasterDepartureEntity[]>({
+  const useMasterDepartureListQuery = (pagination: IPagination) => useQuery<MasterDepartureEntity[]>({
     queryKey: ['master-departure-list', { ...pagination }],    
     queryFn: async () => {
       try {
@@ -31,7 +31,7 @@ const useMasterDeparture = () => {
     staleTime: 20 * 60 * 60
   });
 
-  const useMasterEntryQuery = (args: { masterEntryId: number }) => useQuery<MasterDepartureEntity>({
+  const useMasterDepartureQuery = (args: { masterDepartureId: number }) => useQuery<MasterDepartureEntity>({
     queryKey: ['master-departure', { ...args }],    
     queryFn: async () => {
       try {
@@ -48,7 +48,7 @@ const useMasterDeparture = () => {
     staleTime: 20 * 60 * 60
   });
 
-  const useMasterEntryMutation = (pagination?: IPagination, options?: IOptionsQuery) => useMutation<MasterDepartureEntity, Error, MasterDepartureEntity>({
+  const useMasterDepartureMutation = (pagination?: IPagination, options?: IOptionsQuery) => useMutation<MasterDepartureEntity, Error, MasterDepartureEntity>({
     mutationFn: async (data) => { 
       if (options?.typeMutation === 'post') {
         const [errors, masterDepartureDto] = await MasterDepartureDTO.created({ ...data });
@@ -77,6 +77,49 @@ const useMasterDeparture = () => {
       pagination && queryClient.invalidateQueries({
         queryKey: ['master-departure-list', { ...pagination }]
       });
+      queryClient.invalidateQueries({
+        queryKey: ['master-departure', { masterEntryId: data.masterDepartureId }]
+      });
+      return data;
+      return data;
+    }
+  });
+
+  const useMasterDepartureFinishMutation = (pagination?: IPagination) => useMutation<MasterDepartureEntity, Error, MasterDepartureEntity>({
+    mutationFn: async (data) => { 
+      const [errors, masterDepartureDto] = await MasterDepartureDTO.get({ ...data });
+      if (errors) throw new Error(errors);
+      const dataNew = (await dispatch(masterDepartureAsyncThunks.onFinishMasterDeparture(masterDepartureDto!))).payload;
+      Validator.httpValidation(dataNew as any);
+      if (dataNew) {
+        return {...data, isFinish: !data.isFinish };
+      }
+      return data;
+    },
+    onSuccess: (data) => {
+      pagination && queryClient.invalidateQueries({
+        queryKey: ['master-departure-list', { ...pagination }]
+      });
+      return data;
+    }
+  });
+
+  const useMasterDepartureDeleteDetailMutation = (options?: IOptionsQuery) => useMutation<MasterDepartureEntity, Error, MasterDepartureEntity>({
+    mutationFn: async (data) => { 
+      if (options.typeMutation === 'post') return data;
+      const [errors, masterDepartureDto] = await MasterDepartureDTO.get({ ...data });
+      if (errors) throw new Error(errors);
+      const dataNew = (await dispatch(masterDepartureAsyncThunks.onDeleteMasterDepartureDetail(masterDepartureDto!))).payload;
+      Validator.httpValidation(dataNew as any);
+      if (dataNew) {
+        return {...data, isFinish: !data.isFinish };
+      }
+      return data;
+    },
+    onSuccess: (data) => {
+      // pagination && queryClient.invalidateQueries({
+      //   queryKey: ['master-departure-list', { ...pagination }]
+      // });
       return data;
     }
   });
@@ -88,9 +131,11 @@ const useMasterDeparture = () => {
     isGenerate,
     rowCount,
     //METHODS
-    useMasterEntryQuery,
-    useMasterEntryListQuery,
-    useMasterEntryMutation
+    useMasterDepartureQuery,
+    useMasterDepartureListQuery,
+    useMasterDepartureMutation,
+    useMasterDepartureFinishMutation,
+    useMasterDepartureDeleteDetailMutation
   };
 };
 

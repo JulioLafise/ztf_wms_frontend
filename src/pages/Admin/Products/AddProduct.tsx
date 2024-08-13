@@ -207,7 +207,6 @@ const AddProductPage = () => {
   };
   
   const onDelete = (id: string, name: string) => (_e: any) => {
-    console.log(files);
     setFiles(prevState => [...prevState.filter(ft => ft.name !== name)]);
     setImageList(prevState => [...prevState.filter(ft => ft.id !== id)]);
   };    

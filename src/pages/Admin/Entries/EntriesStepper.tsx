@@ -56,9 +56,10 @@ const EntriesStepper = () => {
     dataImport: []
   });
 
-  const { useMasterEntryMutation, useMasterEntryQuery } = useMasterEntry();
+  const { useMasterEntryMutation, useMasterEntryQuery, useMasterEntryDeleteDetailMutation } = useMasterEntry();
   const { data, refetch, isRefetching } = useMasterEntryQuery({ masterEntryId: Number(params.entryId) || 0 });
   const mutation = useMasterEntryMutation({ pageIndex: 0, pageSize: 1000, filter: '' }, { typeMutation: !params.entryId ? 'post' : 'put' });
+  const mutationDetailDelete = useMasterEntryDeleteDetailMutation({ typeMutation: !params.entryId ? 'post' : 'put' });
 
   const steps = React.useMemo<{ label: string }[]>(() => [
     { label: 'Entry' },
@@ -204,11 +205,15 @@ const EntriesStepper = () => {
       ...dataGeneral.dataHeader,
       details: dataGeneral.dataDetail
     };
-    mutation.mutateAsync(values)
-      .then(result => {
-        swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
-        navigate(`/app/inventory/entries/${result.masterEntryId}/edit`, { replace: true });
-        setActiveStep(2);
+    mutationDetailDelete.mutateAsync(values)
+      .then(() => {
+        mutation.mutateAsync(values)
+          .then(result => {
+            swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+            navigate(`/app/inventory/entries/${result.masterEntryId}/edit`, { replace: true });
+            setActiveStep(2);
+          })
+          .catch(err => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
       })
       .catch(err => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
   };
@@ -239,17 +244,22 @@ const EntriesStepper = () => {
         <ButtonActions
           title="Previous"
           onClick={previousStep}
-          disabled={activeStep === 0}
+          disabled={activeStep === 0 || (mutation.isPending || mutationDetailDelete.isPending)}
           ComponentIcon={<ArrowBack color={activeStep === 0 ? 'disabled' : 'inherit'} />}
           ubication={isMobile ? { left: 50 } : { bottom: 55, left: isSideBarOpen ? 280 : 99 }}
         />
-        <ButtonActions
-          title="Exit"
-          onClick={() => navigate('/app/inventory/entries', { replace: true })}
-          ComponentIcon={<ExitToApp />}
-          ubication={isMobile ? { left: 90 } : { bottom: 55, left: isSideBarOpen ? 351 : 170 }}
-        />
         {
+          activeStep !== 2 && (
+            <ButtonActions
+              title="Exit"
+              onClick={() => navigate('/app/inventory/entries', { replace: true })}
+              ComponentIcon={<ExitToApp />}
+              ubication={isMobile ? { left: 90 } : { bottom: 55, left: isSideBarOpen ? 351 : 170 }}
+              disabled={(mutation.isPending || mutationDetailDelete.isPending)}
+            />
+          )
+        }
+        {/* {
           activeStep === 1 && (
             <>
               <ButtonActions
@@ -257,6 +267,7 @@ const EntriesStepper = () => {
                 onClick={() => setOpenImport(true)}
                 ComponentIcon={<Download />}
                 ubication={isMobile ? {} : { bottom: 55, right: 180 }}
+                disabled={(mutation.isPending || mutationDetailDelete.isPending)}
               />
               <ReactSpreadsheetImport
                 isOpen={openImport}
@@ -275,7 +286,7 @@ const EntriesStepper = () => {
               )}
             </>
           )
-        }
+        } */}
         {
           (activeStep === 2 ? activeStep + 1 : activeStep) != steps.length
             ? (
@@ -284,6 +295,7 @@ const EntriesStepper = () => {
                 onClick={activeStep === 0 ? onClick : activeStep === 1 ? onSaveOrEdit : nextStep}
                 ComponentIcon={activeStep === 1 ? <Save /> : <ArrowForward />}
                 ubication={isMobile ? {} : { bottom: 55, right: 99 }}
+                disabled={(mutation.isPending || mutationDetailDelete.isPending)}
               />
             )
             : (

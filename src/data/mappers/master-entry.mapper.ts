@@ -111,6 +111,7 @@ export class MasterEntryMapper {
             price: item.precio,
             serie: item.numeroserie,
             masterEntryId: item.maestroEntradaId,
+            isNew: true,
             product: {
               productId: item.producto.productoId,
               description: item.producto.descripcion,
@@ -123,7 +124,7 @@ export class MasterEntryMapper {
           }
         ];
       });
-    } else throw new Error('An array was expected');
+    }
     return data;
   }
 

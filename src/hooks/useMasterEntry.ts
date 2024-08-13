@@ -77,15 +77,18 @@ const useMasterEntry = () => {
       pagination && queryClient.invalidateQueries({
         queryKey: ['master-entry-list', { ...pagination }]
       });
+      queryClient.invalidateQueries({
+        queryKey: ['master-entry', { masterEntryId: data.masterEntryId }]
+      });
       return data;
     }
   });
 
   const useMasterEntryFinishMutation = (pagination?: IPagination) => useMutation<MasterEntryEntity, Error, MasterEntryEntity>({
     mutationFn: async (data) => { 
-      const [errors, productDto] = await MasterEntryDTO.get({ ...data });
+      const [errors, masterEntryDto] = await MasterEntryDTO.get({ ...data });
       if (errors) throw new Error(errors);
-      const dataNew = (await dispatch(masterEntryAsyncThunks.onFinishMasterEntry(productDto!))).payload;
+      const dataNew = (await dispatch(masterEntryAsyncThunks.onFinishMasterEntry(masterEntryDto!))).payload;
       Validator.httpValidation(dataNew as any);
       if (dataNew) {
         return {...data, isFinish: !data.isFinish };
@@ -100,6 +103,26 @@ const useMasterEntry = () => {
     }
   });
 
+  const useMasterEntryDeleteDetailMutation = (options?: IOptionsQuery) => useMutation<MasterEntryEntity, Error, MasterEntryEntity>({
+    mutationFn: async (data) => { 
+      if (options.typeMutation === 'post') return data;
+      const [errors, masterEntryDto] = await MasterEntryDTO.get({ ...data });
+      if (errors) throw new Error(errors);
+      const dataNew = (await dispatch(masterEntryAsyncThunks.onDeleteMasterEntryDetail(masterEntryDto!))).payload;
+      Validator.httpValidation(dataNew as any);
+      if (dataNew) {
+        return {...data, isFinish: !data.isFinish };
+      }
+      return data;
+    },
+    onSuccess: (data) => {
+      // pagination && queryClient.invalidateQueries({
+      //   queryKey: ['master-entry-list', { ...pagination }]
+      // });
+      return data;
+    }
+  });
+
 
   return {
     //VAR
@@ -110,7 +133,8 @@ const useMasterEntry = () => {
     useMasterEntryQuery,
     useMasterEntryListQuery,
     useMasterEntryMutation,
-    useMasterEntryFinishMutation
+    useMasterEntryFinishMutation,
+    useMasterEntryDeleteDetailMutation
   };
 };
 

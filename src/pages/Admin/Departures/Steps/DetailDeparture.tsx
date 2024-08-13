@@ -1,137 +1,323 @@
 import React from 'react';
 import type { MRT_ColumnDef, MRT_TableInstance } from 'material-react-table';
-import { useNavigate } from 'react-router-dom';
-import { Paper, useMediaQuery, Theme } from '@mui/material';
-import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
+import { Paper, Box, Typography, Divider } from '@mui/material';
+import { FactCheck } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
-import moment from 'moment';
-import { v4 as uuid } from 'uuid';
-import { IOnSaveAndEditRows, IValidationErrors } from '@wms/interfaces';
-import { useAlertNotification } from '@wms/hooks';
-import { MaterialTable, TextFieldHF } from '@wms/components';
-import { paginateArray } from '@wms/helpers';
+import _ from 'lodash';
+import * as Yup from 'yup';
+import { MasterDepartureEntity, DetailDepartureEntity } from '@wms/entities';
+import { IOnSaveAndEditRows, IValidationErrors, ComboBoxSelectTable } from '@wms/interfaces';
+import { useAlertNotification, useProduct, useProductStatus } from '@wms/hooks';
+import { MaterialTable, TextFieldHF, DecimalNumberFormat } from '@wms/components';
+import { paginateArray, Validator, GeneratedData } from '@wms/helpers';
 
-const DetailDeparture = () => {
+interface IPropsDetail {
+  setDataGeneral: React.Dispatch<React.SetStateAction<ImportExcelProps>>,
+  dataGeneral: ImportExcelProps,
+  openImport: boolean
+}
+
+type ImportExcelProps = {
+  dataHeader: MasterDepartureEntity,
+  dataDetail: DetailDepartureEntity[],
+  dataImport: any[]
+};
+
+interface IForm {
+  quanty: number,
+  subTotal: number,
+  total: number,
+}
+
+const defaultValues: IForm = {
+  quanty: 0,
+  subTotal: 0,
+  total: 0,
+};
+
+interface ISchemaValidationTable {
+  productId?: number,
+  lot?: string,
+  serie?: string,
+  // price?: number,
+  quanty?: number,
+  productStatusId?: number,
+  description?: string,
+  isActive?: Yup.Maybe<boolean>
+}
+
+const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.object().shape({
+  productId: Yup.number().required('Product is required'),
+  lot: Yup.string().required('Lot is required'),
+  serie: Yup.string().required('Serie is required'),
+  // price: Yup.number().required('Price is required'),
+  quanty: Yup.number().required('Quanty is required'),
+  productStatusId: Yup.number().required('Product Status is required'),
+  description: Yup.string().notRequired(),
+  isActive: Yup.boolean().notRequired()
+});
+
+type ComboBoxItems = { products: object[], status: object[] };
+
+const DetailDeparture: React.FC<IPropsDetail> = (props) => {
+  const { dataGeneral, setDataGeneral, openImport } = props;
   const { swalToastSuccess } = useAlertNotification();
-  const navigate = useNavigate();
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
-  const [ref, setRef] = React.useState<MRT_TableInstance<any>>();
+  const [selectData, setSelectData] = React.useState<ComboBoxSelectTable<ComboBoxItems>>({
+    products: [],
+    status: []
+  });
+  const [ref, setRef] = React.useState<MRT_TableInstance<DetailDepartureEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const [rowData, setRowData] = React.useState<any[]>([]);
-  const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<object>>({});
+  const [rowData, setRowData] = React.useState<DetailDepartureEntity[]>([]);
+  const [validationErrors, setValidationErrors] = React.useState<IValidationErrors<ISchemaValidationTable>>({});
   const paginateData = React.useMemo(() => paginateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
   const methods = useForm({
-    mode: 'onSubmit'
+    defaultValues,
+    mode: 'onSubmit',
+    reValidateMode: 'onChange'
   });
+  const { reset, watch } = methods;
 
-  const columns = React.useMemo<MRT_ColumnDef<any>[]>(() => [
+  const { useProductListQuery } = useProduct();
+  const { useProductStatusListQuery } = useProductStatus();
+
+  const { data: dataProduct } = useProductListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
+  const { data: dataProductStatus } = useProductStatusListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
+
+  const columns = React.useMemo<MRT_ColumnDef<DetailDepartureEntity>[]>(() => [
     {
-      id: 'salidaDetalleId',
-      accessorKey: 'salidaDetalleId',
+      id: 'detailDepartureId',
+      accessorKey: 'detailDepartureId',
       header: 'ID',
       enableEditing: false,
       minSize: 150,
     },
     {
-      id: 'producto',
-      accessorKey: 'producto',
+      id: 'masterDepartureId',
+      accessorKey: 'masterDepartureId',
+      header: 'Master ID',
+      enableEditing: false,
+      minSize: 150,
+    },
+    {
+      id: 'productId',
+      accessorKey: 'productId',
+      accessorFn: (row) => row.product?.productId,
       header: 'Producto',
       minSize: 150,
       editVariant: 'select',
-      editSelectOptions: [{ label: 'Laptops #1', value: 'Laptops #1' }, { label: 'Laptops #2', value: 'Laptops #2' }]
+      muiEditTextFieldProps: {      
+        required: true,
+        error: !!validationErrors.productId,
+        helperText: validationErrors.productId
+      },
+      editSelectOptions: selectData.products,
+      Cell: ({ row }) => <div className="flex items-center h-12 w-96"><p className="text-wrap break-all">{String(row.original.product?.description).slice(0,105)}{String(row.original.product?.description).length >= 104 ? '...' : ''}</p></div>
     },
     {
-      id: 'descripcion',
-      accessorKey: 'descripcion',
-      header: 'Descripcion',
+      id: 'lot',
+      accessorKey: 'lot',
+      header: 'Codigo Lote',
+      enableEditing: true,
       minSize: 150,
-      enableEditing: false,
+      muiEditTextFieldProps: {      
+        required: true,
+        error: !!validationErrors.lot,
+        helperText: validationErrors.lot
+      },
     },
     {
-      id: 'precio',
-      accessorKey: 'precio',
-      header: 'Precio',
-      enableEditing: false,
+      id: 'serie',
+      accessorKey: 'serie',
+      header: 'Numero Serie',
+      enableEditing: true,
       minSize: 150,
+      muiEditTextFieldProps: {      
+        required: true,
+        error: !!validationErrors.serie,
+        helperText: validationErrors.serie
+      },
     },
+    // {
+    //   id: 'price',
+    //   accessorKey: 'price',
+    //   header: 'Precio',
+    //   enableEditing: true,
+    //   minSize: 150,
+    //   muiEditTextFieldProps: {      
+    //     required: true,
+    //     error: !!validationErrors.price,
+    //     helperText: validationErrors.price,
+    //     InputProps: {
+    //       inputComponent: DecimalNumberFormat
+    //     }
+    //   },
+    // },
     {
-      id: 'cantidad',
-      accessorKey: 'cantidad',
+      id: 'quanty',
+      accessorKey: 'quanty',
       header: 'Cantidad',
       minSize: 150,
+      enableEditing: true,
+      muiEditTextFieldProps: {      
+        required: true,
+        error: !!validationErrors.quanty,
+        helperText: validationErrors.quanty,
+        InputProps: {
+          inputComponent: DecimalNumberFormat
+        }
+      },
     },
     {
-      id: 'estadoProducto',
-      accessorKey: 'estadoProducto',
-      header: 'Estado',
+      id: 'productStatusId',
+      accessorKey: 'productStatusId',
+      accessorFn: (row) => row.productStatus?.productStatusId,
+      header: 'Estado', 
       minSize: 150,
       editVariant: 'select',
-      editSelectOptions: [{ label: 'Bueno', value: 'Bueno' }, { label: 'Regular', value: 'Regular' }, { label: 'Malo', value: 'Malo' }]
+      muiEditTextFieldProps: {      
+        required: true,
+        error: !!validationErrors.productStatusId,
+        helperText: validationErrors.productStatusId
+      },
+      editSelectOptions: selectData.status,
+      Cell: ({ row }) => <span>{row.original.productStatus?.description}</span>
     },
-  ], [validationErrors]);
+    {
+      id: 'description',
+      accessorKey: 'description',
+      header: 'Observaciones',
+      minSize: 150,
+      enableEditing: true,
+      Cell: ({ renderedCellValue }) => <div className="flex items-center h-12 w-96"><p className="text-wrap break-all">{String(renderedCellValue).slice(0,105)}{String(renderedCellValue).length >= 104 ? '...' : ''}</p></div>
+    },
+  ], [validationErrors, selectData]);
 
-  const onSaveOrEdit: IOnSaveAndEditRows<any> = async (row, table, values, validation): Promise<void> => {
-    setRowData(prevState => [
-      ...prevState,
-      {
-        ...values,
-        salidaDetalleId: uuid(),
-        descripcion: `${values.producto} equipo de computo kid`,
-        precio: '$20'
-      }
-    ]);
+  const onSaveOrEdit: IOnSaveAndEditRows<DetailDepartureEntity> = async (row, table, values, validation): Promise<void> => {
+    const validateValues = { ...values };
+    // if (dataGeneral.dataHeader.category?.description?.indexOf('LAPTOP') > -1 || dataGeneral.dataHeader.category?.description?.indexOf('PC') > -1) {
+    //   validateValues = { ...values, quanty: 1 };
+    // }
+    const [isPassed, errors] = await Validator.yupSchemaValidation({ schema: schemaValidationTable, data: validateValues });
+    if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.detailDepartureId ? true : false); return; }
     setValidationErrors({});
-    validation!({})(table, row.original.pedidoDetalleId ? true : false);
+    validation!({})(table, row.original.detailDepartureId ? true : false);
+    const product = dataProduct.filter(ft => ft.productId === values.productId)[0];
+    const productStatus = dataProductStatus.filter(ft => ft.productStatusId === values.productStatusId)[0];
+    const data: any = {
+      ...validateValues,
+      product,
+      productStatus,
+      masterDepartureId: 0,
+      detailDepartureId: row.original.detailDepartureId || GeneratedData.getRandomInt(3000),
+      isNew: true,
+      // isNew: !row.original.detailDepartureId,
+    };
+    setRowData(prevState => [
+      ...prevState.filter(ft => ft.detailDepartureId !== row.original.detailDepartureId),
+      data
+    ]);
+    setDataGeneral(prevState => ({
+      ...prevState,
+      dataDetail: [...prevState.dataDetail.filter(ft => ft.detailDepartureId !== data.detailDepartureId), data]
+    }));
   };
 
   const onDelete = async (values: { [key: string]: any }) => {
-    console.log(values);
     setRowData(prevState => [
-      ...prevState.filter(ft => ft.salidaDetalleId != values.salidaDetalleId)
+      ...prevState.filter(ft => ft.detailDepartureId != values.detailDepartureId)
     ]);
+    setDataGeneral(prevState => ({
+      ...prevState,
+      dataDetail: [...dataGeneral.dataDetail.filter(ft => ft.detailDepartureId !== values.detailDepartureId)]
+    }));
     swalToastSuccess('Delete item', {
       message: 'Success',
       timer: 2000
     });
   };
 
+  React.useEffect(() => {
+    setRowData(openImport ? _.get(dataGeneral, 'dataImport', []) : _.get(dataGeneral, 'dataDetail', []));
+    // if (dataGeneral.dataHeader.category?.description?.indexOf('LAPTOP') > -1 || dataGeneral.dataHeader.category?.description?.indexOf('PC') > -1) {
+    //   if (ref) {
+    //     ref.setColumnVisibility(obj => ({ ...obj, quanty: false}));
+    //   }
+    // }
+  }, [dataGeneral.dataHeader, dataGeneral.dataImport, ref]);
+
+  
+  React.useEffect(() => {
+    let quanty = 0;
+    let prices = 0;
+    rowData.forEach(item => {
+      quanty += item.quanty || 0;
+      prices += item.price || 0;
+    });
+    const subTotal = quanty * prices;
+    const data = {
+      quanty,
+      subTotal,
+      total: subTotal
+    };
+    reset(data || defaultValues);
+  }, [rowData]);
+
+  
+  React.useEffect(() => {
+    if (dataProduct) {
+      setSelectData(oldData => ({ ...oldData, products: dataProduct.map(obj => ({ label: obj.description, value: obj.productId })) }));
+    }
+    if (dataProductStatus) {
+      setSelectData(oldData => ({ ...oldData, status: dataProductStatus.map(obj => ({ label: obj.description, value: obj.productStatusId })) }));
+    }
+  }, [dataProduct, dataProductStatus]);
+
   return (
     <React.Fragment>
       <Paper elevation={4} sx={{ mb: 2 }}>
+        <Box component="section" className="flex items-center gap-2 p-2">
+          <FactCheck color="primary" />
+          <Typography variant="h6" fontWeight="bold">Detail Entry</Typography>
+        </Box>
+        <Divider variant="inset" />
         <FormProvider {...methods}>
           <form noValidate className="p-4 flex gap-2 w-full">
             <TextFieldHF
-              name="cantidad"
+              name="quanty"
               label="Cantidad"
               className="w-2/6"
+              mask="decimal"
               readOnly
             />
             <TextFieldHF
               name="subTotal"
               label="Sub Total"
               className="w-2/6"
+              mask="decimal"
               readOnly
             />
             <TextFieldHF
               name="total"
               label="Total"
               className="w-2/6"
+              mask="decimal"
               readOnly
             />
           </form>
         </FormProvider>
       </Paper>
       <Paper elevation={4}>
-        <MaterialTable
+        <MaterialTable<DetailDepartureEntity>
           columns={columns}
           data={paginateData || []}
           enableRowActions
           isEditing
-          columnsVisible={{ salidaDetalleId: false }}
+          columnsVisible={{ detailDepartureId: false, masterDepartureId: false }}
           setRef={setRef}
           pagination={pagination}
           rowCount={rowData.length}
@@ -141,7 +327,6 @@ const DetailDeparture = () => {
           onActionEdit={onSaveOrEdit}
           onActionSave={onSaveOrEdit}
           onActionDelete={(row) => onDelete(row.original)}
-          // onActionRefreshTable={() => refetch()}
           isLoading={false}
           isGenerate={true}
           isError={false}

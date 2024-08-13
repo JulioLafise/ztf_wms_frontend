@@ -11,5 +11,7 @@ export class DetailDepartureEntity {
     public masterDepartureId?: number,
     public product?: ProductEntity,
     public productStatus?: ProductStatusEntity,
+    public inventoryId?: number,
+    public isNew?: boolean
   ) {}
 }

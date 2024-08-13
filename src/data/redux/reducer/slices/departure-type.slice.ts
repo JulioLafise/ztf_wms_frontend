@@ -1,22 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { EntryTypeEntity } from '@wms/entities';
+import { DepartureTypeEntity } from '@wms/entities';
 import { ICatalogueProps } from '@wms/interfaces';
-import { entryTypeAsyncThunks } from '@wms/redux/actions';
+import { departureTypeAsyncThunks } from '@wms/redux/actions';
 
-interface IEntryTypeProps<T> extends ICatalogueProps<T> {
+interface IDepartureTypeProps<T> extends ICatalogueProps<T> {
 
 }
 
-const initialState: IEntryTypeProps<EntryTypeEntity> = {
+const initialState: IDepartureTypeProps<DepartureTypeEntity> = {
   data: [],
   rowCount: 0,
   isGenerate: false,
   error: null
 };
 
-const entryTypeSlice = createSlice({
+const departureTypeSlice = createSlice({
   initialState,
-  name: 'entry-type',
+  name: 'departure-type',
   reducers: {
     onReset: () => initialState,
     onGenerate: (state) => {
@@ -27,13 +27,13 @@ const entryTypeSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // ENTRY TYPE LIST
-    builder.addCase(entryTypeAsyncThunks.getEntryTypeList.fulfilled, (state, { payload }) => {
+    // DEPARTURE TYPE LIST
+    builder.addCase(departureTypeAsyncThunks.getDepartureTypeList.fulfilled, (state, { payload }) => {
       state.data = payload;
       state.isGenerate = true;
       state.error = undefined;
     });
-    builder.addCase(entryTypeAsyncThunks.getEntryTypeList.rejected, (state, { payload }) => {
+    builder.addCase(departureTypeAsyncThunks.getDepartureTypeList.rejected, (state, { payload }) => {
       state.data = [];
       state.isGenerate = true;
       state.error = payload;
@@ -45,6 +45,6 @@ export const {
   onReset,
   onRowCount,
   onGenerate
-} = entryTypeSlice.actions;
+} = departureTypeSlice.actions;
 
-export default entryTypeSlice.reducer;
+export default departureTypeSlice.reducer;

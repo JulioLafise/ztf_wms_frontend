@@ -49,3 +49,10 @@ export const eliminateMasterEntryDELETE = async (options: IParamsProps<MasterEnt
     data: options.body
   }
 });
+
+export const eliminateMasterEntryDetailDELETE = async (options: IParamsProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.delete({
+  url: `maestroentrada/${options.params.maestroEntradaId}/delete-detalle`,
+  options: {
+    data: options.body
+  }
+});

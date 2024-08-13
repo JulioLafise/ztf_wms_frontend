@@ -79,3 +79,15 @@ export const onDeleteMasterEntry = createAsyncThunk(
     }
   }
 );
+
+export const onDeleteMasterEntryDetail = createAsyncThunk(
+  'catalogue/onDeleteMasterEntryDetail',
+  async (masterEntryDto: MasterEntryDTO, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.eliminateMasterEntryDetailDELETE({ params: masterEntryDto });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);

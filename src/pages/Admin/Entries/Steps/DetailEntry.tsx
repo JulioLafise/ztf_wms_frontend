@@ -60,6 +60,7 @@ const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.obje
 type ComboBoxItems = { products: object[], status: object[] };
 
 const DetailEntry: React.FC<IPropsDetail> = (props) => {
+  const { dataGeneral, setDataGeneral, openImport } = props;
   const { swalToastSuccess } = useAlertNotification();
   const [selectData, setSelectData] = React.useState<ComboBoxSelectTable<ComboBoxItems>>({
     products: [],
@@ -70,7 +71,6 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
     pageIndex: 0,
     pageSize: 10
   });
-  const { dataGeneral, setDataGeneral, openImport } = props;
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [rowData, setRowData] = React.useState<DetailEntryEntity[]>([]);
   const paginateData = React.useMemo(() => paginateArray(rowData, pagination.pageSize, pagination.pageIndex), [rowData, pagination]);
@@ -94,6 +94,13 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
       id: 'detailEntryId',
       accessorKey: 'detailEntryId',
       header: 'ID',
+      enableEditing: false,
+      minSize: 150,
+    },
+    {
+      id: 'masterEntryId',
+      accessorKey: 'masterEntryId',
+      header: 'Master ID',
       enableEditing: false,
       minSize: 150,
     },
@@ -156,6 +163,7 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
       accessorKey: 'quanty',
       header: 'Cantidad',
       minSize: 150,
+      enableEditing: true,
       muiEditTextFieldProps: {      
         required: true,
         error: !!validationErrors.quanty,
@@ -191,18 +199,24 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
   ], [validationErrors, selectData]);
 
   const onSaveOrEdit: IOnSaveAndEditRows<DetailEntryEntity> = async (row, table, values, validation): Promise<void> => {
-    const [isPassed, errors] = await Validator.yupSchemaValidation({ schema: schemaValidationTable, data: values });
+    let validateValues ={ ...values };
+    if (dataGeneral.dataHeader.category?.description?.indexOf('LAPTOP') > -1 || dataGeneral.dataHeader.category?.description?.indexOf('PC') > -1) {
+      validateValues = { ...values, quanty: 1 };
+    }
+    const [isPassed, errors] = await Validator.yupSchemaValidation({ schema: schemaValidationTable, data: validateValues });
     if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.detailEntryId ? true : false); return; }
     setValidationErrors({});
     validation!({})(table, row.original.detailEntryId ? true : false);
     const product = dataProduct.filter(ft => ft.productId === values.productId)[0];
     const productStatus = dataProductStatus.filter(ft => ft.productStatusId === values.productStatusId)[0];
     const data: any = {
-      ...values,
+      ...validateValues,
       product,
       productStatus,
-      masterEntryId: row.original.masterEntryId || 0,
+      masterEntryId: 0,
       detailEntryId: row.original.detailEntryId || GeneratedData.getRandomInt(3000),
+      isNew: true,
+      // isNew: !row.original.detailEntryId,
     };
     setRowData(prevState => [
       ...prevState.filter(ft => ft.detailEntryId !== row.original.detailEntryId),
@@ -230,7 +244,12 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
 
   React.useEffect(() => {
     setRowData(openImport ? _.get(dataGeneral, 'dataImport', []) : _.get(dataGeneral, 'dataDetail', []));
-  }, []);
+    if (dataGeneral.dataHeader.category?.description?.indexOf('LAPTOP') > -1 || dataGeneral.dataHeader.category?.description?.indexOf('PC') > -1) {
+      if (ref) {
+        ref.setColumnVisibility(obj => ({ ...obj, quanty: false}));
+      }
+    }
+  }, [dataGeneral.dataHeader, dataGeneral.dataImport, ref]);
 
   React.useEffect(() => {
     let quanty = 0;
@@ -298,7 +317,7 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
           data={paginateData || []}
           enableRowActions
           isEditing
-          columnsVisible={{ detailEntryId: false }}
+          columnsVisible={{ detailEntryId: false, masterEntryId: false }}
           setRef={setRef}
           pagination={pagination}
           rowCount={rowData.length}

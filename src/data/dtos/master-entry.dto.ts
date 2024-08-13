@@ -139,13 +139,13 @@ export class MasterEntryDTO {
           details = [
             ...details,
             {
-              entradaDetalleId: value.detailEntryId,
+              entradaDetalleId: value.isNew ? 0 : value.detailEntryId,
               descripcion: value.description,
               cantidad: value.quanty,
               codigoLote: value.lot,
               numeroSerie: value.serie,
               precio: value.price,
-              maestroentradaId: value.masterEntryId,
+              maestroentradaId: value.isNew ? 0 : value.masterEntryId,
               estadoProductoId: value.productStatus ? value.productStatus.productStatusId : value.productStatusId,
               productoId: value.product ? value.product.productId : value.productId,
             }

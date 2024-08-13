@@ -1,18 +1,18 @@
 import React from 'react';
 import type { MRT_ColumnDef, MRT_TableInstance } from 'material-react-table';
 import { useNavigate } from 'react-router-dom';
-import { Paper, useMediaQuery, Theme, Tooltip, IconButton } from '@mui/material';
+import { Paper, Tooltip, IconButton } from '@mui/material';
 import { CheckBox, CheckBoxOutlineBlank, DoneAll } from '@mui/icons-material';
 import moment from 'moment';
 import { IOnSaveAndEditRows } from '@wms/interfaces';
 import { MasterEntryEntity } from '@wms/entities';
-import { useAlertNotification, useMasterEntry } from '@wms/hooks';
+import { useAlertNotification, useMasterEntry, useUI } from '@wms/hooks';
 import { MaterialTable, ButtonActions } from '@wms/components';
 
 const EntryPage = () => {
   const { swalToastError, swalToastSuccess, swalToastWait, swalToastQuestion, swalToastInfo } = useAlertNotification();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
+  const { isMobile } = useUI();
   const [ref, setRef] = React.useState<MRT_TableInstance<MasterEntryEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
