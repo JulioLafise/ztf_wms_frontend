@@ -14,7 +14,8 @@ import {
   ColorPageLazy,
   EntryTypePageLazy,
   EmployeePageLazy,
-  SupplierPageLazy
+  SupplierPageLazy,
+  ProductStatusPageLazy
 } from '@wms/pages';
 
 export const catalogueRouter: RouteObject = {
@@ -73,6 +74,11 @@ export const catalogueRouter: RouteObject = {
     {
       path: 'product-category',
       element: <CategoryPageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'product-status',
+      element: <ProductStatusPageLazy />,
       errorElement: <Error />
     },
     {

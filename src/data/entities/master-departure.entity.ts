@@ -10,6 +10,7 @@ export class MasterDepartureEntity {
   constructor(
     public masterDepartureId?: number,
     public code?: string,
+    public accountAngaza?: string,
     public purchaseOrderCode?: string,
     public description?: string,
     public customer?: CustomerEntity,

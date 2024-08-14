@@ -246,7 +246,7 @@ const EntriesStepper = () => {
           onClick={previousStep}
           disabled={activeStep === 0 || (mutation.isPending || mutationDetailDelete.isPending)}
           ComponentIcon={<ArrowBack color={activeStep === 0 ? 'disabled' : 'inherit'} />}
-          ubication={isMobile ? { left: 50 } : { bottom: 55, left: isSideBarOpen ? 280 : 99 }}
+          ubication={isMobile ? { left: 50 } : { bottom: 99, left: isSideBarOpen ? 280 : 99 }}
         />
         {
           activeStep !== 2 && (
@@ -254,7 +254,7 @@ const EntriesStepper = () => {
               title="Exit"
               onClick={() => navigate('/app/inventory/entries', { replace: true })}
               ComponentIcon={<ExitToApp />}
-              ubication={isMobile ? { left: 90 } : { bottom: 55, left: isSideBarOpen ? 351 : 170 }}
+              ubication={isMobile ? { left: 120 } : { bottom: 99, left: isSideBarOpen ? 351 : 170 }}
               disabled={(mutation.isPending || mutationDetailDelete.isPending)}
             />
           )
@@ -266,7 +266,7 @@ const EntriesStepper = () => {
                 title="Import"
                 onClick={() => setOpenImport(true)}
                 ComponentIcon={<Download />}
-                ubication={isMobile ? {} : { bottom: 55, right: 180 }}
+                ubication={isMobile ? {} : { bottom: 99, right: 180 }}
                 disabled={(mutation.isPending || mutationDetailDelete.isPending)}
               />
               <ReactSpreadsheetImport
@@ -294,7 +294,7 @@ const EntriesStepper = () => {
                 title={activeStep === 1 ? 'Save' : 'Next'}
                 onClick={activeStep === 0 ? onClick : activeStep === 1 ? onSaveOrEdit : nextStep}
                 ComponentIcon={activeStep === 1 ? <Save /> : <ArrowForward />}
-                ubication={isMobile ? {} : { bottom: 55, right: 99 }}
+                ubication={isMobile ? {} : { bottom: 99, right: 99 }}
                 disabled={(mutation.isPending || mutationDetailDelete.isPending)}
               />
             )
@@ -303,7 +303,7 @@ const EntriesStepper = () => {
                 title="Finish"
                 onClick={() => navigate('/app/inventory/entries', { replace: true })}
                 ComponentIcon={<Task />}
-                ubication={isMobile ? {} : { bottom: 55, right: 99 }}
+                ubication={isMobile ? {} : { bottom: 99, right: 99 }}
               />
             )
         }

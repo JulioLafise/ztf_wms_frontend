@@ -20,4 +20,5 @@ export { default as masterDepartureReducer } from './master-departure.slice';
 export { default as masterPurchaseOrderReducer } from './master-purchase-order';
 export { default as colorReducer } from './color.slice';
 export { default as entryTypeReducer } from './entry-type.slice';
+export { default as departureTypeReducer } from './departure-type.slice';
 export { default as kitReducer } from './kit.slice';

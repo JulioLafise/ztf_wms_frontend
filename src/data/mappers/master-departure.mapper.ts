@@ -51,26 +51,29 @@ export class MasterDepartureMapper {
           {
             masterDepartureId: value.maestroSalidaId,
             description: value.descripcion,
-            code: value.codigo,
+            code: value.codigo, 
+            accountAngaza: value.cuentaAngaza,           
             typeCurrency: {
               typeCurrencyId: value.tipoMoneda.tipoMonedaId,
               description: value.tipoMoneda.descripcion,
               iconName: value.tipoMoneda.iconName
             },
-            purchaseOrderCode: value.codigoPedido,
+            purchaseOrderCode: value.ordenPedido,
             employee: {
               employeeId: value.empleadoEntrega.empleadoId,
-              firstName: value.empleadoEntrega.empleadoEntrega
+              firstName: value.empleadoEntrega.nombre
             },
             customer: {
               customerUuid: value.clienteId,
-              firstName: value.cliente,
-              identificationCard: value.cedula
+              firstName: value.firtname,
+              lastName: value.lastName,
+              identificationCard: value.cedula,
+              cellphone: value.phone
             },
             departureType: {
               description: value.tipoSalida,
             },            
-            createdAt: moment(value.fecha).toDate(),
+            createdAt: moment(value.fechaCrea).toDate(),
             isEcommerce: value.isEcommerce,
             isFinish: value.isFinalizado,
             isActive: value.isActivo,

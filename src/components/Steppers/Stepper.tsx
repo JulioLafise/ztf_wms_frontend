@@ -11,6 +11,7 @@ import {
   type Orientation
 } from '@mui/material';
 import { Check } from '@mui/icons-material';
+import { useUI } from '@wms/hooks';
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -87,8 +88,9 @@ type StepsProps = { label: string };
 
 const Stepper: React.FC<IProps> = (props) => {
   const { steps, activeStep, orientation } = props;
+  const { isMobile } = useUI();
   return (
-    <Stack sx={{ width: '100%', marginTop: -6 }} spacing={4}>
+    <Stack sx={{ width: '100%', marginTop: isMobile ? 0 : -6 }} spacing={4}>
       <MuiStepper alternativeLabel activeStep={activeStep} connector={<QontoConnector />} orientation={orientation}>
         {steps.map((step) => (
           <Step key={step.label}>

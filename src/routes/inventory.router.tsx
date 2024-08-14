@@ -9,7 +9,8 @@ import {
   DeparturesStepperLazy,
   PurchaseOrderPageLazy,
   ProductPageLazy,
-  AddProductPageLazy
+  AddProductPageLazy,
+  CustomerPageLazy
 } from '@wms/pages';
 
 export const inventoryRouter: RouteObject = {
@@ -21,7 +22,7 @@ export const inventoryRouter: RouteObject = {
       errorElement: <Error />
     },
     {
-      path: 'kardex',
+      path: 'stock',
       element: <KardexPageLazy />,
       errorElement: <Error />
     },
@@ -78,6 +79,11 @@ export const inventoryRouter: RouteObject = {
     {
       path: 'purchase-order',
       element: <PurchaseOrderPageLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'customers',
+      element: <CustomerPageLazy />,
       errorElement: <Error />
     },
   ]

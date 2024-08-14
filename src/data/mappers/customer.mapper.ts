@@ -19,7 +19,9 @@ export class CustomerMapper {
         address: value.direccion,
         identificationCard: value.cedula,
         departament: {
-          departamentId: value.departamentoId
+          departamentId: value.departamentoId,
+          description: value.departamento.descripcion,
+          countryId: value.departamento.paisId,
         },
         isActive: value.isActivo
       };
@@ -45,7 +47,7 @@ export class CustomerMapper {
             identificationCard: value.cedula,
             departament: {
               departamentId: value.departamento.departamentoId,
-              description: value.departamento.descripcion,
+              description: value.departamento.departamento,
               countryId: value.departamento.paisId,
             },
             isActive: value.isActivo

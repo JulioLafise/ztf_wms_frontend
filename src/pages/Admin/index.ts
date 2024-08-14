@@ -16,4 +16,6 @@ export * from './Kits';
 export * from './Kardex';
 export * from './Users';
 export * from './Employees';
+export * from './Customers';
 export * from './Suppliers';
+export * from './ProductStatus';

@@ -29,6 +29,19 @@ const CustomerStockPage = () => {
     }
   };
 
+  const getAccountStatusColor = (status: string) => {
+    switch (status) {
+      case 'PROCESO DE PAGO':
+        return 'bg-blue-500';
+      case 'CANCELADO':
+        return 'bg-green-500';
+      case 'MORA':
+        return 'bg-red-500';
+      default:
+        return 'bg-red-500';
+    }
+  };
+
   const columns = React.useMemo<MRT_ColumnDef<CustomerStockEntity>[]>(() => [
     {
       id: 'inventoryId',
@@ -49,6 +62,13 @@ const CustomerStockPage = () => {
       accessorKey: 'accountAngaza',
       header: 'Cuenta Angaza',
       minSize: 150,
+    },
+    {
+      id: 'accountStatus',
+      accessorKey: 'accountStatus',
+      header: 'Estado Cuenta',
+      minSize: 150,
+      Cell: ({ renderedCellValue }) => <div className="flex items-center"><p className={`p-2 ${getAccountStatusColor(String(renderedCellValue))} rounded font-bold`}>{renderedCellValue}</p></div>
     },
     {
       id: 'customerUuid',

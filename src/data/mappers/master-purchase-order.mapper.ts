@@ -13,22 +13,22 @@ export class MasterPurchaseOrderMapper {
         code: value.codigo,
         description: value.descripcion,
         date: value.fecha, 
-        identificationCard: value.cedula,
-        phone: value.phone,
-        address: value.address,
         customer: {
-          customerId: value.clienteId
+          customerUuid: value.clienteId,
+          email: value.email,
+          firstName: value.firtname,
+          lastName: value.lastname,
+          identificationCard: value.cedula,
+          cellphone: value.phone,
+          address: value.address,
         },     
-        email: value.email,
-        firstName: value.firtName,
-        lastName: value.lastName,
         paymentMethod: value.metodoPago,
         typeCurrency: {
           typeCurrencyId: value.tipoMoneda.tipoMonedaId,
           description: value.tipoMoneda.tipoMoneda,
           iconName: value.tipoMoneda.icon
         },
-        details: this.getDetailEntryList(value.listEntradaDetalle),
+        // details: this.getDetailPurchaseOrderList(value.listEntradaDetalle),
         status: value.estadoPedido,
         isActive: value.isActivo,
       };
@@ -44,20 +44,22 @@ export class MasterPurchaseOrderMapper {
           ...data,
           {
             masterPurchaseOrderId: value.maestroPedidoId,
+            masterAccountId: value.maestroCuentaId,
+            inventoryId: value.inventarioId,
             code: value.codigo,
             description: value.descripcion,
             date: value.fecha,
-            identificationCard: value.cedula,
-            phone: value.phone,
             status: value.estadoPedido,
-            address: value.address,
             paymentMethod: value.metodoPago,
             customer: {
               customerUuid: value.clienteId,
+              email: value.email,
+              firstName: value.firtname,
+              lastName: value.lastname,
+              identificationCard: value.cedula,
+              cellphone: value.phone,
+              address: value.address,
             },
-            email: value.email,
-            firstName: value.firtname,
-            lastName: value.lastname,
             productName: value.producto,
             productId: value.productoId,
             priceGroupId: value.grupoPrecioAngazaId,
@@ -71,7 +73,7 @@ export class MasterPurchaseOrderMapper {
     return data;
   }
 
-  private static getDetailEntryList(values: unknown): DetailPurchaseOrderEntity[] {
+  private static getDetailPurchaseOrderList(values: unknown): DetailPurchaseOrderEntity[] {
     let data: DetailPurchaseOrderEntity[] = [];
     const value: any = values;
     if (Array.isArray(value)) {

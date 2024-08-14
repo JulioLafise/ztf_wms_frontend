@@ -20,7 +20,8 @@ import {
   useCustomer,
   useTypeCurrency,
   useMasterPurchaseOrder,
-  useEmployee
+  useEmployee,
+  useDepartureType
 } from '@wms/hooks';
 import {
   CustomerEntity,
@@ -28,7 +29,8 @@ import {
   MasterDepartureEntity,
   DetailDepartureEntity,
   MasterPurchaseOrderEntity,
-  EmployeeEntity
+  EmployeeEntity,
+  DepartureTypeEntity
 } from '@wms/entities';
 import { useDidUpdateEffect, Validator } from '@wms/helpers';
 
@@ -49,8 +51,11 @@ type ImportExcelProps = {
 interface IForm {
   code: string,
   description?: string,
+  departureType?: DepartureTypeEntity | null,
   customer?: CustomerEntity | null,
+  employee?: EmployeeEntity | null,
   typeCurrency?: TypeCurrencyEntity | null,
+  purchaseOrder?: MasterPurchaseOrderEntity | null,
   createdAt?: moment.Moment,
   isActive: Yup.Maybe<boolean>
 }
@@ -58,8 +63,11 @@ interface IForm {
 const schemaValidation: Yup.ObjectSchema<IForm> = Yup.object().shape({
   code: Yup.string().notRequired(),
   description: Yup.string().notRequired(),
+  departureType: Yup.mixed<DepartureTypeEntity>().nullable().required('Departure Type is required'),
   customer: Yup.mixed<CustomerEntity>().nullable().required('Customer is required'),
+  employee: Yup.mixed<EmployeeEntity>().nullable().required('Employee is required'),
   typeCurrency: Yup.mixed<TypeCurrencyEntity>().nullable().required('Type Currency is required'),
+  purchaseOrder: Yup.mixed<MasterPurchaseOrderEntity>().nullable().required('Purchase Order is required'),
   createdAt: Yup.mixed<moment.Moment>().required('Date is required'),
   isActive: Yup.boolean().default(true)
 });
@@ -67,8 +75,11 @@ const schemaValidation: Yup.ObjectSchema<IForm> = Yup.object().shape({
 const defaultValues: IForm = {
   code: '000000',
   description: '',
+  departureType: null,
   customer: null,
+  employee: null,
   typeCurrency: null,
+  purchaseOrder: null,
   createdAt: moment(),
   isActive: true
 };
@@ -101,11 +112,13 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
   const { useTypeCurrencyListQuery } = useTypeCurrency();
   const { useMasterPurchaseOrderListQuery } = useMasterPurchaseOrder();
   const { useEmployeeListQuery } = useEmployee();
+  const { useDepartureTypeListQuery } = useDepartureType();
 
   const { data: dataCustomer, isLoading: isLoadingCustomer } = useCustomerListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
   const { data: dataEmployee, isLoading: isLoadingEmployee } = useEmployeeListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
   const { data: dataTypeCurrency, isLoading: isLoadingTypeCurrency } = useTypeCurrencyListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
   const { data: dataPurchaseOrder, isLoading: isLoadingPurchaseOrder } = useMasterPurchaseOrderListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
+  const { data: dataDepartureType, isLoading: isLoadingDepartureType } = useDepartureTypeListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
 
   const onSubmit = (values: { [key: string]: any }) => {
     setDataGeneral(prevState => ({
@@ -148,19 +161,27 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
               <DateTimeHF
                 name="createdAt"
                 label="Fecha"
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
                 disabled
               />
               <TextFieldHF
                 name="code"
                 label="No Salida"
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
                 readOnly
               />
             </Box>
             <Box component="div" className="flex flex-wrap pt-5">
+              <AutoCompleteHF<DepartureTypeEntity>
+                className="w-full md:w-4/12 lg:w-2/12"
+                name="departureType"
+                label="Tipo Salida"
+                optionsData={dataDepartureType || []}
+                getOptionLabel={option => `${option.description}`}
+                loading={isLoadingDepartureType}
+              />
               <AutoCompleteHF<CustomerEntity>
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
                 name="customer"
                 label="Cliente"
                 optionsData={dataCustomer || []}
@@ -168,15 +189,15 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
                 loading={isLoadingCustomer}
               />
               <AutoCompleteHF<EmployeeEntity>
+                className="w-full md:w-4/12 lg:w-2/12"
                 name="employee"
                 label="Empleado"
                 optionsData={dataEmployee || []}
                 loading={isLoadingEmployee}
                 getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-                className="w-full md:w-4/12 lg:w-2/12"
               />
               <AutoCompleteHF<TypeCurrencyEntity>
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
                 name="typeCurrency"
                 label="Tipo Moneda"
                 optionsData={dataTypeCurrency || []}
@@ -184,11 +205,11 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
                 loading={isLoadingTypeCurrency}
               />
               <AutoCompleteHF<MasterPurchaseOrderEntity>
-                className="w-2/12"
+                className="w-full md:w-4/12 lg:w-2/12"
                 name="purchaseOrder"
                 label="Orden de Pedido"
                 optionsData={dataPurchaseOrder || []}
-                getOptionLabel={option => option.code}
+                getOptionLabel={option => `(PO ${option.code}) ${option.customer?.firstName} ${option.customer?.lastName}`}
                 loading={isLoadingPurchaseOrder}
               />
               <TextFieldHF

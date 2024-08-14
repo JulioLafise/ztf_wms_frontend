@@ -138,7 +138,7 @@ const DeparturesStepper = () => {
               title="Exit"
               onClick={() => navigate('/app/inventory/departures', { replace: true })}
               ComponentIcon={<ExitToApp />}
-              ubication={isMobile ? { left: 90 } : { bottom: 99, left: isSideBarOpen ? 351 : 170 }}
+              ubication={isMobile ? { left: 120 } : { bottom: 99, left: isSideBarOpen ? 351 : 170 }}
               disabled={(mutation.isPending || mutationDetailDelete.isPending)}
             />
           )

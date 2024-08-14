@@ -16,7 +16,7 @@ export const masterAccountGET = async (options: IParamsProps<MasterAccountDTO>):
 });
 
 export const assignMasterAccountPOST = async (options: IBodyProps<MasterAccountDTO>): Promise<IJsonBody<boolean>> => await httpClient.post({
-  url: 'maestroentrada/angaza',
+  url: 'maestrocuenta/angaza',
   options: {
     data: options.body
   }

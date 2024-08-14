@@ -134,7 +134,7 @@ const EntryPage = () => {
     swalToastQuestion('Finalize Entry', {
       message: `Are you sure you want to finalize entry ${values.code}? \n You will not be able to edit it after this action`,
       showConfirmButton: true,
-      confirmButtonText: 'Assign',
+      confirmButtonText: 'Finish',
       showCancelButton: true,
       cancelButtonText: 'Cancel'
     }).then(result => {

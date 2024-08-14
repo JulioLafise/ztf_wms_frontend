@@ -9,11 +9,10 @@ import { useAlertNotification, useMasterPurchaseOrder, useMasterAccount } from '
 import { MaterialTable, ButtonActions } from '@wms/components';
 
 const PurchaseOrderPage = () => {
-  const { swalToastError, swalToastSuccess, swalToastInfo, swalToastWarn } = useAlertNotification();
+  const { swalToastError, swalToastSuccess, swalToastInfo, swalToastWarn, swalToastWait } = useAlertNotification();
   const { isGenerate, useMasterPurchaseOrderListQuery } = useMasterPurchaseOrder();
   const { useMasterAccountMutation } = useMasterAccount();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
   const [ref, setRef] = React.useState<MRT_TableInstance<MasterPurchaseOrderEntity>>();
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
@@ -78,8 +77,8 @@ const PurchaseOrderPage = () => {
       minSize: 150,
       Cell: ({ row }) => <div className="flex h-12 w-96">
         <p className="text-wrap break-all">
-          ({row.original.identificationCard}) {row.original.firstName} {row.original.lastName} 
-          , {row.original.email}, {row.original.phone}, {row.original.address}
+          ({row.original.customer?.identificationCard}) {row.original.customer?.firstName} {row.original.customer?.lastName} 
+          , {row.original.customer?.email}, {row.original.customer?.cellphone}, {row.original.customer?.address}
         </p>
       </div>
     },
@@ -124,21 +123,30 @@ const PurchaseOrderPage = () => {
     swalToastInfo('Equipment Assignment', {
       message: 'Enter the code provided for the assignment',
       input: 'text',
+      inputValue: '',
       showConfirmButton: true,
       confirmButtonText: 'Assign',
       showCancelButton: true,
       cancelButtonText: 'Cancel'
     }).then(resp => {
       if (resp.isConfirmed) {
+        swalToastWait('Assigned Purchase Order', {
+          message: 'Please wait a few minutes',
+          showLoading: true,
+        });
         const values = {
           masterPurchaseOrderId: row.masterPurchaseOrderId,
           unitNumber: resp.value,
           customerId: row.customer?.customerUuid,
           priceGroupId: row.priceGroupId,
-          pay: row.pay
+          pay: row.pay,
+          inventoryId: row.inventoryId,
+          productId: row.productId,
+          masterAccountId: row.masterAccountId
         };
         mutationAccount.mutateAsync(values)
           .then(() => {
+            refetch();
             swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
           })
           .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });

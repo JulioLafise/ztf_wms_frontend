@@ -12,7 +12,7 @@ const useDepartureType = () => {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
 
-  const { data, isGenerate, rowCount } = useAppSelector(state => state.entryTypeReducer);
+  const { data, isGenerate, rowCount } = useAppSelector(state => state.departureTypeReducer);
 
   const useDepartureTypeListQuery = (pagination: IPagination) => useQuery<DepartureTypeEntity[]>({
     queryKey: ['departure-type-list', { ...pagination }],    

@@ -2,6 +2,9 @@ import * as Yup from 'yup';
 
 const schemaPOST: Yup.ObjectSchema<MasterAccountDTO> = Yup.object().shape({
   maestroPedidoId: Yup.number().required(),
+  inventarioId: Yup.number().required(),
+  maestroCuentaId: Yup.number().required(),
+  productoId: Yup.number().required(),
   unitNumber: Yup.string().required(),
   grupoPrecioId: Yup.string().required(),
   clienteId: Yup.string().required(),
@@ -10,6 +13,9 @@ const schemaPOST: Yup.ObjectSchema<MasterAccountDTO> = Yup.object().shape({
 
 const schemaPATCH: Yup.ObjectSchema<MasterAccountDTO> = Yup.object().shape({
   maestroPedidoId: Yup.number().required(),
+  inventarioId: Yup.number(),
+  maestroCuentaId: Yup.number(),
+  productoId: Yup.number(),
   unitNumber: Yup.string(),
   grupoPrecioId: Yup.string(),
   clienteId: Yup.string(),
@@ -20,6 +26,12 @@ const schemaPATCH: Yup.ObjectSchema<MasterAccountDTO> = Yup.object().shape({
 export class MasterAccountDTO {
 
   public maestroPedidoId?: number;
+
+  public inventarioId?: number;
+
+  public maestroCuentaId?: number;
+
+  public productoId?: number;
 
   public unitNumber?: string;
 
@@ -35,6 +47,9 @@ export class MasterAccountDTO {
       const dto = new MasterAccountDTO();
 
       dto.maestroPedidoId = data.masterPurchaseOrderId;
+      dto.maestroCuentaId = data.masterAccountId;
+      dto.productoId = data.productId;
+      dto.inventarioId = data.inventoryId;
       dto.unitNumber = data.unitNumber;
       dto.clienteId = data.customerId;
       dto.grupoPrecioId = data.priceGroupId;

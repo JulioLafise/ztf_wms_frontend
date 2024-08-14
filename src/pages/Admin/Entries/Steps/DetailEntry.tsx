@@ -146,7 +146,7 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
     {
       id: 'price',
       accessorKey: 'price',
-      header: 'Precio',
+      header: 'Costo',
       enableEditing: true,
       minSize: 150,
       muiEditTextFieldProps: {      

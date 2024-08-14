@@ -29,11 +29,11 @@ export const menu: IMenuList[] = [
     description: '',
     children: [
       {
-        menuId: 'kardex',
-        menuUrl: '/kardex',
-        menuName: 'Kardex',
+        menuId: 'stock',
+        menuUrl: '/stock',
+        menuName: 'Stock',
         icon: 'boxes-stacked',
-        description: 'Listado del Inventario actual',
+        description: 'Managing inventory',
         roles: ['dev']
       },
       {
@@ -41,7 +41,7 @@ export const menu: IMenuList[] = [
         menuUrl: '/customer-stock',
         menuName: 'Customer Stock',
         icon: 'people-carry-box',
-        description: 'Listado del inventario entregado',
+        description: 'Managing customer stocks',
         roles: ['dev']
       },
       {
@@ -49,7 +49,7 @@ export const menu: IMenuList[] = [
         menuUrl: '/entries',
         menuName: 'Entries',
         icon: 'dolly',
-        description: 'Manejo de las Entradas',
+        description: 'Managing entries',
         roles: ['dev']
       },
       {
@@ -57,7 +57,7 @@ export const menu: IMenuList[] = [
         menuUrl: '/departures',
         menuName: 'Departures',
         icon: 'truck-ramp-box',
-        description: 'Manejo de las Salidas',
+        description: 'Managing departures',
         roles: ['dev']
       },
       {
@@ -65,7 +65,7 @@ export const menu: IMenuList[] = [
         menuUrl: '/purchase-order',
         menuName: 'Purchase Order',
         icon: 'sheet-plastic',
-        description: 'Ordenes de Pedido',
+        description: 'Managing purchase order',
         roles: ['dev']
       },
       {
@@ -73,7 +73,15 @@ export const menu: IMenuList[] = [
         menuUrl: '/products',
         menuName: 'Products',
         icon: 'box',
-        description: 'Productos',
+        description: 'Managing products',
+        roles: ['dev']
+      },
+      {
+        menuId: 'customers',
+        menuUrl: '/customers',
+        menuName: 'Customers',
+        icon: 'user-group',
+        description: 'Managing customers',
         roles: ['dev']
       },
     ],
@@ -159,6 +167,14 @@ export const settings: IMenuList[] = [
         menuName: 'Product Category',
         icon: 'layer-group',
         description: 'Managing product category',
+        roles: ['dev'],
+      },
+      {
+        menuId: 'product-status',
+        menuUrl: '/product-status',
+        menuName: 'Product Status',
+        icon: 'object-ungroup',
+        description: 'Managing product status',
         roles: ['dev'],
       },
       {
