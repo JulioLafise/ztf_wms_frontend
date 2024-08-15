@@ -19,9 +19,10 @@ const EntryPage = () => {
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { isGenerate, useMasterEntryListQuery, useMasterEntryFinishMutation } = useMasterEntry();
+  const { isGenerate, useMasterEntryListQuery, useMasterEntryFinishMutation, useMasterEntryMutation } = useMasterEntry();
   const { data, isLoading, isError, refetch } = useMasterEntryListQuery({ ...pagination, filter: globalFilter });
   const mutationFinished = useMasterEntryFinishMutation({ ...pagination, filter: globalFilter });
+  const mutation = useMasterEntryMutation({ ...pagination, filter: globalFilter }, { typeMutation: 'delete' });
   
   const columns = React.useMemo<MRT_ColumnDef<MasterEntryEntity>[]>(() => [
     {
@@ -113,7 +114,7 @@ const EntryPage = () => {
   ], []);
 
   const onSaveOrEdit: IOnSaveAndEditRows<MasterEntryEntity> = async (row, table, values, validation): Promise<void> => {
-    if (row.original.isFinish || !row.original.isActive) {
+    if (row.original.isFinish) {
       swalToastInfo('Entry Finished', {
         message: 'A completed entry cannot be edited',
         timer: 3000
@@ -124,13 +125,33 @@ const EntryPage = () => {
   };
 
   const onStateChange = async (values: { [key: string]: any }) => {
-    const data: any = {
-      isActive: !values.isActive,
-      entryId: values.entryId
-    };
+    if (values.isFinish) {
+      swalToastInfo('Entry Finished', {
+        message: 'A completed entry cannot be edited',
+        timer: 3000
+      });
+      return;
+    }
+    const title = values.isActive ? 'Desactive Entry!' : 'Active Entry!';
+    swalToastWait(title, {
+      message: 'Please wait a few minutes',
+      showLoading: true,
+    });
+    mutation.mutateAsync(values)
+      .then(() => {
+        swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+      })
+      .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
   };
 
   const onFinishEntry = async (values: { [key: string]: any }) => {
+    if (!values.isActive) {
+      swalToastInfo('Entry Inactive', {
+        message: 'Cannot finished an inactive entry',
+        timer: 3000
+      });
+      return;
+    }
     swalToastQuestion('Finalize Entry', {
       message: `Are you sure you want to finalize entry ${values.code}? \n You will not be able to edit it after this action`,
       showConfirmButton: true,
@@ -152,6 +173,8 @@ const EntryPage = () => {
       }
     });
   };
+
+  React.useEffect(() => { refetch(); }, []);
 
   return (
     <Paper elevation={4}>

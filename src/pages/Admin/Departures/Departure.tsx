@@ -19,9 +19,10 @@ const DeparturePage = () => {
     pageSize: 10
   });
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { isGenerate, rowCount, useMasterDepartureListQuery, useMasterDepartureFinishMutation } = useMasterDeparture();
+  const { isGenerate, rowCount, useMasterDepartureListQuery, useMasterDepartureFinishMutation, useMasterDepartureMutation } = useMasterDeparture();
   const { data, isError, isLoading, refetch } = useMasterDepartureListQuery({ ...pagination, filter: globalFilter });
   const mutationFinished = useMasterDepartureFinishMutation({ ...pagination, filter: globalFilter });
+  const mutation = useMasterDepartureMutation({ ...pagination, filter: globalFilter }, { typeMutation: 'delete' });
 
   const columns = React.useMemo<MRT_ColumnDef<MasterDepartureEntity>[]>(() => [
     {
@@ -95,7 +96,7 @@ const DeparturePage = () => {
   ], []);
 
   const onSaveOrEdit: IOnSaveAndEditRows<MasterDepartureEntity> = async (row, table, values, validation): Promise<void> => {
-    if (row.original.isFinish || !row.original.isActive) {
+    if (row.original.isFinish) {
       swalToastInfo('Departure Finished', {
         message: 'A completed entry cannot be edited',
         timer: 3000
@@ -113,13 +114,33 @@ const DeparturePage = () => {
   };
 
   const onStateChange = async (values: { [key: string]: any }) => {
-    const data: any = {
-      isActive: !values.isActive,
-      masterDepartureId: values.masterDepartureId
-    };
+    if (values.isFinish) {
+      swalToastInfo('Departure Finished', {
+        message: 'A completed entry cannot be edited',
+        timer: 3000
+      });
+      return;
+    }
+    const title = values.isActive ? 'Desactive Departure!' : 'Active Departure!';
+    swalToastWait(title, {
+      message: 'Please wait a few minutes',
+      showLoading: true,
+    });
+    mutation.mutateAsync(values)
+      .then(() => {
+        swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+      })
+      .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
   };
 
   const onFinishEntry = async (values: { [key: string]: any }) => {
+    if (!values.isActive) {
+      swalToastInfo('Departure Inactive', {
+        message: 'Cannot finished an inactive departure',
+        timer: 3000
+      });
+      return;
+    }
     swalToastQuestion('Finalize Departure', {
       message: `Are you sure you want to finalize departure ${values.code}? \n You will not be able to edit it after this action`,
       showConfirmButton: true,
@@ -141,6 +162,8 @@ const DeparturePage = () => {
       }
     });
   };
+
+  React.useEffect(() => { refetch(); }, []);
 
   return (
     <Paper elevation={4}>

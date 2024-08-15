@@ -35,6 +35,7 @@ const useMasterDeparture = () => {
     queryKey: ['master-departure', { ...args }],    
     queryFn: async () => {
       try {
+        if (args.masterDepartureId === 0 || Validator.isObjectEmpty(args)) return {};
         const [errors, masterDepartureDto] = await MasterDepartureDTO.get({ ...args });
         if (errors) throw new Error(errors);
         const data = (await dispatch(masterDepartureAsyncThunks.getMasterDeparture(masterDepartureDto!))).payload;
@@ -80,7 +81,6 @@ const useMasterDeparture = () => {
       queryClient.invalidateQueries({
         queryKey: ['master-departure', { masterEntryId: data.masterDepartureId }]
       });
-      return data;
       return data;
     }
   });
