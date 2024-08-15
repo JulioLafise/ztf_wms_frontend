@@ -29,7 +29,7 @@ const ProductPage = () => {
     {
       id: 'productId',
       accessorKey: 'productId',
-      header: 'Product ID',
+      header: 'Codigo Producto',
       enableEditing: false,
       minSize: 150,
     },
@@ -132,7 +132,7 @@ const ProductPage = () => {
         columns={columns}
         data={data || []}
         enableRowActions
-        columnsVisible={{ productId: false }}
+        columnsVisible={{ productId: true }}
         setRef={setRef}
         pagination={pagination}
         rowCount={rowCount}

@@ -243,12 +243,17 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
   };
 
   React.useEffect(() => {
-    setRowData(openImport ? _.get(dataGeneral, 'dataImport', []) : _.get(dataGeneral, 'dataDetail', []));
+    setRowData(_.get(dataGeneral, 'dataImport', []) || _.get(dataGeneral, 'dataDetail', []));
     if (dataGeneral.dataHeader.category?.description?.indexOf('LAPTOP') > -1 || dataGeneral.dataHeader.category?.description?.indexOf('PC') > -1) {
       if (ref) {
         ref.setColumnVisibility(obj => ({ ...obj, quanty: false}));
       }
     }
+    // setDataGeneral(prevStates => ({
+    //   ...prevStates,
+    //   dataDetail: _.get(dataGeneral, 'dataImport', []),
+    //   dataImport: []
+    // }));
   }, [dataGeneral.dataHeader, dataGeneral.dataImport, ref]);
 
   React.useEffect(() => {

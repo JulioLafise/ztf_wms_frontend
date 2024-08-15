@@ -19,6 +19,7 @@ import { Stepper, ButtonActions } from '@wms/components';
 import {
   useUI,
   useProduct,
+  useProductStatus,
   useMasterEntry,
   useAlertNotification
 } from '@wms/hooks';
@@ -43,7 +44,7 @@ const EntriesStepper = () => {
   const { isSideBarOpen, isMobile } = useUI();
   const params = useParams();
   const navigate = useNavigate();
-  const { swalToastSuccess, swalToastError, swalToastWait } = useAlertNotification();
+  const { swalToastSuccess, swalToastError, swalToastWait, swalToastQuestion } = useAlertNotification();
   const [activeStep, setActiveStep] = React.useState(0);
   const [openImport, setOpenImport] = React.useState(false);
   const previousStep = () => setActiveStep(prevState => prevState - 1);
@@ -57,7 +58,11 @@ const EntriesStepper = () => {
   });
 
   const { useMasterEntryMutation, useMasterEntryQuery, useMasterEntryDeleteDetailMutation } = useMasterEntry();
+  const { useProductListQuery } = useProduct();
+  const { useProductStatusListQuery } = useProductStatus();
   const { data, refetch, isRefetching } = useMasterEntryQuery({ masterEntryId: Number(params.entryId) || 0 });
+  const { data: productData } = useProductListQuery({ pageIndex: 0, pageSize: 1000, filter: '' });
+  const { data: productStatusData } = useProductStatusListQuery({ pageIndex: 0, pageSize: 1000, filter: '' });
   const mutation = useMasterEntryMutation({ pageIndex: 0, pageSize: 1000, filter: '' }, { typeMutation: !params.entryId ? 'post' : 'put' });
   const mutationDetailDelete = useMasterEntryDeleteDetailMutation({ typeMutation: !params.entryId ? 'post' : 'put' });
 
@@ -70,8 +75,9 @@ const EntriesStepper = () => {
   const fields = React.useMemo<Field<string>[]>(() => [
     {
       label: 'Producto',
-      key: 'Producto',
-      alternateMatches: ['producto'],
+      key: 'product',
+      description: 'product',
+      alternateMatches: ['product', 'producto', 'Producto'],
       fieldType: {
         type: 'input',
       },
@@ -86,8 +92,8 @@ const EntriesStepper = () => {
     },
     {
       label: 'Codigo Lote',
-      key: 'CodigoLote',
-      alternateMatches: ['lote', 'codigoLote'],
+      key: 'lot',
+      alternateMatches: ['lot', 'codigoLote', 'lote'],
       fieldType: {
         type: 'input',
       },
@@ -102,8 +108,8 @@ const EntriesStepper = () => {
     },
     {
       label: 'Numero Serie',
-      key: 'NumeroSerie',
-      alternateMatches: ['numeroSerie'],
+      key: 'serie',
+      alternateMatches: ['numeroSerie', 'serie'],
       fieldType: {
         type: 'input',
       },
@@ -117,9 +123,25 @@ const EntriesStepper = () => {
       ],
     },
     {
+      label: 'Costo',
+      key: 'price',
+      alternateMatches: ['price', 'Costo', 'costo'],
+      fieldType: {
+        type: 'input',
+      },
+      example: '55.55',
+      validations: [
+        {
+          rule: 'required',
+          errorMessage: 'Costo es requerido',
+          level: 'error',
+        },
+      ],
+    },
+    {
       label: 'Cantidad',
-      key: 'Cantidad',
-      alternateMatches: ['cantidad'],
+      key: 'quanty',
+      alternateMatches: ['cantidad', 'quanty'],
       fieldType: {
         type: 'input',
       },
@@ -134,8 +156,8 @@ const EntriesStepper = () => {
     },
     {
       label: 'Estado Producto',
-      key: 'Estado',
-      alternateMatches: ['estadoProducto', 'Estado Producto', 'estado producto', 'Estado producto', 'EstadoProducto'],
+      key: 'productStatus',
+      alternateMatches: ['estadoProducto', 'Estado Producto', 'estado producto', 'Estado producto', 'EstadoProducto', 'productStatus', 'estado'],
       fieldType: {
         type: 'input',
       },
@@ -150,18 +172,18 @@ const EntriesStepper = () => {
     },
     {
       label: 'Descripcion',
-      key: 'Descripcion',
-      alternateMatches: ['descripcion', 'observaciones', 'Observaciones'],
+      key: 'description',
+      alternateMatches: ['descripcion', 'observaciones', 'Observaciones', 'description'],
       fieldType: {
         type: 'input',
       },
       example: 'Observaciones sobre el producto',
       validations: [
-        {
-          rule: 'required',
-          errorMessage: 'Observaciones es requerido',
-          level: 'error',
-        },
+        // {
+        //   rule: '',
+        //   errorMessage: 'Observaciones es requerido',
+        //   level: 'error',
+        // },
       ],
     },
   ], []);
@@ -177,16 +199,47 @@ const EntriesStepper = () => {
     }
   };
 
-  const onSubmitImport = (data: IDataExcel) => {
+  const onSubmitImport = async <T,>(data: IDataExcel): Promise<void | T> => {
+    if (dataGeneral.dataDetail.length) {
+      swalToastQuestion('Replace detail data', {
+        message: 'Are you sure you want to replace the detail information with the imported one?',
+        showConfirmButton: true,
+        confirmButtonText: 'Finish',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel'
+      }).then(result => {
+        if (result.isConfirmed) {
+          onUploadTable(data);
+        }
+      });      
+    } else onUploadTable(data);    
+  };
+
+  const onUploadTable = (data: IDataExcel) => {
     const validatedData = data.validData.map(obj => {
       const objectData = {};
-      Object.keys(obj).map(_obj => {
-        objectData[`${_obj.substring(0, 1).toLowerCase()}${_obj.substring(1, _obj.length)}`] = obj[_obj];
+      Object.keys(obj).forEach(_obj => {
+        const propertyName = `${_obj.substring(0, 1).toLowerCase()}${_obj.substring(1, _obj.length)}`;
+        if (propertyName === 'product') {
+          const objData = productData.filter(ft => ft.productId === Number(obj[_obj]))[0];
+          objectData[propertyName] = objData;
+          return;
+        }
+        if (propertyName === 'productStatus') {
+          const objData = productStatusData.filter(ft => ft.productStatusId === Number(obj[_obj]))[0];
+          objectData[propertyName] = objData;
+          return;
+        }
+        if (propertyName === 'description') {
+          objectData[propertyName] = String(obj[_obj]) !== undefined ? obj[_obj] : '';
+          return;
+        }
+        objectData[propertyName] = obj[_obj];
       });
       return objectData;
     }
     );
-    // console.log(validatedData, 'Pruebaa');
+    // console.log(validatedData, 'Prueba');
     setDataGeneral(prevState => ({ ...prevState, dataImport: validatedData }));
     // if (data.invalidData.length > 0) {
     //   console.log(data.invalidData, 'invalid');
@@ -259,7 +312,7 @@ const EntriesStepper = () => {
             />
           )
         }
-        {/* {
+        {
           activeStep === 1 && (
             <>
               <ButtonActions
@@ -269,10 +322,10 @@ const EntriesStepper = () => {
                 ubication={isMobile ? {} : { bottom: 99, right: 180 }}
                 disabled={(mutation.isPending || mutationDetailDelete.isPending)}
               />
-              <ReactSpreadsheetImport
+              <ReactSpreadsheetImport                
                 isOpen={openImport}
-                onSubmit={(result) => onSubmitImport(result)}
-                onClose={() => setOpenImport(false)}
+                onSubmit={onSubmitImport}
+                onClose={() => setOpenImport(false)}                
                 fields={fields}
               />
               {openImport && (
@@ -286,7 +339,7 @@ const EntriesStepper = () => {
               )}
             </>
           )
-        } */}
+        }
         {
           (activeStep === 2 ? activeStep + 1 : activeStep) != steps.length
             ? (

@@ -47,9 +47,10 @@ const ElevationScroll = (props: IProps) => {
 const NavBar: React.FC<{
   setOpenSideBar: React.Dispatch<React.SetStateAction<boolean>>,
   setTypeSideBar: React.Dispatch<React.SetStateAction<'permanent' | 'temporary'>>,
+  typeSideBar: 'permanent' | 'temporary',
   openSideBar: boolean
 }> = (props) => {
-  const { setOpenSideBar, setTypeSideBar, openSideBar } = props;
+  const { setOpenSideBar, setTypeSideBar, openSideBar, typeSideBar } = props;
   const { onSignOut } = useAuth();
   const { toastInfo } = useToastNotification();
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ const NavBar: React.FC<{
               onClick={onClick}
             >
               {
-                openSideBar
+                (typeSideBar === 'permanent' && openSideBar)
                   ? <Close />
                   : <Menu />
               }

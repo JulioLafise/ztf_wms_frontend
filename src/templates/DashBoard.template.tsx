@@ -47,7 +47,7 @@ const DashBoardTemplate = () => {
   const { user } = useAuth();
   const {
     menu,
-    about,
+    about,    
     onMenu,
     onDarkMode,
     onAboutMenu,
@@ -87,7 +87,7 @@ const DashBoardTemplate = () => {
   return (
     <React.Fragment>
       <Paper className="h-[100vh] overflow-hidden" elevation={1}>
-        <NavBar setOpenSideBar={setOpenSideBar} setTypeSideBar={setTypeSideBar} openSideBar={openSideBar} />
+        <NavBar setOpenSideBar={setOpenSideBar} setTypeSideBar={setTypeSideBar} openSideBar={openSideBar} typeSideBar={typeSideBar} />
         <NavBarMobile menu={menu.main} />
         <SideBarMenu
           menu={menu.main}

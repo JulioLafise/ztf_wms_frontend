@@ -99,7 +99,27 @@ const MaterialTable = <T extends MRT_RowData,>(props: IProps<T>) => {
   });
 
   const onActionExportTable = () => {
-    const csv = generateCsv(csvConfig)(data);
+    let dataConvert: T[] = [];
+    for (const item of data) {
+      let element: T = undefined;
+      Object.entries(item).forEach(obj => {
+        let contentStr = '';
+        if (typeof obj[1] === 'object') {
+          contentStr = JSON.stringify(obj[1]).replace(/"/g,'').replace('{','').replace('}','');
+        } else {
+          contentStr = obj[1];
+        }
+        element = {
+          ...element,
+          [obj[0]]: contentStr
+        };
+      });
+      dataConvert = [
+        ...dataConvert,
+        element
+      ];
+    }
+    const csv = generateCsv(csvConfig)(dataConvert);
     download(csvConfig)(csv);
   };
 
