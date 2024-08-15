@@ -19,7 +19,7 @@ export class CustomerMapper {
         address: value.direccion,
         identificationCard: value.cedula,
         departament: {
-          departamentId: value.departamentoId,
+          departamentId: value.departamento ? value.departamento.departamentoId : value.departamentoId,
           description: value.departamento.descripcion,
           countryId: value.departamento.paisId,
         },

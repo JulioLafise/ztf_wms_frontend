@@ -36,6 +36,7 @@ export class MasterEntryMapper {
         },
         typeCurrency: {
           typeCurrencyId: value.tipoMoneda.tipoMonedaId,
+          iconName: value.tipoMoneda.iconName,
           description: value.tipoMoneda.descripcion,
         },
         category: {

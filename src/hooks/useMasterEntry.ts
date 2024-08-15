@@ -35,6 +35,7 @@ const useMasterEntry = () => {
     queryKey: ['master-entry', { ...args }],    
     queryFn: async () => {
       try {
+        if (args.masterEntryId === 0 || Validator.isObjectEmpty(args)) return {};
         const [errors, masterEntryDto] = await MasterEntryDTO.get({ ...args });
         if (errors) throw new Error(errors);
         const data = (await dispatch(masterEntryAsyncThunks.getMasterEntry(masterEntryDto!))).payload;

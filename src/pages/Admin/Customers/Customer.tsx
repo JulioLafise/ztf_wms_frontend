@@ -258,7 +258,13 @@ const CustomerPage = () => {
         setEdit(null);
         swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
       })
-      .catch((err) => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
+      .catch((err) => { 
+        let message = '';
+        if (String(err.message).indexOf('Duplicate') > -1) {
+          message = 'Review the fields Identification Card, Phone and Email';
+        }
+        swalToastError(err.message, { message, showConfirmButton: false, timer: 4000 }); 
+      });
   };
 
   const onChangeState = async (values: { [key: string]: any }) => {
