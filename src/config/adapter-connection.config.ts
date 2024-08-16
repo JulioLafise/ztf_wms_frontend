@@ -84,12 +84,22 @@ class AdapterConnection {
   }
 
   async post<T>({ url, options }: IMethodHttp): Promise<IJsonBody<T>> {
+    if (Array.isArray(options?.data)) {
+      const { data, status, statusText } = await this.axios.post<T>(url, options?.data, {
+        headers: options?.headers,
+        params: options?.params
+      });
+  
+      return {
+        data, status: statusText, statusCode: status
+      };      
+    } 
     const { data, status, statusText } = await this.axios.post<T>(url, {
       headers: options?.headers,
       params: options?.params,
       ...options?.data
     }, { headers: options?.headers });
-
+  
     return {
       data, status: statusText, statusCode: status
     };

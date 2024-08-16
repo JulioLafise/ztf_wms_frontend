@@ -31,6 +31,13 @@ export const createMasterEntryPOST = async (options: IBodyProps<MasterEntryDTO>)
   }
 });
 
+export const verifyMasterEntryDetailSeriePOST = async (options: IBodyProps<Array<{ nombre: string }>>): Promise<IJsonBody<Array<{ serie: string, status: boolean }>>> => await httpClient.post({
+  url: 'maestroentrada/detalle/verify-numero-serie',
+  options: {
+    data: options.body
+  }
+});
+
 export const updateMasterEntryPUT = async (options: IBodyProps<MasterEntryDTO>): Promise<IJsonBody<MasterEntryEntity | string>> => await httpClient.put({
   url: `maestroentrada/${options.body.maestroEntradaId}/`,
   options: {

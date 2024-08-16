@@ -5,16 +5,16 @@ import {
   ArrowForward,
   ExitToApp,
   Task,
-  Download,
   Cancel,
-  Save
+  Save,
+  UploadFile
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ReactSpreadsheetImport } from 'react-spreadsheet-import';
 import { Data, Field } from 'react-spreadsheet-import/types/types';
 import { Meta } from 'react-spreadsheet-import/types/steps/ValidationStep/types';
 import _ from 'lodash';
-import { Validator } from '@wms/helpers';
+import { Validator, sleep } from '@wms/helpers';
 import { Stepper, ButtonActions } from '@wms/components';
 import {
   useUI,
@@ -24,6 +24,7 @@ import {
   useAlertNotification
 } from '@wms/hooks';
 import { MasterEntryEntity, DetailEntryEntity } from '@wms/entities';
+import { mkConfig, generateCsv, download } from 'export-to-csv';
 import HeaderEntry from './Steps/HeaderEntry';
 import DetailEntry from './Steps/DetailEntry';
 import Report from './Steps/ReportEntries';
@@ -44,7 +45,7 @@ const EntriesStepper = () => {
   const { isSideBarOpen, isMobile } = useUI();
   const params = useParams();
   const navigate = useNavigate();
-  const { swalToastSuccess, swalToastError, swalToastWait, swalToastQuestion } = useAlertNotification();
+  const { swalToastSuccess, swalToastError, swalToastWait, swalToastQuestion, swalToastWarn } = useAlertNotification();
   const [activeStep, setActiveStep] = React.useState(0);
   const [openImport, setOpenImport] = React.useState(false);
   const previousStep = () => setActiveStep(prevState => prevState - 1);
@@ -56,8 +57,14 @@ const EntriesStepper = () => {
     dataDetail: [],
     dataImport: []
   });
+  const csvConfig = mkConfig({
+    filename: 'VerifyCode_' + new Date().toISOString(),
+    fieldSeparator: ',',
+    decimalSeparator: '.',
+    useKeysAsHeaders: true,
+  });
 
-  const { useMasterEntryMutation, useMasterEntryQuery, useMasterEntryDeleteDetailMutation } = useMasterEntry();
+  const { useMasterEntryMutation, useMasterEntryQuery, useMasterEntryDeleteDetailMutation, filterSerieExistByName } = useMasterEntry();
   const { useProductListQuery } = useProduct();
   const { useProductStatusListQuery } = useProductStatus();
   const { data, refetch, isRefetching } = useMasterEntryQuery({ masterEntryId: Number(params.entryId) || 0 });
@@ -191,7 +198,7 @@ const EntriesStepper = () => {
   const ComponentStep = (step: number) => {
     switch (step) {
       case 1:
-        return (<DetailEntry dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} openImport={openImport} />);
+        return (<DetailEntry dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} masterEntryId={Number(params.entryId)} />);
       case 2:
         return (<Report />);
       default:
@@ -201,7 +208,7 @@ const EntriesStepper = () => {
 
   const onSubmitImport = async <T,>(data: IDataExcel): Promise<void | T> => {
     if (dataGeneral.dataDetail.length) {
-      swalToastQuestion('Replace detail data', {
+      swalToastQuestion('Replace Detail Data', {
         message: 'Are you sure you want to replace the detail information with the imported one?',
         showConfirmButton: true,
         confirmButtonText: 'Finish',
@@ -209,14 +216,18 @@ const EntriesStepper = () => {
         cancelButtonText: 'Cancel'
       }).then(result => {
         if (result.isConfirmed) {
-          onUploadTable(data);
+          mutationDetailDelete.mutateAsync(dataGeneral.dataHeader)
+            .then(result => {              
+              onUploadTable(data);
+            })
+            .catch(err => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
         }
       });      
     } else onUploadTable(data);    
   };
 
   const onUploadTable = (data: IDataExcel) => {
-    const validatedData = data.validData.map(obj => {
+    const validatedData: any = data.validData.map(obj => {
       const objectData = {};
       Object.keys(obj).forEach(_obj => {
         const propertyName = `${_obj.substring(0, 1).toLowerCase()}${_obj.substring(1, _obj.length)}`;
@@ -231,7 +242,7 @@ const EntriesStepper = () => {
           return;
         }
         if (propertyName === 'description') {
-          objectData[propertyName] = String(obj[_obj]) !== undefined ? obj[_obj] : '';
+          objectData[propertyName] = typeof obj[_obj] === 'undefined' ? '' : obj[_obj];
           return;
         }
         objectData[propertyName] = obj[_obj];
@@ -239,8 +250,41 @@ const EntriesStepper = () => {
       return objectData;
     }
     );
-    // console.log(validatedData, 'Prueba');
-    setDataGeneral(prevState => ({ ...prevState, dataImport: validatedData }));
+    let serie: Array<{ name: string }> = [];
+    validatedData.forEach(item => {
+      serie = [
+        ...serie,
+        {
+          name: item.serie
+        }
+      ];
+    });
+    filterSerieExistByName(serie)
+      .then(resp => {
+        if (!resp.length) {
+          setDataGeneral(prevState => ({ ...prevState, dataImport: validatedData }));
+          swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+        } else {
+          swalToastWarn('The import was not completed because existing serial numbers were found in the database', { showConfirmButton: false, timer: 4000 });
+          sleep(4.5)
+            .then(() => {
+              swalToastQuestion('Export Data', {
+                message: 'Do you want to export the duplicate data found?',
+                showConfirmButton: true,
+                confirmButtonText: 'Yes',
+                showCancelButton: true,
+                cancelButtonText: 'Cancel'
+              }).then(result => {
+                if (result.isConfirmed) {
+                  swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+                  const csv = generateCsv(csvConfig)(resp);
+                  download(csvConfig)(csv);
+                }
+              });      
+            });
+        }
+      })
+      .catch(err => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
     // if (data.invalidData.length > 0) {
     //   console.log(data.invalidData, 'invalid');
     // }
@@ -318,7 +362,7 @@ const EntriesStepper = () => {
               <ButtonActions
                 title="Import"
                 onClick={() => setOpenImport(true)}
-                ComponentIcon={<Download />}
+                ComponentIcon={<UploadFile />}
                 ubication={isMobile ? {} : { bottom: 99, right: 180 }}
                 disabled={(mutation.isPending || mutationDetailDelete.isPending)}
               />

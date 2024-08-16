@@ -39,7 +39,7 @@ export class Validator {
 
   static httpValidation(response: ErrorAxios, fields?: Array<{ [key: string]: any }>) {
     let error = undefined;
-    if (!response) {
+    if (!response && typeof response !== 'boolean') {
       throw new Error('Connection error');
     }
     const infoError: Record<string,any> = response.message as any;

@@ -47,6 +47,7 @@ interface IProps<T extends MRT_RowData> {
   setValidationErrors?: React.Dispatch<React.SetStateAction<IValidationErrors<object>>>,
   onEditingRowChange?: (state: { cell: MRT_Cell<T, unknown>, row: MRT_Row<T>, staticRowIndex?: number | undefined, table: MRT_TableInstance<T> }) => void,
   onActionRefreshTable?: (table: MRT_TableInstance<T>) => void,
+  onActionClearTable?: (table: MRT_TableInstance<T>) => void,
   onActionPickPicture?: (row: MRT_Row<T>, file: File) => Promise<void>,
 }
 
@@ -88,6 +89,7 @@ const MaterialTable = <T extends MRT_RowData,>(props: IProps<T>) => {
     setValidationErrors,
     onEditingRowChange,
     onActionRefreshTable,
+    onActionClearTable,
     onActionPickPicture
   } = props;
   
@@ -237,7 +239,13 @@ const MaterialTable = <T extends MRT_RowData,>(props: IProps<T>) => {
         />
     ),
     renderTopToolbarCustomActions: ({ table }) => (
-      <ActionToolbarComponent table={table} onActionExportTable={onActionExportTable} onActionRefreshTable={onActionRefreshTable} isEditing={isEditing} />
+      <ActionToolbarComponent
+        table={table}
+        onActionExportTable={onActionExportTable}
+        onActionRefreshTable={onActionRefreshTable}
+        onActionClearTable={onActionClearTable}
+        isEditing={isEditing}
+      />
     )
   });
   

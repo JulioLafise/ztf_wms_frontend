@@ -124,6 +124,21 @@ const useMasterEntry = () => {
     }
   });
 
+  const filterSerieExistByName = async (arrayProductsSerieName: Array<{ name: string }>): Promise<Array<{ serie: string, status: boolean }>> => {
+    let seriesByName: Array<{ nombre: string }> = [];
+    arrayProductsSerieName.forEach(serie => {
+      seriesByName = [
+        ...seriesByName,
+        {
+          nombre: serie.name
+        }
+      ];
+    });
+    const data = (await dispatch(masterEntryAsyncThunks.onVerifyMasterEntryDetailSerie(seriesByName))).payload as any;
+    Validator.httpValidation(data);
+    return data;
+  };
+
 
   return {
     //VAR
@@ -135,7 +150,8 @@ const useMasterEntry = () => {
     useMasterEntryListQuery,
     useMasterEntryMutation,
     useMasterEntryFinishMutation,
-    useMasterEntryDeleteDetailMutation
+    useMasterEntryDeleteDetailMutation,
+    filterSerieExistByName
   };
 };
 

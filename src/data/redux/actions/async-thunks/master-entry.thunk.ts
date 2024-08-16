@@ -44,6 +44,18 @@ export const onSaveMasterEntry = createAsyncThunk(
   }
 );
 
+export const onVerifyMasterEntryDetailSerie = createAsyncThunk(
+  'catalogue/onVerifyMasterEntryDetailSerie',
+  async (args: Array<{ nombre: string }>, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.verifyMasterEntryDetailSeriePOST({ body: args });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
 export const onEditMasterEntry = createAsyncThunk(
   'catalogue/onEditMasterEntry',
   async (masterEntryDto: MasterEntryDTO, { rejectWithValue, dispatch }) => {

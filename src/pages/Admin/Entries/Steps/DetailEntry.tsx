@@ -7,14 +7,14 @@ import _ from 'lodash';
 import * as Yup from 'yup';
 import { MasterEntryEntity, DetailEntryEntity } from '@wms/entities';
 import { IOnSaveAndEditRows, IValidationErrors, ComboBoxSelectTable } from '@wms/interfaces';
-import { useAlertNotification, useProduct, useProductStatus } from '@wms/hooks';
+import { useAlertNotification, useProduct, useProductStatus, useMasterEntry } from '@wms/hooks';
 import { MaterialTable, TextFieldHF, DecimalNumberFormat } from '@wms/components';
 import { paginateArray, Validator, GeneratedData } from '@wms/helpers';
 
 interface IPropsDetail {
   setDataGeneral: React.Dispatch<React.SetStateAction<ImportExcelProps>>,
   dataGeneral: ImportExcelProps,
-  openImport: boolean
+  masterEntryId?: number
 }
 
 type ImportExcelProps = {
@@ -60,8 +60,8 @@ const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.obje
 type ComboBoxItems = { products: object[], status: object[] };
 
 const DetailEntry: React.FC<IPropsDetail> = (props) => {
-  const { dataGeneral, setDataGeneral, openImport } = props;
-  const { swalToastSuccess } = useAlertNotification();
+  const { dataGeneral, setDataGeneral, masterEntryId } = props;
+  const { swalToastSuccess, swalToastQuestion, swalToastError, swalToastWait } = useAlertNotification();
   const [selectData, setSelectData] = React.useState<ComboBoxSelectTable<ComboBoxItems>>({
     products: [],
     status: []
@@ -85,9 +85,11 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
 
   const { useProductListQuery } = useProduct();
   const { useProductStatusListQuery } = useProductStatus();
+  const { useMasterEntryDeleteDetailMutation } = useMasterEntry();
 
   const { data: dataProduct } = useProductListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
   const { data: dataProductStatus } = useProductStatusListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
+  const mutationDetailDelete = useMasterEntryDeleteDetailMutation({ typeMutation: 'delete' });
 
   const columns = React.useMemo<MRT_ColumnDef<DetailEntryEntity>[]>(() => [
     {
@@ -242,26 +244,56 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
     });
   };
 
+  const onClearTable = (table: MRT_TableInstance<DetailEntryEntity>) => {
+    swalToastQuestion('Clear Data Detail', {
+      message: 'Are you sure you want clear data?',
+      showConfirmButton: true,
+      confirmButtonText: 'Clear',
+      showCancelButton: true,
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if (result.isConfirmed) {
+        swalToastWait('Clear Data', {
+          message: 'Please wait a few minutes',
+          showLoading: true,
+        });
+        if (masterEntryId) {
+          mutationDetailDelete.mutateAsync({ masterEntryId })
+            .then(() => {
+              swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+              setRowData([]);
+              setDataGeneral(prevState => ({ ...prevState, dataDetail: [] }));
+            })
+            .catch(err => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
+        } else {
+          setRowData([]);
+          setDataGeneral(prevState => ({ ...prevState, dataDetail: [] }));
+        }
+      }
+    });      
+  };
+
   React.useEffect(() => {
-    setRowData(_.get(dataGeneral, 'dataImport', []) || _.get(dataGeneral, 'dataDetail', []));
+    const isImport = _.get(dataGeneral, 'dataImport', []).length > 0;
+    setRowData(isImport && _.get(dataGeneral, 'dataImport', []) || _.get(dataGeneral, 'dataDetail', []));
     if (dataGeneral.dataHeader.category?.description?.indexOf('LAPTOP') > -1 || dataGeneral.dataHeader.category?.description?.indexOf('PC') > -1) {
       if (ref) {
         ref.setColumnVisibility(obj => ({ ...obj, quanty: false}));
       }
     }
-    // setDataGeneral(prevStates => ({
-    //   ...prevStates,
-    //   dataDetail: _.get(dataGeneral, 'dataImport', []),
-    //   dataImport: []
-    // }));
+    isImport && setDataGeneral(prevStates => ({
+      ...prevStates,
+      dataDetail: _.get(dataGeneral, 'dataImport', []),
+      dataImport: []
+    }));
   }, [dataGeneral.dataHeader, dataGeneral.dataImport, ref]);
 
   React.useEffect(() => {
     let quanty = 0;
     let prices = 0;
     rowData.forEach(item => {
-      quanty += item.quanty || 0;
-      prices += item.price || 0;
+      quanty += Number(item.quanty) || 0;
+      prices += Number(item.price) || 0;
     });
     const subTotal = quanty * prices;
     const data = {
@@ -332,6 +364,7 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
           onActionEdit={onSaveOrEdit}
           onActionSave={onSaveOrEdit}
           onActionDelete={(row) => onDelete(row.original)}
+          onActionClearTable={onClearTable}
           isLoading={false}
           isGenerate={true}
           isError={false}
