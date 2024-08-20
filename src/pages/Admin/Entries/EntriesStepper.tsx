@@ -200,7 +200,7 @@ const EntriesStepper = () => {
       case 1:
         return (<DetailEntry dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} masterEntryId={Number(params.entryId)} />);
       case 2:
-        return (<Report />);
+        return (<Report data={data} />);
       default:
         return (<HeaderEntry dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} setActiveStep={setActiveStep} clickCounter={clickCounter} />);
     }
@@ -290,6 +290,23 @@ const EntriesStepper = () => {
     // }
     // const dataUnique: { nombre: string }[] = _.uniqBy(data.validData, (obj: any) => obj.Nombre).map((obj: any) => ({ nombre: obj.Nombre }));
     // filterProductExistByName(dataUnique).then((res: boolean) => console.log(res));
+  };
+
+  const onQuestionOperation = () => {
+    if (params.entryId) {
+      swalToastQuestion('Action Entry', {
+        message: 'Do you want to save the changes to the entry or generate the report?',
+        showConfirmButton: true,
+        confirmButtonText: 'Save',
+        showCancelButton: true,
+        cancelButtonText: 'Report'
+      })
+        .then(result => {
+          if (result.isConfirmed) {
+            onSaveOrEdit();            
+          } else nextStep();
+        });
+    } else onSaveOrEdit();
   };
 
   const onSaveOrEdit = () => {
@@ -389,7 +406,7 @@ const EntriesStepper = () => {
             ? (
               <ButtonActions
                 title={activeStep === 1 ? 'Save' : 'Next'}
-                onClick={activeStep === 0 ? onClick : activeStep === 1 ? onSaveOrEdit : nextStep}
+                onClick={activeStep === 0 ? onClick : activeStep === 1 ? onQuestionOperation : nextStep}
                 ComponentIcon={activeStep === 1 ? <Save /> : <ArrowForward />}
                 ubication={isMobile ? {} : { bottom: 99, right: 99 }}
                 disabled={(mutation.isPending || mutationDetailDelete.isPending)}

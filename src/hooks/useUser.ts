@@ -51,8 +51,13 @@ const useUser = () => {
   const useUserMutation = (pagination?: IPagination, options?: IOptionsQuery) => useMutation<UserEntity, Error, UserEntity>({
     mutationFn: async (data) => { 
       if (options?.typeMutation === 'post') {
-
-        return {};
+        const [errors, usersDto] = await UsersDTO.created({ ...data });
+        if (errors) throw new Error(errors);
+        const resp = (await dispatch(userAsyncThunks.onSaveUser(usersDto!))).payload;
+        Validator.httpValidation(resp as any);
+        const result = UserMapper.getItem(resp);
+        dispatch(authSyncThunks.updateUser(result));
+        return result;
       }
       if (options?.typeMutation === 'put') {
         const [errors, usersDto] = await UsersDTO.updated({ ...data });

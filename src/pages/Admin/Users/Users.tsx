@@ -135,7 +135,7 @@ const UnitMeasurePage = () => {
       <MaterialTable<UserEntity>
         columns={columns}
         data={paginateData || []}
-        enableRowActions
+        // enableRowActions
         columnsVisible={{ userId: false, username: false }}
         setRef={setRef}
         pagination={pagination}
@@ -151,8 +151,8 @@ const UnitMeasurePage = () => {
         isError={isError}
         onActionRefreshTable={() => refetch()}       
       />
-      {isMobile && <ButtonActions title="New" onClick={() => { setIsOpen(true); setEdit(null); }} />}
-      {/* <UsersModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} /> */}
+      <ButtonActions title="New" onClick={() => { setIsOpen(true); setEdit(null); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} />
+      <UsersModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={onSubmit} isLoading={mutation.isPending} edit={edit} />
     </Paper>
   );
 };
