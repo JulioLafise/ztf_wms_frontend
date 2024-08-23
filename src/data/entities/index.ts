@@ -33,3 +33,4 @@ export * from './prices-group.entity';
 export * from './auth.entity';
 export * from './customer-stock.entity';
 export * from './available-stock.entity';
+export * from './inventory-departure.entity';

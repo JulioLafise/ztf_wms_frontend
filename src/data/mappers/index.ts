@@ -21,4 +21,5 @@ export * from './departure-type.mapper';
 export * from './kit.mapper';
 export * from './available-stock.mapper';
 export * from './customer-stock.mapper';
+export * from './inventory-departure.mapper';
 export * from './user.mapper';

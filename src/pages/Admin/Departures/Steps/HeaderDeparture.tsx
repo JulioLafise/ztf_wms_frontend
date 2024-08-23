@@ -135,7 +135,6 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
   React.useEffect(() => {
     reset(Validator.isObjectEmpty(dataGeneral.dataHeader) ? defaultValues : {
       ...dataGeneral.dataHeader,
-      // country: dataCountry?.length && dataCountry.filter(ft => ft.countryId === dataGeneral.dataHeader.departament.countryId)[0],
       createdAt: moment(dataGeneral.dataHeader.createdAt)
     });
   }, [dataGeneral.dataHeader]);
@@ -208,7 +207,7 @@ const HeaderDeparture: React.FC<IPropsHeader> = (props) => {
                 className="w-full md:w-4/12 lg:w-2/12"
                 name="purchaseOrder"
                 label="Orden de Pedido"
-                optionsData={dataPurchaseOrder || []}
+                optionsData={dataPurchaseOrder?.filter(ft => ft.status !== 'APROBADO') || []}
                 getOptionLabel={option => `(PO ${option.code}) ${option.customer?.firstName} ${option.customer?.lastName}`}
                 loading={isLoadingPurchaseOrder}
               />

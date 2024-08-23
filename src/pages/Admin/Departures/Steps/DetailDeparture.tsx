@@ -7,14 +7,14 @@ import _ from 'lodash';
 import * as Yup from 'yup';
 import { MasterDepartureEntity, DetailDepartureEntity } from '@wms/entities';
 import { IOnSaveAndEditRows, IValidationErrors, ComboBoxSelectTable } from '@wms/interfaces';
-import { useAlertNotification, useProduct, useProductStatus } from '@wms/hooks';
+import { useAlertNotification, useInventory, useProductStatus, useProduct } from '@wms/hooks';
 import { MaterialTable, TextFieldHF, DecimalNumberFormat } from '@wms/components';
 import { paginateArray, Validator, GeneratedData } from '@wms/helpers';
 
 interface IPropsDetail {
   setDataGeneral: React.Dispatch<React.SetStateAction<ImportExcelProps>>,
   dataGeneral: ImportExcelProps,
-  openImport: boolean
+  masterDepartureId?: number
 }
 
 type ImportExcelProps = {
@@ -36,7 +36,7 @@ const defaultValues: IForm = {
 };
 
 interface ISchemaValidationTable {
-  productId?: number,
+  inventoryId?: number,
   lot?: string,
   serie?: string,
   // price?: number,
@@ -47,7 +47,7 @@ interface ISchemaValidationTable {
 }
 
 const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.object().shape({
-  productId: Yup.number().required('Product is required'),
+  inventoryId: Yup.number().required('Product is required'),
   lot: Yup.string().required('Lot is required'),
   serie: Yup.string().required('Serie is required'),
   // price: Yup.number().required('Price is required'),
@@ -60,8 +60,8 @@ const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.obje
 type ComboBoxItems = { products: object[], status: object[] };
 
 const DetailDeparture: React.FC<IPropsDetail> = (props) => {
-  const { dataGeneral, setDataGeneral, openImport } = props;
-  const { swalToastSuccess } = useAlertNotification();
+  const { dataGeneral, setDataGeneral, masterDepartureId } = props;
+  const { swalToastSuccess, swalToastQuestion, swalToastError, swalToastWait } = useAlertNotification();
   const [selectData, setSelectData] = React.useState<ComboBoxSelectTable<ComboBoxItems>>({
     products: [],
     status: []
@@ -83,8 +83,10 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
   const { reset, watch } = methods;
 
   const { useProductListQuery } = useProduct();
+  const { useInventoryDepartureListQuery } = useInventory();
   const { useProductStatusListQuery } = useProductStatus();
 
+  const { data: dataInventory } = useInventoryDepartureListQuery();
   const { data: dataProduct } = useProductListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
   const { data: dataProductStatus } = useProductStatusListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
 
@@ -103,17 +105,24 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
       enableEditing: false,
       minSize: 150,
     },
+    // {
+    //   id: 'productId',
+    //   accessorKey: 'productId',
+    //   header: 'Inventory ID',
+    //   enableEditing: false,
+    //   minSize: 150,
+    // },
     {
-      id: 'productId',
-      accessorKey: 'productId',
-      accessorFn: (row) => row.product?.productId,
+      id: 'inventoryId',
+      accessorKey: 'inventoryId',
+      accessorFn: (row) => row.inventoryId,
       header: 'Producto',
       minSize: 150,
       editVariant: 'select',
       muiEditTextFieldProps: {      
         required: true,
-        error: !!validationErrors.productId,
-        helperText: validationErrors.productId
+        error: !!validationErrors.inventoryId,
+        helperText: validationErrors.inventoryId
       },
       editSelectOptions: selectData.products,
       Cell: ({ row }) => <div className="flex items-center h-12 w-96"><p className="text-wrap break-all">{String(row.original.product?.description).slice(0,105)}{String(row.original.product?.description).length >= 104 ? '...' : ''}</p></div>
@@ -122,7 +131,7 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
       id: 'lot',
       accessorKey: 'lot',
       header: 'Codigo Lote',
-      enableEditing: true,
+      enableEditing: false,
       minSize: 150,
       muiEditTextFieldProps: {      
         required: true,
@@ -134,7 +143,7 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
       id: 'serie',
       accessorKey: 'serie',
       header: 'Numero Serie',
-      enableEditing: true,
+      enableEditing: false,
       minSize: 150,
       muiEditTextFieldProps: {      
         required: true,
@@ -162,7 +171,7 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
       accessorKey: 'quanty',
       header: 'Cantidad',
       minSize: 150,
-      enableEditing: true,
+      enableEditing: false,
       muiEditTextFieldProps: {      
         required: true,
         error: !!validationErrors.quanty,
@@ -198,15 +207,23 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
   ], [validationErrors, selectData]);
 
   const onSaveOrEdit: IOnSaveAndEditRows<DetailDepartureEntity> = async (row, table, values, validation): Promise<void> => {
-    const validateValues = { ...values };
+    let validateValues = { ...values };
     // if (dataGeneral.dataHeader.category?.description?.indexOf('LAPTOP') > -1 || dataGeneral.dataHeader.category?.description?.indexOf('PC') > -1) {
-    //   validateValues = { ...values, quanty: 1 };
+    const productId = dataInventory.filter(ft => ft.inventoryId === values.inventoryId)[0].product?.productId;
+    validateValues = {
+      ...values,
+      quanty: 1,
+      price: 0,
+      serie: dataInventory.filter(ft => ft.inventoryId === values.inventoryId)[0].serie || '',
+      lot: dataInventory.filter(ft => ft.inventoryId === values.inventoryId)[0].ticket || ''
+    };
+    console.log(validateValues);
     // }
     const [isPassed, errors] = await Validator.yupSchemaValidation({ schema: schemaValidationTable, data: validateValues });
     if (!isPassed) { setValidationErrors(errors); validation!(errors)(table, row.original.detailDepartureId ? true : false); return; }
     setValidationErrors({});
     validation!({})(table, row.original.detailDepartureId ? true : false);
-    const product = dataProduct.filter(ft => ft.productId === values.productId)[0];
+    const product = dataProduct.filter(ft => ft.productId === productId)[0];
     const productStatus = dataProductStatus.filter(ft => ft.productStatusId === values.productStatusId)[0];
     const data: any = {
       ...validateValues,
@@ -241,13 +258,52 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
     });
   };
 
+  const onClearTable = (table: MRT_TableInstance<DetailDepartureEntity>) => {
+    swalToastQuestion('Clear Data Detail', {
+      message: 'Are you sure you want clear data?',
+      showConfirmButton: true,
+      confirmButtonText: 'Clear',
+      showCancelButton: true,
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if (result.isConfirmed) {
+        swalToastWait('Clear Data', {
+          message: 'Please wait a few minutes',
+          showLoading: true,
+        });
+        if (masterDepartureId) {
+          swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+          setRowData([]);
+          setDataGeneral(prevState => ({ ...prevState, dataDetail: [] }));
+          // mutationDetailDelete.mutateAsync({ masterDepartureId })
+          //   .then(() => {
+          //     swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+          //     setRowData([]);
+          //     setDataGeneral(prevState => ({ ...prevState, dataDetail: [] }));
+          //   })
+          //   .catch(err => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
+        } else {
+          swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+          setRowData([]);
+          setDataGeneral(prevState => ({ ...prevState, dataDetail: [] }));
+        }
+      }
+    });      
+  };
+
   React.useEffect(() => {
-    setRowData(openImport ? _.get(dataGeneral, 'dataImport', []) : _.get(dataGeneral, 'dataDetail', []));
+    const isImport = _.get(dataGeneral, 'dataImport', []).length > 0;
+    setRowData(isImport && _.get(dataGeneral, 'dataImport', []) || _.get(dataGeneral, 'dataDetail', []));
     // if (dataGeneral.dataHeader.category?.description?.indexOf('LAPTOP') > -1 || dataGeneral.dataHeader.category?.description?.indexOf('PC') > -1) {
     //   if (ref) {
     //     ref.setColumnVisibility(obj => ({ ...obj, quanty: false}));
     //   }
     // }
+    isImport && setDataGeneral(prevStates => ({
+      ...prevStates,
+      dataDetail: _.get(dataGeneral, 'dataImport', []),
+      dataImport: []
+    }));
   }, [dataGeneral.dataHeader, dataGeneral.dataImport, ref]);
 
   
@@ -255,8 +311,8 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
     let quanty = 0;
     let prices = 0;
     rowData.forEach(item => {
-      quanty += item.quanty || 0;
-      prices += item.price || 0;
+      quanty += Number(item.quanty) || 0;
+      prices += Number(item.price) || 0;
     });
     const subTotal = quanty * prices;
     const data = {
@@ -269,20 +325,20 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
 
   
   React.useEffect(() => {
-    if (dataProduct) {
-      setSelectData(oldData => ({ ...oldData, products: dataProduct.map(obj => ({ label: obj.description, value: obj.productId })) }));
+    if (dataInventory) {
+      setSelectData(oldData => ({ ...oldData, products: dataInventory.map(obj => ({ label: obj.product?.name, value: obj.inventoryId })) }));
     }
     if (dataProductStatus) {
       setSelectData(oldData => ({ ...oldData, status: dataProductStatus.map(obj => ({ label: obj.description, value: obj.productStatusId })) }));
     }
-  }, [dataProduct, dataProductStatus]);
+  }, [dataInventory, dataProductStatus]);
 
   return (
     <React.Fragment>
       <Paper elevation={4} sx={{ mb: 2 }}>
         <Box component="section" className="flex items-center gap-2 p-2">
           <FactCheck color="primary" />
-          <Typography variant="h6" fontWeight="bold">Detail Entry</Typography>
+          <Typography variant="h6" fontWeight="bold">Detail Departure</Typography>
         </Box>
         <Divider variant="inset" />
         <FormProvider {...methods}>
@@ -326,6 +382,7 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
           onGlobalFilterChange={setGlobalFilter}
           onActionEdit={onSaveOrEdit}
           onActionSave={onSaveOrEdit}
+          onActionClearTable={onClearTable}
           onActionDelete={(row) => onDelete(row.original)}
           isLoading={false}
           isGenerate={true}

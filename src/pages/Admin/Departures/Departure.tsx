@@ -116,7 +116,7 @@ const DeparturePage = () => {
   const onStateChange = async (values: { [key: string]: any }) => {
     if (values.isFinish) {
       swalToastInfo('Departure Finished', {
-        message: 'A completed entry cannot be edited',
+        message: 'Cannot change state an finished departure',
         timer: 3000
       });
       return;

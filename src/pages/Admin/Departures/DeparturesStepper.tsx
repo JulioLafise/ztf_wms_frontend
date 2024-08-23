@@ -15,6 +15,7 @@ import { MasterDepartureEntity, DetailDepartureEntity } from '@wms/entities';
 import { Validator } from '@wms/helpers';
 import HeaderDeparture from './Steps/HeaderDeparture';
 import DetailDeparture from './Steps/DetailDeparture';
+import ReportDeparture from './Steps/Report';
 
 interface IDataExcel {
   all: (Data<string> & Meta)[],
@@ -47,8 +48,8 @@ const DeparturesStepper = () => {
 
   const { useMasterDepartureMutation, useMasterDepartureQuery, useMasterDepartureDeleteDetailMutation } = useMasterDeparture();
   const { data, refetch, isRefetching } = useMasterDepartureQuery({ masterDepartureId: Number(params.departureId) || 0 });
-  const mutation = useMasterDepartureMutation({ pageIndex: 0, pageSize: 1000, filter: '' }, { typeMutation: !params.entryId ? 'post' : 'put' });
-  const mutationDetailDelete = useMasterDepartureDeleteDetailMutation({ typeMutation: !params.entryId ? 'post' : 'put' });
+  const mutation = useMasterDepartureMutation({ pageIndex: 0, pageSize: 1000, filter: '' }, { typeMutation: !params.departureId ? 'post' : 'put' });
+  const mutationDetailDelete = useMasterDepartureDeleteDetailMutation({ typeMutation: !params.departureId ? 'post' : 'put' });
 
   const steps = React.useMemo<{ label: string }[]>(() => [
     { label: 'Departure' },
@@ -59,9 +60,9 @@ const DeparturesStepper = () => {
   const ComponentStep = (step: number) => {
     switch (step) {
       case 1:
-        return (<DetailDeparture dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} openImport={openImport} />);
+        return (<DetailDeparture dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} masterDepartureId={Number(params.departureId)} />);
       case 2:
-        return (<>Report</>);
+        return (<ReportDeparture />);
       default:
         return (<HeaderDeparture dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} setActiveStep={setActiveStep} clickCounter={clickCounter} />);
     }

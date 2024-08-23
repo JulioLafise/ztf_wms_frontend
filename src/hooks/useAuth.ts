@@ -56,6 +56,19 @@ const useAuth = () => {
     }
   };
 
+  const onForgotPassword = async (data: { username: string }) => {
+    try {
+      setLoading(true);
+      const result = (await dispatch(authAsyncThunks.putForgotPassword(data))).payload;
+      Validator.httpValidation(result as any);
+      setLoading(false);
+      return Promise.resolve(result);
+    } catch (error) {
+      setLoading(false);
+      return Promise.reject(error);
+    }
+  };
+
   return {
     //VAR
     isAuthenticated,
@@ -67,7 +80,8 @@ const useAuth = () => {
     onSignIn,
     onSignOut,
     onRefreshToken,
-    onChangePassword
+    onChangePassword,
+    onForgotPassword
   };
 };
 

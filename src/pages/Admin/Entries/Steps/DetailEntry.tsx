@@ -266,6 +266,7 @@ const DetailEntry: React.FC<IPropsDetail> = (props) => {
             })
             .catch(err => { swalToastError(err.message, { showConfirmButton: false, timer: 3000 }); });
         } else {
+          swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
           setRowData([]);
           setDataGeneral(prevState => ({ ...prevState, dataDetail: [] }));
         }

@@ -96,3 +96,16 @@ export const putChangePassword = createAsyncThunk(
     }
   }
 );
+
+export const putForgotPassword = createAsyncThunk(
+  'Auth/putForgotPassword',
+  async (args: { username: string }, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.updateUserForgotPasswordPUT({ body: { userName: args.username } });
+      // if (data.status !== 200) return false;
+      return true;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);

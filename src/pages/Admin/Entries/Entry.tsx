@@ -127,7 +127,7 @@ const EntryPage = () => {
   const onStateChange = async (values: { [key: string]: any }) => {
     if (values.isFinish) {
       swalToastInfo('Entry Finished', {
-        message: 'A completed entry cannot be edited',
+        message: 'Cannot change state an finished entry',
         timer: 3000
       });
       return;

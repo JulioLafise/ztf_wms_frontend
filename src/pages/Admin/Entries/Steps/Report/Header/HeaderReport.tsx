@@ -16,7 +16,7 @@ const HeaderReport = (props: IHeaderReport) => {
     <View style={styles.header}>
       <View style={styles.headerLeft}>
         <Image src={props.logo} style={{
-          width: '40px',
+          width: '90px',
           height: '40px'
         }}>
         </Image>

@@ -26,6 +26,19 @@ export const getInventoryList = createAsyncThunk(
   }
 );
 
+export const getInventoryDepartureList = createAsyncThunk(
+  'catalogue/getInventoryDepartureList',
+  async (args: never, { rejectWithValue, dispatch }) => {
+    try {
+      dispatch(onInventoryGenerate());
+      const { data } = await WMSAPI.inventoryDepartureListGET({ params: args });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
 export const getAvailableStockList = createAsyncThunk(
   'catalogue/getAvailableStockList',
   async (paginationDto: PaginationDTO, { rejectWithValue, dispatch }) => {

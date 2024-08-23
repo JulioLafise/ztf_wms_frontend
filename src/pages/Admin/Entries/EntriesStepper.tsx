@@ -27,7 +27,7 @@ import { MasterEntryEntity, DetailEntryEntity } from '@wms/entities';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
 import HeaderEntry from './Steps/HeaderEntry';
 import DetailEntry from './Steps/DetailEntry';
-import Report from './Steps/ReportEntries';
+import Report from './Steps/Report';
 
 interface IDataExcel {
   all: (Data<string> & Meta)[],

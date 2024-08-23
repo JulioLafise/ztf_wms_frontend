@@ -1,5 +1,4 @@
 
-
 export class InventoryEntity {
   constructor(
     public inventoryId?: number,

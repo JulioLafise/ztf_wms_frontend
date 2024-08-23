@@ -5,14 +5,16 @@ import { IPagination } from '@wms/interfaces';
 import {
   InventoryEntity,
   AvailableStockEntity,
-  CustomerStockEntity
+  CustomerStockEntity,
+  InventoryDepartureEntity
 } from '@wms/entities';
 import { PaginationDTO } from '@wms/dtos';
 import { Validator } from '@wms/helpers';
 import {
   InventoryMapper,
   AvailableStockMapper,
-  CustomerStockMapper
+  CustomerStockMapper,
+  InventoryDepartureMapper
 } from '@wms/mappers';
 
 
@@ -30,6 +32,21 @@ const useInventory = () => {
         const data = (await dispatch(inventoryAsyncThunks.getInventoryList(paginationDto!))).payload;
         Validator.httpValidation(data as any);
         return InventoryMapper.getList(data);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: 20 * 60 * 60
+  });
+
+  const useInventoryDepartureListQuery = () => useQuery<InventoryDepartureEntity[]>({
+    queryKey: ['inventory-departure-list', { }],    
+    queryFn: async () => {
+      try {
+        const data = (await dispatch(inventoryAsyncThunks.getInventoryDepartureList())).payload;
+        Validator.httpValidation(data as any);
+        return InventoryDepartureMapper.getList(data);
       } catch (error) {
         return Promise.reject(error);
       }
@@ -93,7 +110,8 @@ const useInventory = () => {
     //METHODS
     useInventoryListQuery,
     useAvailableStockListQuery,
-    useCustomerStockListQuery
+    useCustomerStockListQuery,
+    useInventoryDepartureListQuery
   };
 };
 
