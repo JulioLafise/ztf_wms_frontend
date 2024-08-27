@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppSelector, useAppDispatch } from '@wms/redux/selector';
 import { masterPurchaseOrderAsyncThunks } from '@wms/redux/actions';
 import { IPagination, IOptionsQuery } from '@wms/interfaces';
-import { MasterPurchaseOrderEntity } from '@wms/entities';
+import { MasterPurchaseOrderEntity, PurchaseOrderYearEntity } from '@wms/entities';
 import { PaginationDTO, MasterPurchaseOrderDTO } from '@wms/dtos';
 import { Validator } from '@wms/helpers';
 import { MasterPurchaseOrderMapper } from '@wms/mappers';
@@ -23,6 +23,21 @@ const useMasterPurchaseOrder = () => {
         const data = (await dispatch(masterPurchaseOrderAsyncThunks.getMasterPurchaseOrderList(paginationDto!))).payload;
         Validator.httpValidation(data as any);
         return MasterPurchaseOrderMapper.getList(data);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: 20 * 60 * 60
+  });
+
+  const usePurchaseOrderYearListQuery = (args: { year: number }) => useQuery<PurchaseOrderYearEntity[]>({
+    queryKey: ['purchase-order-year-list', { ...args }],    
+    queryFn: async () => {
+      try {
+        const data = (await dispatch(masterPurchaseOrderAsyncThunks.getMasterPurchaseYearOrder(args))).payload;
+        Validator.httpValidation(data as any);
+        return MasterPurchaseOrderMapper.getPurchaseOrderYearList(data);
       } catch (error) {
         return Promise.reject(error);
       }
@@ -57,6 +72,7 @@ const useMasterPurchaseOrder = () => {
     //METHODS
     useMasterPurchaseOrderQuery,
     useMasterPurchaseOrderListQuery,
+    usePurchaseOrderYearListQuery
   };
 };
 

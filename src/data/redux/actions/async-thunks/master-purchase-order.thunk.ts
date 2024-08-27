@@ -31,3 +31,16 @@ export const getMasterPurchaseOrder = createAsyncThunk(
     }
   }
 );
+
+export const getMasterPurchaseYearOrder = createAsyncThunk(
+  'catalogue/getMasterPurchaseYearOrder',
+  async (args: { year: number }, { rejectWithValue, dispatch }) => {
+    try {
+      dispatch(onGenerate());
+      const { data } = await WMSAPI.masterPurchaseOrderYearGET({ params: args });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);

@@ -7,7 +7,7 @@ import {
   IBodyProps,
   IParamsProps
 } from '@wms/interfaces';
-import { MasterPurchaseOrderEntity } from '@wms/entities';
+import { MasterPurchaseOrderEntity, PurchaseOrderYearEntity } from '@wms/entities';
 
 
 export const masterPurchaseOrderListGET = async (options: IPaginationProps<PaginationDTO>): Promise<IJsonBody<IPaginationResp<MasterPurchaseOrderEntity>>> => await httpClient.get({
@@ -17,7 +17,12 @@ export const masterPurchaseOrderListGET = async (options: IPaginationProps<Pagin
   }
 });
 
-export const masterPurchaseOrderGET = async (options: IParamsProps<MasterPurchaseOrderDTO>): Promise<IJsonBody<MasterPurchaseOrderDTO>> => await httpClient.get({
+export const masterPurchaseOrderGET = async (options: IParamsProps<MasterPurchaseOrderDTO>): Promise<IJsonBody<MasterPurchaseOrderEntity>> => await httpClient.get({
   url: `maestropedido/${options.params.maestroPedidoId}/`,
+  options: {}
+});
+
+export const masterPurchaseOrderYearGET = async (options: IParamsProps<{ year: number }>): Promise<IJsonBody<PurchaseOrderYearEntity>> => await httpClient.get({
+  url: `maestropedido/reporte/${options.params.year}/estato`,
   options: {}
 });

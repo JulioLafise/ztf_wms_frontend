@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   Paper,
@@ -5,30 +6,60 @@ import {
   useTheme
 } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
 import { FontAwesomeIcon, IconButtonBg } from '@wms/components';
+import { useMasterPurchaseOrder } from '@wms/hooks';
 import {
   ChartPieVisit,
   CharBarsAnnualVisits,
-  GaugeChartPerformance
+  GaugeChartPerformance,
+  StatusCard
 } from './widgets';
-import { useNavigate } from 'react-router-dom';
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const [approved, setApproved] = React.useState(0);
+  const [pending, setPending] = React.useState(0);
+
+  const { usePurchaseOrderYearListQuery } = useMasterPurchaseOrder();
+  const { data, isLoading, refetch } = usePurchaseOrderYearListQuery({ year: moment().year() });
+
+  React.useEffect(() => {
+    if (data?.length) {
+      const status = data.map(item => item.status);
+      const statusFilter = status.filter((ft, index) => status.indexOf(ft) === index);
+      statusFilter.forEach(stat => {
+        data.filter(ft => ft.status === stat).forEach(item => {
+          if (item.status === 'APROBADO') {
+            setApproved(prevState => prevState + item.count);
+          }
+          if (item.status === 'EN PROCESO') {
+            setPending(prevState => prevState + item.count);
+          }
+        });
+      });
+    }
+  }, [data]);
+
   return (
     <Box component="div" className="grid gap-3 grid-cols-12 grid-rows-auto">
-      <Box component="div" className="col-span-12 col-start-1 row-start-1 animate-fade">
+      <Box component="div" className="col-span-12 col-start-1 row-start-1 animate-fade flex gap-2">
+        <StatusCard title="APROBADOS" count={approved} color="success" />
+        <StatusCard title="EN PROCESO" count={pending} color="warning" comment="Review" />
+      </Box>
+      <Box component="div" className="col-span-12 col-start-1 row-start-2 animate-fade">
         <CharBarsAnnualVisits />
       </Box>
-      <Box component="div" className="col-span-12 md:col-span-6 col-start-1 row-start-2 animate-fade">
+      <Box component="div" className="col-span-12 md:col-span-6 col-start-1 row-start-3 animate-fade">
         <ChartPieVisit />
       </Box>
-      <Box component="div" className="col-span-12 md:col-span-6 col-start-1 row-start-3 md:row-start-2 animate-fade">
+      <Box component="div" className="col-span-12 md:col-span-6 col-start-1 row-start-4 md:row-start-3 animate-fade">
         <GaugeChartPerformance />
       </Box>
       <Box component="div" className="col-span-full row-start-auto flex gap-2">
-        <Paper
+        {/* <Paper
           elevation={4}
           className="w-full md:w-3/12 p-3 flex flex-col gap-3"
         >
@@ -46,7 +77,7 @@ const DashboardPage = () => {
               </IconButtonBg>
             </Box>
           </Box>
-        </Paper>
+        </Paper> */}
       </Box>
     </Box>
   );

@@ -10,14 +10,14 @@ export const menu: IMenuList[] = [
     icon: 'chart-column',
     description: '',
     children: [
-      {
-        menuId: 'metrics',
-        menuUrl: '/metrics',
-        menuName: 'Metrics',
-        icon: 'chart-pie',
-        description: '',
-        roles: ['dev']
-      },
+      // {
+      //   menuId: 'metrics',
+      //   menuUrl: '/metrics',
+      //   menuName: 'Metrics',
+      //   icon: 'chart-pie',
+      //   description: '',
+      //   roles: ['dev']
+      // },
     ],
     roles: ['dev']
   },

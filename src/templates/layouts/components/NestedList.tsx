@@ -24,20 +24,23 @@ interface INestedListProps {
 
 const NestedList = ({ menu, handleClose }: INestedListProps) => {
   const [open, setOpen] = React.useState(false);
+  const [isChildren] = React.useState(menu?.children?.length > 0);
   const navigate = useNavigate();
   const onToggle = (open: boolean) => (event: any) => setOpen(open);
   // const handleClick = () => setOpen(!open);
   return (
     <React.Fragment>
       <ListItem
-        // onClick={handleClick}
+        onClick={() => { !isChildren && handleClose(); }}
         onMouseOver={onToggle(true)}
         onMouseLeave={onToggle(false)}
         className="text-end"
         secondaryAction={
-          <IconButton edge="end" >
-            {open ? <ExpandLess /> : <ExpandMore />}
-          </IconButton>
+          isChildren && (
+            <IconButton edge="end" >
+              {open ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
+          )
         }
         // disablePadding
       >
@@ -47,40 +50,45 @@ const NestedList = ({ menu, handleClose }: INestedListProps) => {
             justifyContent: 'initial',
             px: 2.5,
           }}
+          onClick={() => { !isChildren && navigate(`${menu.menuUrl}`, { replace: false }); }}
         >
           <ListItemIcon><FontAwesomeIcon iconLabel={menu.icon} size="lg" /></ListItemIcon>
           <ListItemText disableTypography primary={menu?.menuName} className="font-semibold" />
         </ListItemButton>
       </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          {
-            menu.children!.map(item => (
-              <ListItem key={uuid()} sx={{ pl: 1 }} onClick={handleClose} className="text-end" disablePadding onMouseOver={onToggle(true)} onMouseLeave={onToggle(false)}>
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: 'initial',
-                    px: 2.5,
-                  }}
-                  onClick={() => navigate(`${menu.menuUrl}${item.menuUrl}`, { replace: false })}
-                >
-                  <ListItemText primary={item.menuName} />
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      ml: 'auto',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <FontAwesomeIcon iconLabel={item.icon} size="lg" />
-                  </ListItemIcon>
-                </ListItemButton>
-              </ListItem>
-            ))
-          }
-        </List>
-      </Collapse>
+      {
+        isChildren && (
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {
+                menu.children!.map(item => (
+                  <ListItem key={uuid()} sx={{ pl: 1 }} onClick={handleClose} className="text-end" disablePadding onMouseOver={onToggle(true)} onMouseLeave={onToggle(false)}>
+                    <ListItemButton
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: 'initial',
+                        px: 2.5,
+                      }}
+                      onClick={() => navigate(`${menu.menuUrl}${item.menuUrl}`, { replace: false })}
+                    >
+                      <ListItemText primary={item.menuName} />
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          ml: 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <FontAwesomeIcon iconLabel={item.icon} size="lg" />
+                      </ListItemIcon>
+                    </ListItemButton>
+                  </ListItem>
+                ))
+              }
+            </List>
+          </Collapse>
+        )
+      }
     </React.Fragment>
   );
 };

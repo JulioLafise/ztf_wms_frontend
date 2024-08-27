@@ -34,3 +34,4 @@ export * from './auth.entity';
 export * from './customer-stock.entity';
 export * from './available-stock.entity';
 export * from './inventory-departure.entity';
+export * from './purchase-order-year.entity';

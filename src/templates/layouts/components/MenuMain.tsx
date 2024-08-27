@@ -27,6 +27,7 @@ interface IMenuProps {
 const MenuMain: React.FC<IMenuProps> = (props) => {
   const { toggleDrawer, menu, openSideBar, typeSideBar } = props;
   const [open, setOpen] = React.useState(false);
+  const [isChildren] = React.useState(menu?.children?.length > 0);
   // const [open, setOpen] = React.useState(typeSideBar === 'permanent');
 
   // const onToggle = (ev: any) => setOpen(prevState => !prevState);
@@ -41,7 +42,7 @@ const MenuMain: React.FC<IMenuProps> = (props) => {
         disablePadding
         sx={{ display: 'block' }}
         secondaryAction={
-          openSideBar && (
+          isChildren && openSideBar && (
             <IconButton edge="end" >
               {open ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
@@ -54,6 +55,7 @@ const MenuMain: React.FC<IMenuProps> = (props) => {
             justifyContent: 'initial',
             px: 2.5,
           }}
+          onClick={(e) => { !isChildren && toggleDrawer(false, `${menu.menuUrl}`)(e); }}
         >
           <Tooltip title={menu.menuName} placement="right">
             <ListItemIcon><FontAwesomeIcon iconLabel={menu.icon} size="lg" /></ListItemIcon>
@@ -61,22 +63,26 @@ const MenuMain: React.FC<IMenuProps> = (props) => {
           <ListItemText disableTypography primary={menu?.menuName} className="font-semibold" />
         </ListItemButton>
       </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <ClickAwayListener onClickAway={() => { }}>
-          <List>
-            {menu?.children?.map((item) => (
-              <ListItem key={item.menuId} disablePadding onMouseOver={onToggle(true)} onMouseLeave={onToggle(false)}>
-                <ListItemButton onClick={toggleDrawer(false, `${menu.menuUrl}${item.menuUrl}`)}>
-                  <ListItemIcon sx={{ pl: 1 }} >
-                    <FontAwesomeIcon iconLabel={item.icon} size="lg" />
-                  </ListItemIcon>
-                  <ListItemText primary={item.menuName} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </ClickAwayListener>
-      </Collapse>
+      {
+        isChildren && (
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <ClickAwayListener onClickAway={() => { }}>
+              <List>
+                {menu?.children?.map((item) => (
+                  <ListItem key={item.menuId} disablePadding onMouseOver={onToggle(true)} onMouseLeave={onToggle(false)}>
+                    <ListItemButton onClick={toggleDrawer(false, `${menu.menuUrl}${item.menuUrl}`)}>
+                      <ListItemIcon sx={{ pl: 1 }} >
+                        <FontAwesomeIcon iconLabel={item.icon} size="lg" />
+                      </ListItemIcon>
+                      <ListItemText primary={item.menuName} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </ClickAwayListener>
+          </Collapse>
+        )
+      }
       {menu.menuId === 'dashboard' && <Divider />}
     </React.Fragment>
   );

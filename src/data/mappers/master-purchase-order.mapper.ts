@@ -1,4 +1,4 @@
-import { MasterPurchaseOrderEntity, DetailPurchaseOrderEntity } from '@wms/entities';
+import { MasterPurchaseOrderEntity, DetailPurchaseOrderEntity, PurchaseOrderYearEntity } from '@wms/entities';
 import { Validator } from '@wms/helpers';
 
 export class MasterPurchaseOrderMapper {
@@ -66,6 +66,24 @@ export class MasterPurchaseOrderMapper {
             pay: value.pago,
             price: value.precio,
             isActive: value.isActivo,
+          }
+        ];
+      });
+    } else throw new Error('An array was expected');
+    return data;
+  }
+
+  static getPurchaseOrderYearList(values: unknown): PurchaseOrderYearEntity[] {
+    let data: PurchaseOrderYearEntity[] = [];
+    if (Array.isArray(values)){
+      values.forEach(value => {
+        data = [
+          ...data,
+          {
+            year: value.year,
+            month: value.fecha,
+            status: value.estado,
+            count: value.count
           }
         ];
       });

@@ -93,7 +93,7 @@ const NavBarMobile = (props: INavBarMobileProps) => {
               className="pl-2"
               fontWeight="bold"
               onClick={onNavHome}
-              minWidth={378}
+              // minWidth={378}
               display={{ xs: 'none', sm: 'initial', md: 'initial' }}
             >
               {enviroment.appShortName}
