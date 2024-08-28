@@ -212,7 +212,7 @@ const DeparturePage = () => {
             )
         )}
       />
-      <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} />
+      {/* <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} /> */}
     </Paper>
   );
 };

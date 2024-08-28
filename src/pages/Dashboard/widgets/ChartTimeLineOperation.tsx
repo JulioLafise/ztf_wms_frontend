@@ -1,36 +1,36 @@
 import React from 'react';
 import {
-  Paper,
+  Box,
   IconButton,
-  Skeleton,
-  Box
+  Paper,
+  Skeleton
 } from '@mui/material';
 import { RefreshRounded } from '@mui/icons-material';
-import { ChartPie } from '@wms/components';
-import { useMasterAccount } from '@wms/hooks';
+import { ChartBars } from '@wms/components';
+import { useMasterDeparture } from '@wms/hooks';
 import { v4 as uuid } from 'uuid';
 import moment from 'moment';
 
-const ChartPieVisit = () => {
-  const { useAccountStatusQuery } = useMasterAccount();
+const CharBarsAnnualVisits = () => {
   const [chartData, setChartData] = React.useState<any[]>([]);
-
-  const { data, isLoading, refetch } = useAccountStatusQuery({ year: moment().year(), statusId: 0 });
+  const { useEntryDepartureListQuery } = useMasterDeparture();
+  const { data, isLoading, refetch } = useEntryDepartureListQuery({ year: moment().year() });
 
   React.useEffect(() => {
     if (data?.length > 0) {
-      const status = data.map(item => item.status);
-      const statusFilter = status.filter((ft, index) => status.indexOf(ft) === index);
-      statusFilter.forEach(statu => {
+      const months = data.map(item => item.month);
+      const monthsFilter = months.filter((ft, index) => months.indexOf(ft) === index);
+      monthsFilter.forEach(month => {
         let newState: any = {};
-        let acc = 0;
-        data.filter(ft => ft.status === statu).forEach(item => {
-          acc += Number(item.count) || 0;
+        data.filter(ft => ft.month === month).forEach(item => {
+          newState = {
+            field: item.month,
+            values: {
+              ...newState.values,
+              [item.type.toUpperCase()]: item.count
+            }
+          };
         });
-        newState = {
-          category: statu,
-          value: acc
-        };
         setChartData(prevState => [
           ...prevState,
           newState
@@ -54,8 +54,8 @@ const ChartPieVisit = () => {
               />
               <Skeleton
                 animation="wave"
-                variant="circular"
-                width="35%"
+                variant="rectangular"
+                width="15%"
                 height="200px"
                 sx={{ bgcolor: 'grey.400' }}
               />
@@ -64,11 +64,10 @@ const ChartPieVisit = () => {
           : (
             <React.Fragment>
               <IconButton onClick={() => refetch()}><RefreshRounded /></IconButton>
-              <ChartPie
+              <ChartBars
                 id={uuid()}
+                title={`Entradas y Salidas - ${moment().year()}`}
                 data={chartData}
-                title={`Estado de Cuentas - ${moment().year()}`}
-                size={{ height: '350px' }}
               />
             </React.Fragment>
           )
@@ -77,4 +76,4 @@ const ChartPieVisit = () => {
   );
 };
 
-export default ChartPieVisit;
+export default CharBarsAnnualVisits;

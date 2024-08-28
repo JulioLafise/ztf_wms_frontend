@@ -1,4 +1,4 @@
-import { MasterDepartureEntity, DetailDepartureEntity } from '@wms/entities';
+import { MasterDepartureEntity, DetailDepartureEntity, EntryDepartureEntity } from '@wms/entities';
 import { Validator } from '@wms/helpers';
 import moment from 'moment';
 
@@ -111,6 +111,23 @@ export class MasterDepartureMapper {
         ];
       });
     } 
+    return data;
+  }
+
+  static getEntryDepartureList(values: unknown): EntryDepartureEntity[] {
+    let data: EntryDepartureEntity[] = [];
+    if (Array.isArray(values)){
+      values.forEach(value => {
+        data = [
+          ...data,
+          {
+            month: value.fecha,
+            count: value.count,
+            type: value.type === 'entrada' ? 'entry' : 'departure'
+          }
+        ];
+      });
+    } else throw new Error('An array was expected');
     return data;
   }
 

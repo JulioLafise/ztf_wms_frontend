@@ -23,3 +23,4 @@ export * from './available-stock.mapper';
 export * from './customer-stock.mapper';
 export * from './inventory-departure.mapper';
 export * from './user.mapper';
+export * from './master-account.mapper';

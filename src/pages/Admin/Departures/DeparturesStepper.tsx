@@ -33,7 +33,7 @@ const DeparturesStepper = () => {
   const { isSideBarOpen, isMobile } = useUI();
   const params = useParams();
   const navigate = useNavigate();
-  const { swalToastSuccess, swalToastError, swalToastWait } = useAlertNotification();
+  const { swalToastSuccess, swalToastError, swalToastWait, swalToastQuestion } = useAlertNotification();
   const [openImport, setOpenImport] = React.useState(false);
   const [activeStep, setActiveStep] = React.useState(0);
   const previousStep = () => setActiveStep(prevState => prevState - 1);
@@ -62,7 +62,7 @@ const DeparturesStepper = () => {
       case 1:
         return (<DetailDeparture dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} masterDepartureId={Number(params.departureId)} />);
       case 2:
-        return (<ReportDeparture />);
+        return (<ReportDeparture data={data} />);
       default:
         return (<HeaderDeparture dataGeneral={dataGeneral} setDataGeneral={setDataGeneral} setActiveStep={setActiveStep} clickCounter={clickCounter} />);
     }
@@ -80,8 +80,25 @@ const DeparturesStepper = () => {
     setDataGeneral(prevState => ({ ...prevState, dataImport: validatedData }));
   };
 
+  const onQuestionOperation = () => {
+    if (params.departureId) {
+      swalToastQuestion('Action Departure', {
+        message: 'Do you want to save the changes to the departure or generate the report?',
+        showConfirmButton: true,
+        confirmButtonText: 'Save',
+        showCancelButton: true,
+        cancelButtonText: 'Report'
+      })
+        .then(result => {
+          if (result.isConfirmed) {
+            onSaveOrEdit();            
+          } else nextStep();
+        });
+    } else onSaveOrEdit();
+  };
+
   const onSaveOrEdit = () => {
-    const title = !params.entryId ? 'Saving Entry!' : 'Updating Entry!';
+    const title = !params.departureId ? 'Saving Departure!' : 'Updating Departure!';
     swalToastWait(title, {
       message: 'Please wait a few minutes',
       showLoading: true,
@@ -92,6 +109,7 @@ const DeparturesStepper = () => {
     };
     mutationDetailDelete.mutateAsync(values)
       .then(() => {
+        // console.log(values);
         mutation.mutateAsync(values)
           .then(result => {
             swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
@@ -177,7 +195,7 @@ const DeparturesStepper = () => {
             ? (
               <ButtonActions
                 title={activeStep === 1 ? 'Save' : 'Next'}
-                onClick={activeStep === 0 ? onClick : activeStep === 1 ? onSaveOrEdit : nextStep}
+                onClick={activeStep === 0 ? onClick : activeStep === 1 ? onQuestionOperation : nextStep}
                 ComponentIcon={activeStep === 1 ? <Save /> : <ArrowForward />}
                 ubication={isMobile ? {} : { bottom: 99, right: 99 }}
                 disabled={(mutation.isPending || mutationDetailDelete.isPending)}

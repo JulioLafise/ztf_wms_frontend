@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppSelector, useAppDispatch } from '@wms/redux/selector';
 import { masterDepartureAsyncThunks } from '@wms/redux/actions';
 import { IPagination, IOptionsQuery } from '@wms/interfaces';
-import { MasterDepartureEntity } from '@wms/entities';
+import { MasterDepartureEntity, EntryDepartureEntity } from '@wms/entities';
 import { PaginationDTO, MasterDepartureDTO } from '@wms/dtos';
 import { Validator } from '@wms/helpers';
 import { MasterDepartureMapper } from '@wms/mappers';
@@ -23,6 +23,21 @@ const useMasterDeparture = () => {
         const data = (await dispatch(masterDepartureAsyncThunks.getMasterDepartureList(paginationDto!))).payload;
         Validator.httpValidation(data as any);
         return MasterDepartureMapper.getList(data);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: 20 * 60 * 60
+  });
+
+  const useEntryDepartureListQuery = (args: { year: number }) => useQuery<EntryDepartureEntity[]>({
+    queryKey: ['entry-departure-list', { ...args }],    
+    queryFn: async () => {
+      try {
+        const data = (await dispatch(masterDepartureAsyncThunks.getEntryDepartureList(args))).payload;
+        Validator.httpValidation(data as any);
+        return MasterDepartureMapper.getEntryDepartureList(data);
       } catch (error) {
         return Promise.reject(error);
       }
@@ -133,6 +148,7 @@ const useMasterDeparture = () => {
     //METHODS
     useMasterDepartureQuery,
     useMasterDepartureListQuery,
+    useEntryDepartureListQuery,
     useMasterDepartureMutation,
     useMasterDepartureFinishMutation,
     useMasterDepartureDeleteDetailMutation

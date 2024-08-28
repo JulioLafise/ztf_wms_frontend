@@ -9,7 +9,7 @@ export class DepartureTypeMapper {
     if (!Validator.isObjectEmpty(values as any)){
       const value: any = values;
       data = {
-        departureTypeId: value.tipoEntrada,
+        departureTypeId: value.tipoSalidaId,
         description: value.descripcion,
         isActive: value.isActivo
       };
@@ -24,7 +24,7 @@ export class DepartureTypeMapper {
         data = [
           ...data,
           {
-            departureTypeId: value.tipoEntrada,
+            departureTypeId: value.tipoSalidaId,
             description: value.descripcion,
             isActive: value.isActivo
           }

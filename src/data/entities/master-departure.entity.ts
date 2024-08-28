@@ -3,6 +3,7 @@ import {
   DepartureTypeEntity,
   DetailDepartureEntity,
   EmployeeEntity,
+  MasterPurchaseOrderEntity,
   TypeCurrencyEntity,
 } from './';
 
@@ -18,6 +19,7 @@ export class MasterDepartureEntity {
     public typeCurrency?: TypeCurrencyEntity,
     public departureType?: DepartureTypeEntity,
     public details?: DetailDepartureEntity[],
+    public purchaseOrder?: MasterPurchaseOrderEntity,
     public isFinish?: boolean,
     public isEcommerce?: boolean,
     public isActive?: boolean,

@@ -27,3 +27,15 @@ export const onAssingMasterAccount = createAsyncThunk(
     }
   }
 );
+
+export const getAccountYearList = createAsyncThunk(
+  'catalogue/getAccountYearList',
+  async (args: { year: number, statusId: number }, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.accountYearListGET({ params: args });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);

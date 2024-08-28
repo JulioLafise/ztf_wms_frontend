@@ -21,3 +21,10 @@ export const assignMasterAccountPOST = async (options: IBodyProps<MasterAccountD
     data: options.body
   }
 });
+
+export const accountYearListGET = async (options: IParamsProps<{ year: number, statusId: number }>): Promise<IJsonBody<boolean>> => await httpClient.get({
+  url: `maestrocuenta/ventas/${options.params.year}/estado/${options.params.statusId}`,
+  options: {
+    data: options.body
+  }
+});

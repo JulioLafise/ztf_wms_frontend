@@ -17,7 +17,7 @@ const CharBarsAnnualVisits = () => {
   const { data, isLoading, refetch } = usePurchaseOrderYearListQuery({ year: moment().year() });
 
   React.useEffect(() => {
-    if (data?.length) {
+    if (data?.length > 0) {
       const months = data.map(item => item.month);
       const monthsFilter = months.filter((ft, index) => months.indexOf(ft) === index);
       monthsFilter.forEach(month => {

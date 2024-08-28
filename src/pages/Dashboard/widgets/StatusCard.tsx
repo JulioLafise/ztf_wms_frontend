@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography } from '@mui/material';
+import CountUp from 'react-countup';
 import { FontAwesomeIcon } from '@wms/components';
 import { v4 as uuid } from 'uuid';
 
@@ -30,7 +31,13 @@ const StatusCard: React.FC<IProps> = (props) => {
             <div className="flex flex-wrap">
               <div className="relative w-full pr-4 max-w-full flex-grow flex-1">
                 <h5 className="text-blueGray-400 uppercase font-bold text-xs">{title}</h5>
-                <span className="font-semibold text-3xl text-blueGray-700">{new Intl.NumberFormat('en-us', { maximumSignificantDigits: 2 }).format(count || 0)}</span>
+                {/* <span className="font-semibold text-3xl text-blueGray-700">{new Intl.NumberFormat('en-us', { maximumSignificantDigits: 2 }).format(count || 0)}</span> */}
+                <CountUp start={0} end={count} delay={0}>
+                  {({ countUpRef }) => (
+                    <span ref={countUpRef} className="font-semibold text-3xl text-blueGray-700" />
+                  )
+                  }
+                </CountUp>
               </div>
               <div className="relative w-auto pl-4 flex-initial">
                 <div className={`text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full ${getFormat(color).bgColor}`}>

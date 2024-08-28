@@ -41,4 +41,9 @@ export class GeneratedData {
     return Math.floor(Math.random() * max);
   }
 
+  static getCounterNumber(value: number) {
+    const counter = { var: 0  };
+    
+  }
+
 }

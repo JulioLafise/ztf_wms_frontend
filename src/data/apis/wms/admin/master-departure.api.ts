@@ -7,7 +7,7 @@ import {
   IBodyProps,
   IParamsProps
 } from '@wms/interfaces';
-import { MasterDepartureEntity } from '@wms/entities';
+import { MasterDepartureEntity, EntryDepartureEntity } from '@wms/entities';
 
 
 export const masterDepartureListGET = async (options: IPaginationProps<PaginationDTO>): Promise<IJsonBody<IPaginationResp<MasterDepartureEntity>>> => await httpClient.get({
@@ -19,6 +19,11 @@ export const masterDepartureListGET = async (options: IPaginationProps<Paginatio
 
 export const masterDepartureGET = async (options: IParamsProps<MasterDepartureDTO>): Promise<IJsonBody<MasterDepartureEntity>> => await httpClient.get({
   url: `maestrosalida/${options.params.maestroSalidaId}/`,
+  options: {}
+});
+
+export const listEntryDepartureGET = async (options: IParamsProps<{ year: number }>): Promise<IJsonBody<EntryDepartureEntity[]>> => await httpClient.get({
+  url: `maestrosalida/linia-d-tiempo/${options.params.year}/entrada-salida`,
   options: {}
 });
 

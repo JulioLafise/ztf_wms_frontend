@@ -19,6 +19,18 @@ export const getMasterDepartureList = createAsyncThunk(
   }
 );
 
+export const getEntryDepartureList = createAsyncThunk(
+  'catalogue/getEntryDepartureList',
+  async (args: { year: number }, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await WMSAPI.listEntryDepartureGET({ params: args });
+      return data;
+    } catch (rejectedValueOrSerializedError) {
+      return rejectWithValue(filterErrorAxios(rejectedValueOrSerializedError));
+    }
+  }
+);
+
 export const getMasterDeparture = createAsyncThunk(
   'catalogue/getMasterDeparture',
   async (masterDepartureDto: MasterDepartureDTO, { rejectWithValue, dispatch }) => {

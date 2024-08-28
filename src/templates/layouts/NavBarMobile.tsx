@@ -47,6 +47,7 @@ const NavBarMobile = (props: INavBarMobileProps) => {
   const { theme } = useUI();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down(768));
+  const isMinWidth = useMediaQuery((theme: Theme) => theme.breakpoints.down(512));
   const [openMobile, setOpenMobile] = React.useState(false);
   const isMenuOpen = Boolean(anchorEl);
 
@@ -94,7 +95,8 @@ const NavBarMobile = (props: INavBarMobileProps) => {
               fontWeight="bold"
               onClick={onNavHome}
               // minWidth={378}
-              display={{ xs: 'none', sm: 'initial', md: 'initial' }}
+              // display={{ xs: 'none', sm: 'initial', md: 'initial' }}
+              display={isMinWidth ? 'none' : 'initial'}
             >
               {enviroment.appShortName}
             </Typography>

@@ -14,6 +14,7 @@ import {
   ChartPieVisit,
   CharBarsAnnualVisits,
   GaugeChartPerformance,
+  ChartTimeLineOperation,
   StatusCard
 } from './widgets';
 
@@ -46,16 +47,19 @@ const DashboardPage = () => {
   return (
     <Box component="div" className="grid gap-3 grid-cols-12 grid-rows-auto">
       <Box component="div" className="col-span-12 col-start-1 row-start-1 animate-fade flex gap-2">
-        <StatusCard title="APROBADOS" count={approved} color="success" />
-        <StatusCard title="EN PROCESO" count={pending} color="warning" comment="Review" />
+        <StatusCard title="ORDENES APROBADAS" count={approved} color="success" />
+        <StatusCard title="ORDENES EN PROCESO" count={pending} color="warning" comment="Review" />
       </Box>
       <Box component="div" className="col-span-12 col-start-1 row-start-2 animate-fade">
         <CharBarsAnnualVisits />
       </Box>
-      <Box component="div" className="col-span-12 md:col-span-6 col-start-1 row-start-3 animate-fade">
+      <Box component="div" className="col-span-12 col-start-1 row-start-3 animate-fade">
+        <ChartTimeLineOperation />
+      </Box>
+      <Box component="div" className="col-span-12 md:col-span-6 col-start-1 row-start-4 animate-fade">
         <ChartPieVisit />
       </Box>
-      <Box component="div" className="col-span-12 md:col-span-6 col-start-1 row-start-4 md:row-start-3 animate-fade">
+      <Box component="div" className="col-span-12 md:col-span-6 col-start-1 row-start-5 md:row-start-4 animate-fade">
         <GaugeChartPerformance />
       </Box>
       <Box component="div" className="col-span-full row-start-auto flex gap-2">

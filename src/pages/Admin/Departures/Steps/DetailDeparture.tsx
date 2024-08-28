@@ -7,7 +7,13 @@ import _ from 'lodash';
 import * as Yup from 'yup';
 import { MasterDepartureEntity, DetailDepartureEntity } from '@wms/entities';
 import { IOnSaveAndEditRows, IValidationErrors, ComboBoxSelectTable } from '@wms/interfaces';
-import { useAlertNotification, useInventory, useProductStatus, useProduct } from '@wms/hooks';
+import {
+  useAlertNotification,
+  useInventory,
+  useProductStatus,
+  useProduct,
+  useMasterPurchaseOrder
+} from '@wms/hooks';
 import { MaterialTable, TextFieldHF, DecimalNumberFormat } from '@wms/components';
 import { paginateArray, Validator, GeneratedData } from '@wms/helpers';
 
@@ -48,8 +54,8 @@ interface ISchemaValidationTable {
 
 const schemaValidationTable: Yup.ObjectSchema<ISchemaValidationTable> = Yup.object().shape({
   inventoryId: Yup.number().required('Product is required'),
-  lot: Yup.string().required('Lot is required'),
-  serie: Yup.string().required('Serie is required'),
+  lot: Yup.string().notRequired(),
+  serie: Yup.string().notRequired(),
   // price: Yup.number().required('Price is required'),
   quanty: Yup.number().required('Quanty is required'),
   productStatusId: Yup.number().required('Product Status is required'),
@@ -85,10 +91,12 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
   const { useProductListQuery } = useProduct();
   const { useInventoryDepartureListQuery } = useInventory();
   const { useProductStatusListQuery } = useProductStatus();
+  const { useMasterPurchaseOrderListQuery } = useMasterPurchaseOrder();
 
   const { data: dataInventory } = useInventoryDepartureListQuery();
   const { data: dataProduct } = useProductListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
   const { data: dataProductStatus } = useProductStatusListQuery({ filter: '', pageIndex: 0, pageSize: 1000 });
+  const { data: dataPurchaseOrder } = useMasterPurchaseOrderListQuery({ pageIndex: 0, pageSize: 100, filter: '' });
 
   const columns = React.useMemo<MRT_ColumnDef<DetailDepartureEntity>[]>(() => [
     {
@@ -326,7 +334,12 @@ const DetailDeparture: React.FC<IPropsDetail> = (props) => {
   
   React.useEffect(() => {
     if (dataInventory) {
-      setSelectData(oldData => ({ ...oldData, products: dataInventory.map(obj => ({ label: obj.product?.name, value: obj.inventoryId })) }));
+      if (Validator.isObjectEmpty(dataGeneral.dataHeader.purchaseOrder)) {
+        setSelectData(oldData => ({ ...oldData, products: dataInventory.map(obj => ({ label: obj.product?.name, value: obj.inventoryId })) }));
+      } else {
+        const productId = dataGeneral.dataHeader.purchaseOrder.productId;
+        setSelectData(oldData => ({ ...oldData, products: dataInventory.filter(ft => ft.product.productId === productId).map(obj => ({ label: obj.product?.name, value: obj.inventoryId })) }));
+      }
     }
     if (dataProductStatus) {
       setSelectData(oldData => ({ ...oldData, status: dataProductStatus.map(obj => ({ label: obj.description, value: obj.productStatusId })) }));

@@ -2,10 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppSelector, useAppDispatch } from '@wms/redux/selector';
 import { masterAccountAsyncThunks } from '@wms/redux/actions';
 import { IPagination, IOptionsQuery } from '@wms/interfaces';
-import {  } from '@wms/entities';
+import { AccountStatusEntity } from '@wms/entities';
 import { PaginationDTO, MasterAccountDTO } from '@wms/dtos';
 import { Validator } from '@wms/helpers';
-import {  } from '@wms/mappers';
+import { MasterAccount } from '@wms/mappers';
 
 
 const useMasterAccount = () => {
@@ -21,6 +21,21 @@ const useMasterAccount = () => {
         const data = (await dispatch(masterAccountAsyncThunks.getMasterAccount(masterAccountDto!))).payload;
         Validator.httpValidation(data as any);
         return data;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: 20 * 60 * 60
+  });
+
+  const useAccountStatusQuery = (args: { year: number, statusId: number }) => useQuery<AccountStatusEntity[]>({
+    queryKey: ['account-status', { ...args }],    
+    queryFn: async () => {
+      try {
+        const data = (await dispatch(masterAccountAsyncThunks.getAccountYearList(args))).payload;
+        Validator.httpValidation(data as any);
+        return MasterAccount.getAccountStatusList(data);
       } catch (error) {
         return Promise.reject(error);
       }
@@ -52,6 +67,7 @@ const useMasterAccount = () => {
 
     //METHODS
     useMasterAccountQuery,
+    useAccountStatusQuery,
     useMasterAccountMutation
   };
 };
