@@ -2,7 +2,7 @@ import React from 'react';
 import type { MRT_ColumnDef, MRT_TableInstance } from 'material-react-table';
 import { useNavigate } from 'react-router-dom';
 import { Paper, Tooltip, IconButton } from '@mui/material';
-import { CheckBox, CheckBoxOutlineBlank, DoneAll } from '@mui/icons-material';
+import { CheckBox, CheckBoxOutlineBlank, DoneAll, PlagiarismRounded } from '@mui/icons-material';
 import moment from 'moment';
 import { IOnSaveAndEditRows } from '@wms/interfaces';
 import { MasterEntryEntity } from '@wms/entities';
@@ -174,6 +174,26 @@ const EntryPage = () => {
     });
   };
 
+  const onGenerateReport = async (values: { [key: string]: any }) => {
+    swalToastQuestion('Entry Report', {
+      message: `Do you want to generate entry report ${values.code}?`,
+      showConfirmButton: true,
+      confirmButtonText: 'Generate',
+      showCancelButton: true,
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if(result.isConfirmed) {
+        const title = 'Generate Report!';
+        swalToastWait(title, {
+          message: 'Please wait a few minutes',
+          showLoading: true,
+        });
+        swalToastSuccess('Finished', { showConfirmButton: false, timer: 2000 });
+        navigate(`${values.masterEntryId}/report`);
+      }
+    });
+  };
+
   React.useEffect(() => { refetch(); }, []);
 
   return (
@@ -194,33 +214,47 @@ const EntryPage = () => {
         onActionRefreshTable={() => refetch()}
         isLoading={isLoading}
         isGenerate={isGenerate}
-        isError={isError}     
-        onActionStateChange={(row: any) => onStateChange(row.original)}  
+        isError={isError}
+        onActionStateChange={(row: any) => onStateChange(row.original)}
         AddCustomActions={({ row }) => (
-          row.original.isFinish
-            ? (
+          <>
+            {
+              row.original.isFinish
+                ? (
+                  <IconButton
+                    sx={{
+                      padding: 0
+                    }}
+                    disabled={row.original.isFinish}
+                    onClick={() => onFinishEntry(row.original)}
+                  >
+                    <DoneAll color={!row.original.isFinish ? 'success' : 'error'} />
+                  </IconButton>
+                )
+                : (
+                  <Tooltip title="Finished">
+                    <IconButton
+                      sx={{
+                        padding: 0
+                      }}
+                      onClick={() => onFinishEntry(row.original)}
+                    >
+                      <DoneAll color={!row.original.isFinish ? 'success' : 'error'} />
+                    </IconButton>
+                  </Tooltip>
+                )
+            }
+            <Tooltip title="Report">
               <IconButton
                 sx={{
                   padding: 0
                 }}
-                disabled={row.original.isFinish}
-                onClick={() => onFinishEntry(row.original)}
+                onClick={() => onGenerateReport(row.original)}
               >
-                <DoneAll color={!row.original.isFinish ? 'success' : 'error'} />
+                <PlagiarismRounded color="inherit" />
               </IconButton>
-            )
-            : (
-              <Tooltip title="Finished">
-                <IconButton
-                  sx={{
-                    padding: 0
-                  }}
-                  onClick={() => onFinishEntry(row.original)}
-                >
-                  <DoneAll color={!row.original.isFinish ? 'success' : 'error'} />
-                </IconButton>
-              </Tooltip>
-            )
+            </Tooltip>
+          </>
         )}
       />
       <ButtonActions title="New" onClick={() => { navigate('new', { replace: false }); }} ubication={isMobile ? {} : { bottom: 99, right: 99 }} />

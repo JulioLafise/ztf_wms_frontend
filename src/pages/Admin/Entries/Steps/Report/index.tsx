@@ -1,4 +1,5 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Document,
   Page,
@@ -7,7 +8,9 @@ import {
   View,
 } from '@react-pdf/renderer';
 import Logo from '@wms/assets/olpc_gsuite_320.png';
-import { DetailEntryEntity, MasterEntryEntity } from '@wms/entities';
+import { MasterEntryEntity } from '@wms/entities';
+import { useMasterEntry } from '@wms/hooks';
+import { SpinnerLoading } from '@wms/components';
 import HeaderReport from './Header/HeaderReport';
 import HeaderDataReport from './Header/HeaderDataReport';
 import TableColumns from './Table/TableColumns';
@@ -33,8 +36,15 @@ const columns = [
 ];
 
 const MyDocument: React.FC<{ data?: MasterEntryEntity }> = (props) => {
-  const { data: entryData } = props;
+  const { data } = props;
+
+  const params = useParams();
+  const { useMasterEntryQuery } = useMasterEntry();
+  const [isLoading, setIsLoading] = React.useState(false);
   const [entryDetail, setEntryDetail] = React.useState<any[]>([]);
+  const [entryData, setEntryData] = React.useState<MasterEntryEntity>(null);
+
+  const { data: loadingData } = useMasterEntryQuery({ masterEntryId: Number(params.reportId) || 0 });
 
   const validatePageDecimals = () => {
     const divisionPages = ((entryDetail.length - 36) / 45).toString().split('.');
@@ -46,6 +56,17 @@ const MyDocument: React.FC<{ data?: MasterEntryEntity }> = (props) => {
   };
 
   React.useEffect(() => {
+    if (params.reportId && !!loadingData) {
+      setEntryData(loadingData);
+    } else {
+      if (data) {
+        setEntryData(data);
+      }
+    }    
+  }, [params.reportId, loadingData, data]);
+
+  React.useEffect(() => {
+    setEntryDetail([]);
     entryData?.details?.forEach(item => {
       setEntryDetail(prevState => [
         ...prevState,
@@ -57,31 +78,34 @@ const MyDocument: React.FC<{ data?: MasterEntryEntity }> = (props) => {
         }
       ]);
     });
-  }, []);
+    entryData && setIsLoading(true);
+  }, [entryData]);
 
   return (
-    <PDFViewer style={{ width: '100%', height: '1000px' }}>
-      <Document>
-        <Page size="LETTER" style={styles.page}>
-          {/* CREAR COMPONENTE HEADER */}
-          <View>
-            <HeaderReport logo={Logo} enterpriseName="OLPC - WMS" typeReport="RECIBO DE ENTRADA" numberReport={entryData?.code} />
-            <HeaderDataReport data={entryData} />
-            {/* CREAR COMPONENTE TABLE */}
-            <TableColumns columns={columns} />
-            <TableRows data={entryDetail} columns={columns} />
-          </View>
-          {/* CREAR COMPONENTE FOOTER */}
-          <View style={{
-            ...entryDetail.length > 27 && entryDetail.length < 36 ? { height: '100%', flexDirection: 'column', justifyContent: 'flex-end' } :
-              entryDetail.length === 36 ? { height: '98%', flexDirection: 'column', justifyContent: 'flex-end' } :
-                validatePageDecimals() && { height: '100%', flexDirection: 'column', justifyContent: 'flex-end' }
-          }}>
-            <FooterReport nombreEntrega={entryData.delivery} nombreRecibe={`${entryData.employee?.firstName} ${entryData.employee?.lastName}`} data={entryData} />
-          </View>
-        </Page>
-      </Document>
-    </PDFViewer>
+    isLoading ? (
+      <PDFViewer style={{ width: '100%', height: '1000px' }}>
+        <Document >
+          <Page size="LETTER" style={styles.page} >
+            {/* CREAR COMPONENTE HEADER */}
+            <View>
+              <HeaderReport logo={Logo} enterpriseName="OLPC - WMS" typeReport="RECIBO DE ENTRADA" numberReport={entryData?.code} />
+              <HeaderDataReport data={entryData} />
+              {/* CREAR COMPONENTE TABLE */}
+              <TableColumns columns={columns} />
+              <TableRows data={entryDetail} columns={columns} />
+            </View>
+            {/* CREAR COMPONENTE FOOTER */}
+            <View style={{
+              ...entryDetail.length > 27 && entryDetail.length < 36 ? { height: '100%', flexDirection: 'column', justifyContent: 'flex-end' } :
+                entryDetail.length === 36 ? { height: '98%', flexDirection: 'column', justifyContent: 'flex-end' } :
+                  validatePageDecimals() && { height: '100%', flexDirection: 'column', justifyContent: 'flex-end' }
+            }}>
+              <FooterReport nombreEntrega={entryData?.delivery} nombreRecibe={`${entryData.employee?.firstName} ${entryData.employee?.lastName}`} data={entryData} />
+            </View>
+          </Page>
+        </Document>
+      </PDFViewer>
+    ) : <SpinnerLoading fontSize={10} size={60} color="secondary" />
   );
 };
 

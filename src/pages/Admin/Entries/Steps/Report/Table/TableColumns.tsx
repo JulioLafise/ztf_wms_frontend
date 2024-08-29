@@ -1,5 +1,6 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
 import stylesGlobal from '@wms/styles/pdfStyles';
+import { v4 as uuid } from 'uuid';
 
 interface IColumnsObject {
   name: string,
@@ -25,7 +26,7 @@ const TableColumns = (props: ITableColumns) => {
   return (
     <View style={styles.detail}>
       {props.columns.map((obj, index) => (
-        <View style={{ width: `${obj.width}%`, textAlign: 'center' }}>
+        <View key={uuid()} style={{ width: `${obj.width}%`, textAlign: 'center' }}>
           <Text
             key={obj.name}
             style={{

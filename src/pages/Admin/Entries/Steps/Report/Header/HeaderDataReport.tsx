@@ -26,9 +26,9 @@ const HeaderDataReport: React.FC<IHeaderDataReport> = (props) => {
       <LabelText textTitle="Fecha" text={moment(data?.createdAt).format('YYYY-MM-DD')} width={20} />
       <LabelText textTitle="Tipo de Entrada" text={data?.entryType?.description} width={50} />
       <LabelText textTitle="Categoria" text={data?.category?.description} width={30} />
-      <LabelText textTitle="Bodega" text={data?.warehouse?.description} width={30} />
-      <LabelText textTitle="Pais" text={data?.departament?.description} width={35} />
-      <LabelText textTitle="Proveedor" text={`${data?.supplier?.firstName} ${data?.supplier?.lastName}`} width={35} />
+      <LabelText textTitle="Bodega" text={data?.warehouse?.description} width={35} />
+      <LabelText textTitle="Ciudad" text={data?.departament?.description} width={25} />
+      <LabelText textTitle="Proveedor" text={`${data?.supplier?.firstName} ${data?.supplier?.lastName}`} width={40} />
       <LabelText textTitle="Moneda" text={`${data?.typeCurrency?.iconName} ${data?.typeCurrency?.description}`} width={25} />
       <LabelText textTitle="Responsable" text={`${data?.employee?.firstName} ${data?.employee?.lastName}`} width={45} />
       <LabelText textTitle="Entrega" text={data?.delivery} width={30} />

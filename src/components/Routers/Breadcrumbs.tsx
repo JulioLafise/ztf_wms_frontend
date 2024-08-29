@@ -95,6 +95,7 @@ const Breadcrumbs: React.FC<{ open: boolean }> = (props) => {
 
   const getIcon = (path: string) => {
     if (path === 'app') return 'diamond';
+    if (path === 'report') return 'file-pdf';
     let icon: string = '';
     menu.main.forEach(item => {
       let lastIndex = item.menuUrl.split('/').length - 1;

@@ -66,7 +66,7 @@ const CharBarsAnnualVisits = () => {
               <IconButton onClick={() => refetch()}><RefreshRounded /></IconButton>
               <ChartBars
                 id={uuid()}
-                title={`Entradas y Salidas - ${moment().year()}`}
+                title={`Entradas & Salidas - ${moment().year()}`}
                 data={chartData}
               />
             </React.Fragment>

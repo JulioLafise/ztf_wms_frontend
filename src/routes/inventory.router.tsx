@@ -5,6 +5,7 @@ import {
   CustomerStockPageLazy,
   EntryPageLazy,
   EntriesStepperLazy,
+  EntryReportLazy,
   DeparturePageLazy,
   DeparturesStepperLazy,
   PurchaseOrderPageLazy,
@@ -44,6 +45,11 @@ export const inventoryRouter: RouteObject = {
     {
       path: 'entries/:entryId/edit',
       element: <EntriesStepperLazy />,
+      errorElement: <Error />
+    },
+    {
+      path: 'entries/:reportId/report',
+      element: <EntryReportLazy />,
       errorElement: <Error />
     },
     {
